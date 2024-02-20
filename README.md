@@ -1,6 +1,6 @@
 # tripweather
 
-[![main](https://github.com/dwmkerr/lifeline/actions/workflows/main.yaml/badge.svg)](https://github.com/dwmkerr/lifeline/actions/workflows/main.yaml) [![codecov](https://codecov.io/gh/dwmkerr/lifeline/graph/badge.svg?token=lI5Swxa2tj)](https://codecov.io/gh/dwmkerr/lifeline)
+[![main](https://github.com/dwmkerr/lifeline/actions/workflows/main.yaml/badge.svg)](https://github.com/dwmkerr/lifeline/actions/workflows/main.yaml) [![codecov](https://codecov.io/gh/dwmkerr/tripweather/graph/badge.svg?token=7e6XaNFvoG)](https://codecov.io/gh/dwmkerr/tripweather)
 
 Experimentation project for a climbing trip planner app
 
