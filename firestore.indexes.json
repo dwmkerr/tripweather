@@ -1,0 +1,20 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "lifeevents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "year", "order": "ASCENDING" },
+        { "fieldPath": "month", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "lifeevents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "year", "order": "DESCENDING" },
+        { "fieldPath": "month", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}
