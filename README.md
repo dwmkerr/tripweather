@@ -81,9 +81,13 @@ Weather Services:
 ## TODO
 
 - [x] check name 'trip weather'
-- [ ] feat: weather icon - sunshine
-- [ ] feat: basic structure - search bar and suggest function
+- [x] feat: weather icon - sunshine
+- [x] feat: basic structure - search bar and suggest function
+- [ ] feat: error handling and context
+- [ ] feat: add location to list
+
 - [ ] feat: show weather for selected location
 - [ ] feat: save location as favourite, quick search for favourites
 - [ ] score icons for walking/climbing
 - [ ] ads based on score icons, e.g. climbing books for selected area
+- [ ] feat: spinner when loading location suggestions

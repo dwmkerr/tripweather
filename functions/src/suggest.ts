@@ -1,3 +1,5 @@
+import {IExtent, IGeocodeResponse, IPoint} from "@esri/arcgis-rest-geocoding";
+
 export interface SuggestRequest {
   location: string;
 }
@@ -9,7 +11,21 @@ export interface Suggestion {
 }
 
 export interface SuggestResponse {
-  result: string;
   suggestions: Suggestion[];
 }
 
+export interface FindAddressFromSuggestionRequest {
+  singleLineAddress: string;
+  magicKey: string;
+}
+
+export interface Candidate {
+  address: string;
+  location: IPoint;
+  extent?: IExtent;
+  score: number;
+}
+
+export interface FindAddressFromSuggestionResponse {
+  candidates: Candidate[];
+}

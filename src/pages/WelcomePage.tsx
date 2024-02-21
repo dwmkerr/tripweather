@@ -7,19 +7,50 @@ import Typography from "@mui/joy/Typography";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
 import AutocompleteOption from "@mui/joy/AutocompleteOption";
+import List from "@mui/joy/List";
+import ListItem from "@mui/joy/ListItem";
+import ListItemButton from "@mui/joy/ListItemButton";
+import ListItemContent from "@mui/joy/ListItemContent";
+import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
+import HomeIcon from "@mui/icons-material/Home";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+
 import { functions } from "../lib/app";
 import TwoSidedLayout from "../components/TwoSidedLayout";
+import { Location } from "../lib/Location";
 import {
+  FindAddressFromSuggestionRequest,
+  FindAddressFromSuggestionResponse,
   SuggestRequest,
   SuggestResponse,
   Suggestion,
 } from "../../functions/src/suggest";
-
 export default function WelcomePage() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [selectedSuggestion, setSelectedSuggestion] =
+    useState<Suggestion | null>(null);
+  const selectLocation = async (suggestion: Suggestion | null) => {
+    const findAddress = httpsCallable<
+      FindAddressFromSuggestionRequest,
+      FindAddressFromSuggestionResponse
+    >(functions, "findAddressFromSuggestion");
+    if (!suggestion) {
+      throw new Error("no suggestion selected");
+      //  TODO error context
+    }
+    const result = await findAddress({
+      singleLineAddress: suggestion?.text,
+      magicKey: suggestion?.magicKey,
+    });
+
+    setLocations([...locations, result.data.candidates[0]]);
+
+    console.log("selected", result);
+  };
+  const [locations, setLocations] = useState<Location[]>([]);
 
   return (
     <TwoSidedLayout reversed>
@@ -50,20 +81,20 @@ export default function WelcomePage() {
         <Autocomplete
           size="lg"
           sx={{ flex: "auto" }}
-          placeholder="Type a movie name"
+          placeholder="e.g. Yosemite Valley"
           onInputChange={(event, value) => {
             const addMessage = httpsCallable<SuggestRequest, SuggestResponse>(
               functions,
               "arcGisSuggest",
             );
             addMessage({ location: value }).then((result) => {
-              // Read result of the Cloud Function.
-              /** @type {any} */
-              const data = result.data;
-              const suggestions = data.suggestions;
+              const { suggestions } = result.data;
               setSuggestions(suggestions);
               console.log(suggestions);
             });
+          }}
+          onChange={(event, value) => {
+            setSelectedSuggestion(value);
           }}
           options={suggestions}
           getOptionLabel={(option) => option.text}
@@ -94,10 +125,31 @@ export default function WelcomePage() {
             );
           }}
         />
-        <IconButton type="submit" size="lg" variant="solid" color="primary">
+        <IconButton
+          size="lg"
+          variant="solid"
+          color="primary"
+          onClick={() => selectLocation(selectedSuggestion)}
+        >
           <ArrowForward />
         </IconButton>
+        {selectedSuggestion !== null && (
+          <Typography>{selectedSuggestion.text}</Typography>
+        )}
       </Box>
+      <List>
+        {locations.map((location) => (
+          <ListItem key={location.address}>
+            <ListItemButton>
+              <ListItemDecorator>
+                <HomeIcon />
+              </ListItemDecorator>
+              <ListItemContent>{location.address}</ListItemContent>
+              <KeyboardArrowRightIcon />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </TwoSidedLayout>
   );
 }
