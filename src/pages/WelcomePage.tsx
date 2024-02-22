@@ -28,7 +28,10 @@ import {
   SuggestResponse,
   Suggestion,
 } from "../../functions/src/suggest";
+import { useAlertContext } from "../components/AlertContext";
+
 export default function WelcomePage() {
+  const { setAlertFromError } = useAlertContext();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] =
     useState<Suggestion | null>(null);
@@ -87,11 +90,13 @@ export default function WelcomePage() {
               functions,
               "arcGisSuggest",
             );
-            addMessage({ location: value }).then((result) => {
-              const { suggestions } = result.data;
-              setSuggestions(suggestions);
-              console.log(suggestions);
-            });
+            addMessage({ location: value })
+              .then((result) => {
+                const { suggestions } = result.data;
+                setSuggestions(suggestions);
+                console.log(suggestions);
+              })
+              .catch(setAlertFromError);
           }}
           onChange={(event, value) => {
             setSelectedSuggestion(value);

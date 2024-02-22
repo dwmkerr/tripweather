@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import InfoIcon from "@mui/icons-material/Info";
 
-import { LifelineError } from "../lib/Errors";
+import { TripWeatherError } from "../lib/Errors";
 
 export enum AlertType {
   Info,
@@ -61,7 +61,7 @@ export function alertTypeToIcon(type: AlertType): ReactNode {
 interface AlertContextValue {
   alertInfo: AlertInfo | null;
   setAlertInfo: (alert: AlertInfo | null) => void;
-  setAlertFromError: (error: LifelineError) => void;
+  setAlertFromError: (error: TripWeatherError) => void;
 }
 
 const AlertContext = createContext<AlertContextValue | null>(null);
@@ -74,8 +74,8 @@ export const AlertContextProvider: React.FC<PropsWithChildren> = ({
   const value: AlertContextValue = {
     alertInfo,
     setAlertInfo,
-    //  Essentially just a helper to build an alert from a puzlog error.
-    setAlertFromError: (error: LifelineError) =>
+    //  Essentially just a helper to build an alert from an error.
+    setAlertFromError: (error: TripWeatherError) =>
       setAlertInfo({
         type: AlertType.Error,
         title: error.title,

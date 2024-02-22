@@ -1,4 +1,4 @@
-export class LifelineError extends Error {
+export class TripWeatherError extends Error {
   public title: string;
   public error?: Error;
 
@@ -8,13 +8,17 @@ export class LifelineError extends Error {
     this.error = error;
   }
 
-  public static fromError(title: string, err: unknown): LifelineError {
+  public static fromError(title: string, err: unknown): TripWeatherError {
     //  Cast the internal error into an error object or return it if it is
     //  already one.
     const error = err as Error;
-    if (error instanceof LifelineError) {
+    if (error instanceof TripWeatherError) {
       return error;
     }
-    return new LifelineError(title, error?.message || "Unknown error", error);
+    return new TripWeatherError(
+      title,
+      error?.message || "Unknown error",
+      error,
+    );
   }
 }

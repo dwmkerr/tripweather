@@ -86,6 +86,15 @@ Weather Services:
 - [ ] feat: error handling and context
 - [ ] feat: add location to list
 
+v0.2
+
+- [ ] feat: activity select in navbar
+- [ ] feat: save search details
+- [ ] feat: share button offers link to share
+- [ ] feat: open saved trip from URL
+- [ ] feat: name trips
+- [ ] feat: 'my trips'
+
 - [ ] feat: show weather for selected location
 - [ ] feat: save location as favourite, quick search for favourites
 - [ ] score icons for walking/climbing

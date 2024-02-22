@@ -31,7 +31,7 @@ import {
   SerializableLifeEvent,
 } from "./LifeEvent";
 import { GoogleAuthProvider, Unsubscribe, User } from "firebase/auth";
-import { LifelineError } from "./Errors";
+import { TripWeatherError } from "./Errors";
 import { SerializableUserSettings, UserSettings } from "./UserSettings";
 import { Feedback } from "./Feedback";
 
@@ -100,8 +100,8 @@ const firebaseConfig = {
   appId: "1:43519542082:web:4506c47c35dbb914963edb",
 };
 
-export class LifelineRepository {
-  private static instance: LifelineRepository;
+export class Repository {
+  private static instance: Repository;
   public app: FirebaseApp;
   public auth: Auth;
   public db: Firestore;
@@ -134,12 +134,12 @@ export class LifelineRepository {
     );
   }
 
-  public static getInstance(): LifelineRepository {
-    if (!LifelineRepository.instance) {
-      LifelineRepository.instance = new LifelineRepository(false);
+  public static getInstance(): Repository {
+    if (!Repository.instance) {
+      Repository.instance = new Repository(false);
     }
 
-    return LifelineRepository.instance;
+    return Repository.instance;
   }
 
   async load(): Promise<LifeEvent[]> {
@@ -186,7 +186,7 @@ export class LifelineRepository {
   ): Promise<LifeEvent> {
     const uid = this.getUser()?.uid;
     if (!uid) {
-      throw new LifelineError(
+      throw new TripWeatherError(
         "Create Event Error",
         "uid is null, cannot save to db",
       );
@@ -222,7 +222,7 @@ export class LifelineRepository {
     //  If we don't have a user, we are going to have to fail.
     const uid = this.getUser()?.uid;
     if (!uid) {
-      throw new LifelineError(
+      throw new TripWeatherError(
         "Restore Error",
         "Cannot restore events as the user is not logged in.",
       );
@@ -261,7 +261,7 @@ export class LifelineRepository {
   async getUserSettings(): Promise<UserSettings> {
     const uid = this.getUser()?.uid;
     if (!uid) {
-      throw new LifelineError("Get Settings Error", "User is not logged in");
+      throw new TripWeatherError("Get Settings Error", "User is not logged in");
     }
     const docRef = doc(this.userSettingsCollection, uid);
     const docSnap = await getDoc(docRef);
@@ -282,7 +282,7 @@ export class LifelineRepository {
   ): Unsubscribe {
     const uid = this.getUser()?.uid;
     if (!uid) {
-      throw new LifelineError("Get Settings Error", "User is not logged in");
+      throw new TripWeatherError("Get Settings Error", "User is not logged in");
     }
     return onSnapshot(doc(this.userSettingsCollection, uid), (doc) => {
       const userSettings = doc.data();
@@ -335,7 +335,7 @@ export class LifelineRepository {
       }
       return result.user;
     } catch (err) {
-      throw LifelineError.fromError("Sign In Error", err);
+      throw TripWeatherError.fromError("Sign In Error", err);
     }
   }
 
