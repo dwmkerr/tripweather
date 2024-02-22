@@ -25,3 +25,8 @@ yarn-error.log*
 *.log
 *.xls*
 *.csv
+.config.yaml
+
+# Firebase functions compiled files
+functions/lib
+.firebase/

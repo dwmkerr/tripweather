@@ -1,11 +1,11 @@
 root: true
 extends:
-    "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    "google",
-    "plugin:@typescript-eslint/recommended",
+  - "plugin:@typescript-eslint/recommended"
+  - "prettier"
+  - "plugin:import/errors"
+  - "plugin:import/warnings"
+  - "plugin:import/typescript"
+  # - "google"
 plugins:
   - "@typescript-eslint"
   - "prettier"
@@ -23,6 +23,6 @@ rules:
   prettier/prettier: ["error"]
   # I quite like having explicit type defintiions so disable this rule.
   "@typescript-eslint/no-inferrable-types": "off"
-  quotes: ["error", "double"],
-  import/no-unresolved: 0,
-  indent: ["error", 2],
+  quotes: ["error", "double"]
+  import/no-unresolved: 0
+  indent: ["error", 2]

@@ -4,6 +4,7 @@ import CssBaseline from "@mui/joy/CssBaseline";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import WelcomePage from "./pages/WelcomePage";
+import TripPage from "./pages/TripPage";
 import { AlertContextProvider } from "./components/AlertContext";
 import PageContainer from "./components/PageContainer";
 import ErrorPage from "./pages/ErrorPage";
@@ -15,8 +16,12 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "welcome",
+        path: "/",
         element: <WelcomePage />,
+      },
+      {
+        path: "trip",
+        element: <TripPage />,
       },
     ],
   },

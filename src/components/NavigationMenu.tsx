@@ -2,8 +2,10 @@ import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemButton from "@mui/joy/ListItemButton";
 import ListItemDecorator from "@mui/joy/ListItemDecorator";
-import HomeRounded from "@mui/icons-material/HomeRounded";
 import { NavLink } from "react-router-dom";
+
+import HomeRounded from "@mui/icons-material/HomeRounded";
+import LanguageIcon from "@mui/icons-material/Language";
 
 export default function NavigationMenu() {
   return (
@@ -30,14 +32,14 @@ export default function NavigationMenu() {
               <ListItemDecorator>
                 <HomeRounded />
               </ListItemDecorator>
-              Home
+              Welcome
             </ListItemButton>
           )}
         </NavLink>
       </ListItem>
       <ListItem role="none">
         <NavLink
-          to={"welcome"}
+          to={"trip"}
           style={({ isActive }) => {
             return {
               textDecoration: isActive ? "none" : "none",
@@ -47,9 +49,9 @@ export default function NavigationMenu() {
           {({ isActive }) => (
             <ListItemButton role="menuitem" selected={isActive}>
               <ListItemDecorator>
-                <HomeRounded />
+                <LanguageIcon />
               </ListItemDecorator>
-              Welcome
+              Trip
             </ListItemButton>
           )}
         </NavLink>

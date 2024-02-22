@@ -6,6 +6,19 @@ import {
   Firestore,
 } from "firebase/firestore";
 
+import {
+  HttpsCallable,
+  connectFunctionsEmulator,
+  getFunctions,
+  httpsCallable,
+} from "firebase/functions";
+import {
+  FindAddressFromSuggestionRequest,
+  FindAddressFromSuggestionResponse,
+  SuggestRequest,
+  SuggestResponse,
+} from "../../functions/src/suggest";
+
 // const lifeEventConverter = {
 //   toFirestore(lifeEvent: WithFieldValue<LifeEvent>): SerializableLifeEvent {
 //     return toSerializableObject(lifeEvent as LifeEvent);
@@ -61,15 +74,21 @@ import {
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyD6Wvyid5gqzPC4JWZBoYHvivI7vPGybTk",
-  authDomain: "lifeline-dwmkerr.firebaseapp.com",
-  // databaseURL:
-  //   "https://lifeline-dwmkerr-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "lifeline-dwmkerr",
-  storageBucket: "lifeline-dwmkerr.appspot.com",
-  messagingSenderId: "43519542082",
-  appId: "1:43519542082:web:4506c47c35dbb914963edb",
+  apiKey: "AIzaSyDBl0MbWCaH9hPkayQHh_ZBbly2eSYT8is",
+  authDomain: "dwmkerr-tripweather.firebaseapp.com",
+  projectId: "dwmkerr-tripweather",
+  storageBucket: "dwmkerr-tripweather.appspot.com",
+  messagingSenderId: "249803627566",
+  appId: "1:249803627566:web:ab8bee6d1bc1f6a42093bf",
 };
+
+interface Functions {
+  suggest: HttpsCallable<SuggestRequest, SuggestResponse>;
+  findAddress: HttpsCallable<
+    FindAddressFromSuggestionRequest,
+    FindAddressFromSuggestionResponse
+  >;
+}
 
 export class Repository {
   private static instance: Repository;
@@ -85,14 +104,30 @@ export class Repository {
   //   SerializableUserSettings
   // >;
   // private feedbackCollection: CollectionReference<Feedback, Feedback>;
+  //
+  public functions: Functions;
 
   private constructor(emulator: boolean) {
     this.app = initializeApp(firebaseConfig);
     this.auth = getAuth();
     this.db = getFirestore();
+    const functions = getFunctions(this.app);
     if (emulator) {
       connectFirestoreEmulator(this.db, "127.0.0.1", 8080);
+      connectFunctionsEmulator(functions, "127.0.0.1", 5001);
     }
+
+    this.functions = {
+      suggest: httpsCallable<SuggestRequest, SuggestResponse>(
+        functions,
+        "arcGisSuggest",
+      ),
+      findAddress: httpsCallable<
+        FindAddressFromSuggestionRequest,
+        FindAddressFromSuggestionResponse
+      >(functions, "findAddressFromSuggestion"),
+    };
+
     // this.lifeEventsCollection = collection(this.db, "lifeevents").withConverter(
     //   lifeEventConverter,
     // );
@@ -107,7 +142,7 @@ export class Repository {
 
   public static getInstance(): Repository {
     if (!Repository.instance) {
-      Repository.instance = new Repository(false);
+      Repository.instance = new Repository(true);
     }
 
     return Repository.instance;

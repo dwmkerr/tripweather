@@ -1,4 +1,4 @@
-import {IExtent, IGeocodeResponse, IPoint} from "@esri/arcgis-rest-geocoding";
+import { IExtent, IPoint } from "@esri/arcgis-rest-geocoding";
 
 export interface SuggestRequest {
   location: string;

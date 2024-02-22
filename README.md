@@ -31,7 +31,11 @@ Setup looks like this:
 
 ```bash
 # Install firebase CLI tools, then login.
-curl -sL firebase.tools | bash
+# Don't install with:
+#   curl -sL https://firebase.tools | bash
+# As this seems to suffer from some CLI issues:
+#   - https://github.com/firebase/firebase-tools/issues/6446
+npm install -g firebase-tools
 firebase login
 
 # Initialise the firebase project (not needed for most users, only if you are
