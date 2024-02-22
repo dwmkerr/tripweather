@@ -6,19 +6,10 @@ import Typography from "@mui/joy/Typography";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
 import AutocompleteOption from "@mui/joy/AutocompleteOption";
-import List from "@mui/joy/List";
-import ListItem from "@mui/joy/ListItem";
-import ListItemButton from "@mui/joy/ListItemButton";
-import ListItemContent from "@mui/joy/ListItemContent";
-import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
-import HomeIcon from "@mui/icons-material/Home";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-
 import TwoSidedLayout from "../components/TwoSidedLayout";
-import { TripLocation } from "../lib/Location";
 import { Suggestion } from "../../functions/src/suggest";
 import { AlertType, useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
@@ -36,7 +27,6 @@ export default function WelcomePage() {
       message: `TODO: add this search result to the trip page: ${suggestion?.text}`,
     });
   };
-  const [locations] = useState<TripLocation[]>([]);
 
   return (
     <TwoSidedLayout reversed>

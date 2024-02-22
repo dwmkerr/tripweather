@@ -6,17 +6,9 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
 import Grid from "@mui/joy/Grid";
 import AutocompleteOption from "@mui/joy/AutocompleteOption";
-import {
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemContent,
-  ListItemDecorator,
-} from "@mui/joy";
+import { List } from "@mui/joy";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
-
-import PlaceIcon from "@mui/icons-material/Place";
 
 import { AddressSearchStatus, TripLocation } from "../lib/Location";
 import { Suggestion } from "../../functions/src/suggest";
