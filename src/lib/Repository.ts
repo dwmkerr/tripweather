@@ -1,91 +1,62 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
-import { Auth, getAuth, signInWithPopup } from "firebase/auth";
+import { Auth, getAuth } from "firebase/auth";
 import {
   getFirestore,
   connectFirestoreEmulator,
   Firestore,
-  getDoc,
-  Timestamp,
-  addDoc,
 } from "firebase/firestore";
-import {
-  collection,
-  onSnapshot,
-  doc,
-  getDocs,
-  CollectionReference,
-  WithFieldValue,
-  QueryDocumentSnapshot,
-  SnapshotOptions,
-  setDoc,
-  deleteDoc,
-  query,
-  updateDoc,
-  orderBy,
-  OrderByDirection,
-} from "firebase/firestore";
-import {
-  LifeEvent,
-  toSerializableObject,
-  fromSerializableObject,
-  SerializableLifeEvent,
-} from "./LifeEvent";
-import { GoogleAuthProvider, Unsubscribe, User } from "firebase/auth";
-import { TripWeatherError } from "./Errors";
-import { SerializableUserSettings, UserSettings } from "./UserSettings";
-import { Feedback } from "./Feedback";
 
-const lifeEventConverter = {
-  toFirestore(lifeEvent: WithFieldValue<LifeEvent>): SerializableLifeEvent {
-    return toSerializableObject(lifeEvent as LifeEvent);
-  },
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions,
-  ): LifeEvent {
-    const data = snapshot.data(options) as SerializableLifeEvent;
-    return fromSerializableObject(data);
-  },
-};
-const userSettingsConverter = {
-  toFirestore(
-    userSettings: WithFieldValue<UserSettings>,
-  ): SerializableUserSettings {
-    const settings = userSettings as UserSettings;
-    return {
-      ...settings,
-      dateOfBirth:
-        settings.dateOfBirth && Timestamp.fromDate(settings.dateOfBirth),
-    } as SerializableUserSettings;
-  },
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions,
-  ): UserSettings {
-    const data = snapshot.data(options) as SerializableUserSettings;
-    return {
-      ...data,
-      dateOfBirth: data.dateOfBirth?.toDate(),
-    };
-  },
-};
-const feedbackConverter = {
-  toFirestore(feedback: WithFieldValue<Feedback>): Feedback {
-    const feedbackData = feedback as Feedback;
-    return {
-      ...feedbackData,
-    } as Feedback;
-  },
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions,
-  ): Feedback {
-    const data = snapshot.data(options) as Feedback;
-    return {
-      ...data,
-    };
-  },
-};
+// const lifeEventConverter = {
+//   toFirestore(lifeEvent: WithFieldValue<LifeEvent>): SerializableLifeEvent {
+//     return toSerializableObject(lifeEvent as LifeEvent);
+//   },
+//   fromFirestore(
+//     snapshot: QueryDocumentSnapshot,
+//     options: SnapshotOptions,
+//   ): LifeEvent {
+//     const data = snapshot.data(options) as SerializableLifeEvent;
+//     return fromSerializableObject(data);
+//   },
+// };
+// const userSettingsConverter = {
+//   toFirestore(
+//     userSettings: WithFieldValue<UserSettings>,
+//   ): SerializableUserSettings {
+//     const settings = userSettings as UserSettings;
+//     return {
+//       ...settings,
+//       dateOfBirth:
+//         settings.dateOfBirth && Timestamp.fromDate(settings.dateOfBirth),
+//     } as SerializableUserSettings;
+//   },
+//   fromFirestore(
+//     snapshot: QueryDocumentSnapshot,
+//     options: SnapshotOptions,
+//   ): UserSettings {
+//     const data = snapshot.data(options) as SerializableUserSettings;
+//     return {
+//       ...data,
+//       dateOfBirth: data.dateOfBirth?.toDate(),
+//     };
+//   },
+// };
+// const feedbackConverter = {
+//   toFirestore(feedback: WithFieldValue<Feedback>): Feedback {
+//     const feedbackData = feedback as Feedback;
+//     return {
+//       ...feedbackData,
+//     } as Feedback;
+//   },
+//   fromFirestore(
+//     snapshot: QueryDocumentSnapshot,
+//     options: SnapshotOptions,
+//   ): Feedback {
+//     const data = snapshot.data(options) as Feedback;
+//     return {
+//       ...data,
+//     };
+//   },
+// };
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -105,15 +76,15 @@ export class Repository {
   public app: FirebaseApp;
   public auth: Auth;
   public db: Firestore;
-  private lifeEventsCollection: CollectionReference<
-    LifeEvent,
-    SerializableLifeEvent
-  >;
-  private userSettingsCollection: CollectionReference<
-    UserSettings,
-    SerializableUserSettings
-  >;
-  private feedbackCollection: CollectionReference<Feedback, Feedback>;
+  // private lifeEventsCollection: CollectionReference<
+  //   LifeEvent,
+  //   SerializableLifeEvent
+  // >;
+  // private userSettingsCollection: CollectionReference<
+  //   UserSettings,
+  //   SerializableUserSettings
+  // >;
+  // private feedbackCollection: CollectionReference<Feedback, Feedback>;
 
   private constructor(emulator: boolean) {
     this.app = initializeApp(firebaseConfig);
@@ -122,16 +93,16 @@ export class Repository {
     if (emulator) {
       connectFirestoreEmulator(this.db, "127.0.0.1", 8080);
     }
-    this.lifeEventsCollection = collection(this.db, "lifeevents").withConverter(
-      lifeEventConverter,
-    );
-    this.userSettingsCollection = collection(
-      this.db,
-      "userSettings",
-    ).withConverter(userSettingsConverter);
-    this.feedbackCollection = collection(this.db, "feedback").withConverter(
-      feedbackConverter,
-    );
+    // this.lifeEventsCollection = collection(this.db, "lifeevents").withConverter(
+    //   lifeEventConverter,
+    // );
+    // this.userSettingsCollection = collection(
+    //   this.db,
+    //   "userSettings",
+    // ).withConverter(userSettingsConverter);
+    // this.feedbackCollection = collection(this.db, "feedback").withConverter(
+    //   feedbackConverter,
+    // );
   }
 
   public static getInstance(): Repository {
@@ -142,6 +113,7 @@ export class Repository {
     return Repository.instance;
   }
 
+  /*
   async load(): Promise<LifeEvent[]> {
     const querySnapshot = await getDocs(this.lifeEventsCollection);
     const puzzles = querySnapshot.docs.map((doc) => doc.data());
@@ -342,4 +314,5 @@ export class Repository {
   async signOut() {
     this.auth.signOut();
   }
+  */
 }

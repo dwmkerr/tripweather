@@ -83,8 +83,14 @@ Weather Services:
 - [x] check name 'trip weather'
 - [x] feat: weather icon - sunshine
 - [x] feat: basic structure - search bar and suggest function
-- [ ] feat: error handling and context
-- [ ] feat: add location to list
+- [x] feat: error handling and context
+- [x] feat: add location to list
+- [ ] feat: main page with navbar
+- [ ] feat: main page search
+- [ ] feat: main page list, with location details having a loader
+- [ ] feat: delete location
+- [ ] feat: re-order locations
+- [ ] feat: set location label?
 
 v0.2
 
@@ -94,6 +100,7 @@ v0.2
 - [ ] feat: open saved trip from URL
 - [ ] feat: name trips
 - [ ] feat: 'my trips'
+- [ ] feat: debounce search input
 
 - [ ] feat: show weather for selected location
 - [ ] feat: save location as favourite, quick search for favourites
