@@ -14,6 +14,7 @@ import {
   arcGisSuggest,
   findAddressFromSuggestion,
 } from "./arcgis";
+import { weather } from "./pirate-weather";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -23,4 +24,4 @@ export const helloWorld = onRequest((request, response) => {
   response.send({ message: "Hello from Firebase!" });
 });
 
-export { arcGisStatus, arcGisSuggest, findAddressFromSuggestion };
+export { arcGisStatus, arcGisSuggest, findAddressFromSuggestion, weather };

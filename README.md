@@ -10,6 +10,7 @@ https://lifeline.rocks
 
 - [Developer Guide](#developer-guide)
     - [Firebase](#firebase)
+    - [Firebase Functions](#firebase-functions)
 - [Releasing](#releasing)
 - [Research](#research)
 - [TODO](#todo)
@@ -56,6 +57,26 @@ Deploy indexes and rules with:
 fireabase deploy --only firestore
 ```
 
+### Firebase Functions
+
+To watch for changes in the code and run the Firebase functions in the emulator, run:
+
+```bash
+npm run emulate
+```
+
+To [test functions interactively](https://firebase.google.com/docs/functions/local-shell):
+
+```bash
+firebase functions:shell
+
+# Then e.g:
+# await weather({data: {latitude: "-1.56266", longitude: "53.11893"}})
+# await arcGisSuggest({data: {location: "Peak District"}})
+```
+
+Firebase function parameters and configuration are defined in `./functions/src/parameters.ts`. These parameters are loaded from Firebase at runtime, but can also be defined in `./functions/.secrets.local` if needed.
+
 ## Releasing
 
 This project uses [Release Please](https://github.com/googleapis/release-please) to manage releases. As long as you use [Conventional Commit messages](https://www.conventionalcommits.org/en/v1.0.0/), release please will open up a 'release' pull request on the `main` branch when changes are merged. Merging the release pull request will trigger a full release to NPM.
@@ -89,12 +110,14 @@ Weather Services:
 - [x] feat: basic structure - search bar and suggest function
 - [x] feat: error handling and context
 - [x] feat: add location to list
-- [ ] feat: main page with navbar
+- [x] feat: main page with navbar
 - [ ] feat: main page search
+- [ ] feat: basic weather api call
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location
 - [ ] feat: re-order locations
 - [ ] feat: set location label?
+- [ ] chore: recycle arcgis keys
 
 v0.2
 

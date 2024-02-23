@@ -45,7 +45,7 @@ export const arcGisSuggest = onCall<SuggestRequest, Promise<SuggestResponse>>(
   { cors: ["localhost:3000"] },
   async (req): Promise<SuggestResponse> => {
     const session = getSession();
-    const locationText = req.data.location as string;
+    const locationText = req.data.location;
     logger.info(`Suggest, query: ${locationText}`);
     try {
       const response = await suggest(locationText, {

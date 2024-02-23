@@ -29,6 +29,12 @@ export default function TripLocationListItem({
               <CircularProgress />
             </Stack>
           )}
+          {location.candidate !== undefined && (
+            <Typography level="body-sm">
+              Latitude: {location.candidate?.location.x}, Longitude:{" "}
+              {location.candidate?.location.y}
+            </Typography>
+          )}
         </Stack>
       </ListItemContent>
     </ListItem>
