@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/dwmkerr/tripweather/compare/v0.1.0...v0.1.1) (2024-02-24)
+
+
+### Miscellaneous Chores
+
+* release 0.1.0 ([ec9a593](https://github.com/dwmkerr/tripweather/commit/ec9a5938b76254f09b06000aa1c4efb9789be1dc))
+* release 0.1.1 ([80532d1](https://github.com/dwmkerr/tripweather/commit/80532d11a4e2161c3172d1b398410f00011600db))
+
 ## [0.1.0](https://github.com/dwmkerr/tripweather/compare/v0.1.0...v0.1.0) (2024-02-24)
 
 
