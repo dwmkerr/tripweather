@@ -1,4 +1,5 @@
-import { Candidate } from "../../functions/src/suggest";
+import { Candidate } from "../../functions/src/arcgis";
+import { PirateWeatherIcon } from "../../functions/src/weather/PirateWeatherTypes";
 
 export enum AddressSearchStatus {
   NotStarted,
@@ -13,4 +14,8 @@ export interface TripLocation {
   };
   addressSearchStatus: AddressSearchStatus;
   candidate?: Candidate;
+  weather?: {
+    summary: string;
+    icon: PirateWeatherIcon;
+  };
 }

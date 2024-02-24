@@ -10,7 +10,7 @@ import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
 import TwoSidedLayout from "../components/TwoSidedLayout";
-import { Suggestion } from "../../functions/src/suggest";
+import { Suggestion } from "../../functions/src/arcgis";
 import { AlertType, useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
 

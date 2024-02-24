@@ -10,7 +10,12 @@ https://lifeline.rocks
 
 - [Developer Guide](#developer-guide)
     - [Firebase](#firebase)
+    - [Firebase Functions](#firebase-functions)
 - [Releasing](#releasing)
+- [Service Tiers](#service-tiers)
+    - [Guest](#guest)
+    - [User](#user)
+    - [Subscriber](#subscriber)
 - [Research](#research)
 - [TODO](#todo)
 
@@ -20,6 +25,8 @@ https://lifeline.rocks
 
 | Command | Description |
 | ------- | ----------- |
+| `npm run start` | Run the website locally, connected to the cloud |
+| `npm run start:local` | Run the website locally, connected to the local emulator |
 | `npm run lint` | Lint the code with eslint/prettier |
 | `npm run lint:fix` | Fix the code with eslint/prettier |
 
@@ -56,6 +63,26 @@ Deploy indexes and rules with:
 fireabase deploy --only firestore
 ```
 
+### Firebase Functions
+
+To watch for changes in the code and run the Firebase functions in the emulator, run:
+
+```bash
+npm run emulate
+```
+
+To [test functions interactively](https://firebase.google.com/docs/functions/local-shell):
+
+```bash
+firebase functions:shell
+
+# Then e.g:
+# await weather({data: {latitude: "-1.56266", longitude: "53.11893"}})
+# await arcGisSuggest({data: {location: "Peak District"}})
+```
+
+Firebase function parameters and configuration are defined in `./functions/src/parameters.ts`. These parameters are loaded from Firebase at runtime, but can also be defined in `./functions/.secrets.local` if needed.
+
 ## Releasing
 
 This project uses [Release Please](https://github.com/googleapis/release-please) to manage releases. As long as you use [Conventional Commit messages](https://www.conventionalcommits.org/en/v1.0.0/), release please will open up a 'release' pull request on the `main` branch when changes are merged. Merging the release pull request will trigger a full release to NPM.
@@ -65,6 +92,24 @@ VERSION="0.1.0" git commit --allow-empty -m "chore: release ${VERSION}" -m "Rele
 ```
 
 Note that currently firestore configuration (security rules and indexes) is not deployed as part of this process, to avoid unexpected downtime while indexes rebuild. Manually deploy these changes as needed.
+
+## Service Tiers
+
+### Guest
+
+- Can use one location
+- Can use one week
+
+### User
+
+- Can use five locations
+- Can use one week
+- Can share and view/edit other trips
+
+### Subscriber
+
+- Unlimited locations
+- Unlimited dates
 
 ## Research
 
@@ -82,6 +127,10 @@ Weather Services:
 - [PirateWeather](https://pirateweather.net/en/latest/): based on government-provided weather sources, drop in replacement for Dark Sky, 15000 requests per month
 - [OpenWeather](https://openweathermap.org/): more commercial than the above
 
+Weather icons:
+
+Amazing icons at: https://basmilius.github.io/weather-icons/index-line.html
+
 ## TODO
 
 - [x] check name 'trip weather'
@@ -89,15 +138,21 @@ Weather Services:
 - [x] feat: basic structure - search bar and suggest function
 - [x] feat: error handling and context
 - [x] feat: add location to list
-- [ ] feat: main page with navbar
-- [ ] feat: main page search
+- [x] feat: main page with navbar
+- [x] feat: main page search
+- [x] feat: basic weather api call
+- [x] feat: handle weather api errors e.g https://api.pirateweather.net/forecast/bpUlCYTXUho6JuCR7bD0dWdrscOHtlBw/150.37111,150.37111
+- [ ] feat: weather grid, showing three days
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location
 - [ ] feat: re-order locations
 - [ ] feat: set location label?
+- [ ] chore: recycle arcgis keys
+- [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
 
 v0.2
 
+- [ ] feat: pinned/favourite locations
 - [ ] feat: activity select in navbar
 - [ ] feat: save search details
 - [ ] feat: share button offers link to share

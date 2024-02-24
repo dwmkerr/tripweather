@@ -1,17 +1,41 @@
 import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
+import { IExtent, IPoint, suggest, geocode } from "@esri/arcgis-rest-geocoding";
 import { request } from "@esri/arcgis-rest-request";
 import { ApplicationSession } from "@esri/arcgis-rest-auth";
-import { suggest, geocode } from "@esri/arcgis-rest-geocoding";
-import {
-  FindAddressFromSuggestionRequest,
-  FindAddressFromSuggestionResponse,
-  SuggestRequest,
-  SuggestResponse,
-} from "./suggest";
 
 import { parameters } from "./parameters";
+
+export interface SuggestRequest {
+  location: string;
+}
+
+export interface Suggestion {
+  text: string;
+  magicKey: string;
+  isCollection: boolean;
+}
+
+export interface SuggestResponse {
+  suggestions: Suggestion[];
+}
+
+export interface FindAddressFromSuggestionRequest {
+  singleLineAddress: string;
+  magicKey: string;
+}
+
+export interface Candidate {
+  address: string;
+  location: IPoint;
+  extent?: IExtent;
+  score: number;
+}
+
+export interface FindAddressFromSuggestionResponse {
+  candidates: Candidate[];
+}
 
 function getSession() {
   const session = new ApplicationSession({
@@ -45,7 +69,7 @@ export const arcGisSuggest = onCall<SuggestRequest, Promise<SuggestResponse>>(
   { cors: ["localhost:3000"] },
   async (req): Promise<SuggestResponse> => {
     const session = getSession();
-    const locationText = req.data.location as string;
+    const locationText = req.data.location;
     logger.info(`Suggest, query: ${locationText}`);
     try {
       const response = await suggest(locationText, {
