@@ -56,9 +56,9 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_LIFELINE_DWMKERR }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DWMKERR_TRIPWEATHER }}'
           channelId: live
-          projectId: lifeline-dwmkerr
+          projectId: dwmkerr-tripweather
 
       # Deploy to NPM.
       - run: "npm publish --access=public"
