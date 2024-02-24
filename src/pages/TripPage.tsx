@@ -16,6 +16,7 @@ import { useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
 import TripLocationListItem from "../components/TripLocationListItem";
 import { TripWeatherError } from "../lib/Errors";
+import LocationGrid from "../components/LocationGrid";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
@@ -191,6 +192,9 @@ export default function TripPage() {
             <TripLocationListItem location={location} />
           ))}
         </List>
+      </Grid>
+      <Grid xs={12}>
+        <LocationGrid />
       </Grid>
     </Grid>
   );
