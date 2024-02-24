@@ -20,7 +20,6 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@esri/arcgis-rest-geocoding": "^4.0.2",
     "@mui/icons-material": "^5.15.7",
     "@mui/joy": "^5.0.0-beta.25",
     "@mui/lab": "^5.0.0-alpha.163",
