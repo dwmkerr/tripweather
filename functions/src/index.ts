@@ -14,7 +14,7 @@ import {
   arcGisSuggest,
   findAddressFromSuggestion,
 } from "./arcgis";
-import { weather } from "./pirate-weather";
+import { weather } from "./weather/weather";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

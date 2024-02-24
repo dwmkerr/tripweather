@@ -21,7 +21,7 @@ import {
 import {
   WeatherRequest,
   WeatherResponse,
-} from "../../functions/src/pirate-weather";
+} from "../../functions/src/weather/weather";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional

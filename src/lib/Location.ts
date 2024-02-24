@@ -1,5 +1,5 @@
 import { Candidate } from "../../functions/src/arcgis";
-import { PirateWeatherIcon } from "../../functions/src/pirate-weather";
+import { PirateWeatherIcon } from "../../functions/src/weather/PirateWeatherTypes";
 
 export enum AddressSearchStatus {
   NotStarted,

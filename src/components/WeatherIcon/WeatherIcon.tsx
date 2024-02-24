@@ -1,4 +1,4 @@
-import { PirateWeatherIcon } from "../../../functions/src/pirate-weather";
+import { PirateWeatherIcon } from "../../../functions/src/weather/PirateWeatherTypes";
 
 import iconClearDay from "./icons/clear-day.svg";
 import iconClearNight from "./icons/clear-night.svg";
