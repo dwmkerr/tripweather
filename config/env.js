@@ -88,6 +88,8 @@ function getClientEnvironment(publicUrl) {
         // Whether or not react-refresh is enabled.
         // It is defined here so it is available in the webpackHotDevClient.
         FAST_REFRESH: process.env.FAST_REFRESH !== "false",
+        //  Local tripweather emulator mode.
+        TRIPWEATHER_USE_EMULATOR: process.env.TRIPWEATHER_USE_EMULATOR,
       },
     );
   // Stringify all values so we can feed into webpack DefinePlugin

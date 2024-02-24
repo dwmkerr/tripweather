@@ -4,18 +4,19 @@ import * as logger from "firebase-functions/logger";
 import { parameters } from "./parameters";
 
 export interface WeatherRequest {
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface WeatherResponse {
-  data: Record<string, string>;
+  summary: string;
+  icon: PirateWeatherIcon;
 }
 
 export interface PirateWeatherData {
   time: number; // 1674318840;
   summary: string; // "Clear"
-  icon: string; // "clear-day"
+  icon: PirateWeatherIcon; // "clear-day"
   nearestStormDistance: number; // 0
   nearestStormBearing: number; // 0
   precipIntensity: number; // 0.0
@@ -36,6 +37,18 @@ export interface PirateWeatherData {
   ozone: number; // 402.
 }
 
+export type PirateWeatherIcon =
+  | "clear-day"
+  | "clear-night"
+  | "rain"
+  | "snow"
+  | "sleet"
+  | "wind"
+  | "fog"
+  | "cloudy"
+  | "partly-cloudy-day"
+  | "partly-cloudy-night";
+
 export interface PirateWeatherResponse {
   latitude: number; // 45.42
   longitude: number; // -75.69,
@@ -45,17 +58,17 @@ export interface PirateWeatherResponse {
   currently: PirateWeatherData;
   minutely: {
     summary: string; // "Clear"
-    icon: string; // "clear"
+    icon: PirateWeatherIcon; // "clear"
     data: PirateWeatherData[];
   };
   hourly: {
     summary: string; // "Cloudy"
-    icon: string; // "cloudy"
+    icon: PirateWeatherIcon; // "cloudy"
     data: PirateWeatherData[];
   };
   daily: {
     summary: string; // "Snow"
-    icon: string; // "cloudy"
+    icon: PirateWeatherIcon; // "cloudy"
     data: PirateWeatherData[];
   };
   alerts: any;
@@ -107,14 +120,29 @@ export const weather = onCall<WeatherRequest, Promise<WeatherResponse>>(
 
       logger.debug("Calling weather api:", uri);
       const result = await fetch(uri);
-      const data = (await result.json()) as PirateWeatherResponse;
-      logger.debug("Received weather", data);
+      const data = await result.json();
+
+      //  Check for errors first.
+      if (data["error"]) {
+        const { error, message } = data;
+        logger.error(
+          "an error occurred calling pirateweather: ",
+          error,
+          message,
+        );
+        throw new HttpsError("internal", `weather error: ${error}`);
+      }
+
+      //  Get the data as a weather response and return to the caller.
+      const weatherResponse = data as PirateWeatherResponse;
+      logger.debug("Received weather", weatherResponse);
       logger.debug(
-        `Summary: ${data.currently.summary} (${data.currently.icon})`,
+        `Summary: ${weatherResponse.currently.summary} (${weatherResponse.currently.icon})`,
       );
 
       return {
-        data: {},
+        summary: weatherResponse.currently.summary,
+        icon: weatherResponse.currently.icon,
       };
     } catch (err) {
       console.error(err);

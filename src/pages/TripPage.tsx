@@ -11,10 +11,11 @@ import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
 import { AddressSearchStatus, TripLocation } from "../lib/Location";
-import { Suggestion } from "../../functions/src/suggest";
+import { Suggestion } from "../../functions/src/arcgis";
 import { useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
 import TripLocationListItem from "../components/TripLocationListItem";
+import { TripWeatherError } from "../lib/Errors";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
@@ -41,23 +42,39 @@ export default function TripPage() {
     };
     setLocations([...locations, location]);
 
-    //  Now that we've added the location, start to hydrate it.
+    //  Hydrate the address.
     const result = await repository.functions.findAddress({
       singleLineAddress: location.originalSearch.address,
       magicKey: location.originalSearch.magicKey,
     });
-    setLocations((previousLocations) => {
-      return previousLocations.map((l) => {
-        if (l.id !== location.id) {
-          return l;
-        }
-        return {
-          ...l,
-          addressSearchStatus: AddressSearchStatus.Complete,
-          candidate: result.data.candidates[0],
-        };
+
+    //  Hydate the weather.
+    const latitude = result.data.candidates[0].location.x;
+    const longitude = result.data.candidates[0].location.x;
+    try {
+      const weatherResponse = await repository.functions.weather({
+        latitude,
+        longitude,
       });
-    });
+
+      //  Update the location with the address and weather.
+      setLocations((previousLocations) => {
+        return previousLocations.map((l) => {
+          if (l.id !== location.id) {
+            return l;
+          }
+          return {
+            ...l,
+            addressSearchStatus: AddressSearchStatus.Complete,
+            candidate: result.data.candidates[0],
+            weather: weatherResponse.data,
+          };
+        });
+      });
+    } catch (error) {
+      setAlertFromError(TripWeatherError.fromError("Weather Error", error));
+      return;
+    }
   };
 
   useEffect(() => {

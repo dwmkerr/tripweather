@@ -4,6 +4,7 @@
   "private": false,
   "scripts": {
     "start": "node scripts/start.js",
+    "start:local": "TRIPWEATHER_USE_EMULATOR=1 node scripts/start.js",
     "build": "node scripts/build.js",
     "emulator": "npm run build --prefix functions -- --watch | firebase emulators:start",
     "functions:shell": "firebase functions:shell",

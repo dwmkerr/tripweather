@@ -17,59 +17,11 @@ import {
   FindAddressFromSuggestionResponse,
   SuggestRequest,
   SuggestResponse,
-} from "../../functions/src/suggest";
-
-// const lifeEventConverter = {
-//   toFirestore(lifeEvent: WithFieldValue<LifeEvent>): SerializableLifeEvent {
-//     return toSerializableObject(lifeEvent as LifeEvent);
-//   },
-//   fromFirestore(
-//     snapshot: QueryDocumentSnapshot,
-//     options: SnapshotOptions,
-//   ): LifeEvent {
-//     const data = snapshot.data(options) as SerializableLifeEvent;
-//     return fromSerializableObject(data);
-//   },
-// };
-// const userSettingsConverter = {
-//   toFirestore(
-//     userSettings: WithFieldValue<UserSettings>,
-//   ): SerializableUserSettings {
-//     const settings = userSettings as UserSettings;
-//     return {
-//       ...settings,
-//       dateOfBirth:
-//         settings.dateOfBirth && Timestamp.fromDate(settings.dateOfBirth),
-//     } as SerializableUserSettings;
-//   },
-//   fromFirestore(
-//     snapshot: QueryDocumentSnapshot,
-//     options: SnapshotOptions,
-//   ): UserSettings {
-//     const data = snapshot.data(options) as SerializableUserSettings;
-//     return {
-//       ...data,
-//       dateOfBirth: data.dateOfBirth?.toDate(),
-//     };
-//   },
-// };
-// const feedbackConverter = {
-//   toFirestore(feedback: WithFieldValue<Feedback>): Feedback {
-//     const feedbackData = feedback as Feedback;
-//     return {
-//       ...feedbackData,
-//     } as Feedback;
-//   },
-//   fromFirestore(
-//     snapshot: QueryDocumentSnapshot,
-//     options: SnapshotOptions,
-//   ): Feedback {
-//     const data = snapshot.data(options) as Feedback;
-//     return {
-//       ...data,
-//     };
-//   },
-// };
+} from "../../functions/src/arcgis";
+import {
+  WeatherRequest,
+  WeatherResponse,
+} from "../../functions/src/pirate-weather";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -88,6 +40,7 @@ interface Functions {
     FindAddressFromSuggestionRequest,
     FindAddressFromSuggestionResponse
   >;
+  weather: HttpsCallable<WeatherRequest, WeatherResponse>;
 }
 
 export class Repository {
@@ -126,6 +79,10 @@ export class Repository {
         FindAddressFromSuggestionRequest,
         FindAddressFromSuggestionResponse
       >(functions, "findAddressFromSuggestion"),
+      weather: httpsCallable<WeatherRequest, WeatherResponse>(
+        functions,
+        "weather",
+      ),
     };
 
     // this.lifeEventsCollection = collection(this.db, "lifeevents").withConverter(
@@ -142,7 +99,13 @@ export class Repository {
 
   public static getInstance(): Repository {
     if (!Repository.instance) {
-      Repository.instance = new Repository(true);
+      const useEmulator = process.env.TRIPWEATHER_USE_EMULATOR === "1";
+      console.log(
+        useEmulator
+          ? "tripweather: using emulator"
+          : "tripweather: using cloud",
+      );
+      Repository.instance = new Repository(useEmulator);
     }
 
     return Repository.instance;

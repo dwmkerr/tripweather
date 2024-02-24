@@ -8,6 +8,8 @@ import {
 } from "@mui/joy";
 import PlaceIcon from "@mui/icons-material/Place";
 import { AddressSearchStatus, TripLocation } from "../lib/Location";
+import WeatherIcon from "./WeatherIcon/WeatherIcon";
+import { Fragment } from "react";
 
 export interface TripLocationListItemProps {
   location: TripLocation;
@@ -34,6 +36,14 @@ export default function TripLocationListItem({
               Latitude: {location.candidate?.location.x}, Longitude:{" "}
               {location.candidate?.location.y}
             </Typography>
+          )}
+          {location.weather && (
+            <Fragment>
+              <WeatherIcon weather={location.weather.icon} size={32} />
+              <Typography level="body-xs">
+                {location.weather.summary}
+              </Typography>
+            </Fragment>
           )}
         </Stack>
       </ListItemContent>
