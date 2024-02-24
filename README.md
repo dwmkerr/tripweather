@@ -148,6 +148,7 @@ Amazing icons at: https://basmilius.github.io/weather-icons/index-line.html
 - [ ] feat: re-order locations
 - [ ] feat: set location label?
 - [ ] chore: recycle arcgis keys
+- [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
 
 v0.2
 
