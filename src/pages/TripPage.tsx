@@ -6,15 +6,17 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
 import Grid from "@mui/joy/Grid";
 import AutocompleteOption from "@mui/joy/AutocompleteOption";
-import { List } from "@mui/joy";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
-import { AddressSearchStatus, TripLocation } from "../lib/Location";
+import {
+  AddressSearchStatus,
+  TripLocation,
+  WeatherStatus,
+} from "../lib/Location";
 import { Suggestion } from "../../functions/src/arcgis";
 import { useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
-import TripLocationListItem from "../components/TripLocationListItem";
 import { TripWeatherError } from "../lib/Errors";
 import LocationGrid from "../components/LocationGrid";
 
@@ -40,6 +42,7 @@ export default function TripPage() {
         magicKey: suggestion.magicKey,
       },
       addressSearchStatus: AddressSearchStatus.NotStarted,
+      weatherStatus: WeatherStatus.Loading,
     };
     setLocations([...locations, location]);
 
@@ -68,6 +71,7 @@ export default function TripPage() {
             ...l,
             addressSearchStatus: AddressSearchStatus.Complete,
             candidate: result.data.candidates[0],
+            weatherStatus: WeatherStatus.Loaded,
             weather: weatherResponse.data,
           };
         });
@@ -186,16 +190,11 @@ export default function TripPage() {
           </IconButton>
         </Box>
       </Grid>
-      <Grid xs={12}>
-        <List>
-          {locations.map((location) => (
-            <TripLocationListItem location={location} />
-          ))}
-        </List>
-      </Grid>
-      <Grid xs={12}>
-        <LocationGrid />
-      </Grid>
+      <Box sx={{ height: 400, width: "100%" }}>
+        <Grid xs={12}>
+          <LocationGrid locations={locations} />
+        </Grid>
+      </Box>
     </Grid>
   );
 }

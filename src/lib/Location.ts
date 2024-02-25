@@ -6,6 +6,11 @@ export enum AddressSearchStatus {
   InProgress,
   Complete,
 }
+export enum WeatherStatus {
+  Loading,
+  Loaded,
+  Stale,
+}
 export interface TripLocation {
   id: string;
   originalSearch: {
@@ -14,6 +19,7 @@ export interface TripLocation {
   };
   addressSearchStatus: AddressSearchStatus;
   candidate?: Candidate;
+  weatherStatus: WeatherStatus;
   weather?: {
     summary: string;
     icon: PirateWeatherIcon;

@@ -40,6 +40,7 @@ export default function WeatherIcon({ weather, size }: WeatherIconProps) {
         return iconSnow;
       case "wind":
         return iconWind;
+      case "unknown":
       default:
         return iconUnknown;
     }
