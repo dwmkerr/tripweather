@@ -1,66 +1,98 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Grid from "@mui/joy/Grid";
 
-import {
-  AddressSearchStatus,
-  DateWeather,
-  TripLocation,
-  WeatherStatus,
-} from "../lib/Location";
+import { TripLocation, WeatherStatus } from "../lib/Location";
 import { Suggestion } from "../../functions/src/arcgis";
 import { Repository } from "../lib/Repository";
 import LocationGrid from "../components/LocationGrid";
 import SearchBar from "../components/SearchBar";
+import { useSettingsContext } from "../contexts/SettingsContextProvider";
+import { getMidnightDates } from "../lib/Time";
+import { WeatherResponse } from "../../functions/src/weather/weather";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
+  const { settings } = useSettingsContext();
 
   useState<Suggestion | null>(null);
   const [locations, setLocations] = useState<TripLocation[]>([]);
+
+  useEffect(() => {
+    const hydrateDatesWeather = async () => {
+      const dates = getMidnightDates(settings.startDate, settings.endDate);
+      const updateLocationDatesWeather = locations.map(async (location) => {
+        return dates.map(async (date) => {
+          let weatherResponse: WeatherResponse | undefined = undefined;
+          try {
+            weatherResponse = (
+              await repository.functions.weather({
+                latitude: location.latitude,
+                longitude: location.longitude,
+                date: date.toISOString(),
+              })
+            ).data;
+          } catch (err) {
+            console.error(
+              `Error getting weather for ${location.latitude},${location.longitude} on ${date}`,
+              err,
+            );
+          }
+
+          let anyChanges = false;
+          const newLocations = locations.map((l) => {
+            if (l.id !== location.id) {
+              return l;
+            }
+            //  Update the arrays of dates, filling in the weather for the
+            //  date we've just loaded.
+            const existingDate = location.datesWeather.find(
+              (d) => d.date.getDate() === date.getDate(),
+            );
+            //  If there are no changes for a date, return the location.
+            if (
+              existingDate &&
+              existingDate.weatherStatus !== WeatherStatus.Loading
+            ) {
+              return l;
+            }
+
+            if (existingDate) {
+              existingDate.weatherStatus = weatherResponse
+                ? WeatherStatus.Loaded
+                : WeatherStatus.Error;
+              existingDate.weather = weatherResponse?.weather;
+            } else {
+              location.datesWeather.push({
+                date,
+                weatherStatus: weatherResponse
+                  ? WeatherStatus.Loaded
+                  : WeatherStatus.Error,
+                weather: weatherResponse?.weather,
+              });
+              //  We've changed the data.
+            }
+            anyChanges = true;
+            return l;
+          });
+
+          if (anyChanges) {
+            setLocations(newLocations);
+          }
+        });
+      });
+
+      await Promise.all(updateLocationDatesWeather.flat());
+    };
+    hydrateDatesWeather();
+  }, [locations, settings]);
+
   const onSelectLocation = async (location: TripLocation) => {
     setLocations([...locations, location]);
 
-    //  Hydrate the address.
-    const result = await repository.functions.findAddress({
-      singleLineAddress: location.originalSearch.address,
-      magicKey: location.originalSearch.magicKey,
-    });
-
-    //  Hydate the weather.
-    const latitude = result.data.candidates[0].location.x;
-    const longitude = result.data.candidates[0].location.x;
-
-    const getWeatherCalls = location.datesWeather.map(
-      async ({ date }): Promise<DateWeather> => {
-        try {
-          const weatherResponse = await repository.functions.weather({
-            latitude,
-            longitude,
-            date,
-          });
-          return {
-            weatherStatus: WeatherStatus.Loaded,
-            date: weatherResponse.data.date,
-            weather: weatherResponse.data.weather,
-          };
-        } catch (error) {
-          console.error(
-            `Error getting weather for ${latitude},${longitude} on ${date}`,
-            error,
-          );
-          return {
-            date,
-            weatherStatus: WeatherStatus.Error,
-            weather: undefined,
-          };
-        }
-      },
-    );
-    const datesWeather = await Promise.all(getWeatherCalls);
-
-    //  Update the location with the address and weather.
+    //  Update location with the (initially empty) weather.
+    const dates = getMidnightDates(settings.startDate, settings.endDate);
     setLocations((previousLocations) => {
       return previousLocations.map((l) => {
         if (l.id !== location.id) {
@@ -68,10 +100,10 @@ export default function TripPage() {
         }
         return {
           ...l,
-          addressSearchStatus: AddressSearchStatus.Complete,
-          candidate: result.data.candidates[0],
-          weatherStatus: WeatherStatus.Loaded,
-          datesWeather,
+          datesWeather: dates.map((date) => ({
+            date,
+            weatherStatus: WeatherStatus.Loading,
+          })),
         };
       });
     });

@@ -4,23 +4,16 @@ import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
-import Grid from "@mui/joy/Grid";
 import AutocompleteOption from "@mui/joy/AutocompleteOption";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
-import {
-  AddressSearchStatus,
-  DateWeather,
-  TripLocation,
-  WeatherStatus,
-} from "../lib/Location";
+import { TripLocation } from "../lib/Location";
 import { Suggestion } from "../../functions/src/arcgis";
-import { useAlertContext } from "../components/AlertContext";
+import { AlertType, useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
 import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
-import { getMidnightDates } from "../lib/Time";
 
 export interface SearchBarProps {
   onSelectLocation: (location: TripLocation) => void;
@@ -30,32 +23,52 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
   const repository = Repository.getInstance();
   const { settings, setSettings } = useSettingsContext();
 
-  const { setAlertFromError } = useAlertContext();
+  const { setAlertInfo, setAlertFromError } = useAlertContext();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] =
     useState<Suggestion | null>(null);
+  const [searchingForCoordinates, setSearchingForCoordinates] =
+    useState<boolean>(false);
+
   const selectLocation = async (suggestion: Suggestion | null) => {
     if (!suggestion) {
       throw new Error("no suggestion selected");
       //  TODO error context
     }
+    setSearchingForCoordinates(true);
+
+    //  Find the location candidates.
+    const address = await repository.functions.findAddress({
+      singleLineAddress: suggestion.text,
+      magicKey: suggestion.magicKey,
+    });
+
+    //  If we have no candidates, warn and bail.
+    if (address.data.candidates.length === 0) {
+      setAlertInfo({
+        type: AlertType.Warning,
+        title: "Cannot Find Coordinates",
+        message: `Unable to find GPS coordinates for ${suggestion.text}, please try a different address or enter GPS coordinates manually.`,
+      });
+      setSearchingForCoordinates(false);
+      setSelectedSuggestion(null);
+      return;
+    }
+
     //  Add a new trip location, and then start the search for it's candidate
     //  addresses.
-    const dates = getMidnightDates(settings.startDate, settings.endDate);
     const location: TripLocation = {
       id: crypto.randomUUID(),
       originalSearch: {
         address: suggestion.text,
         magicKey: suggestion.magicKey,
       },
-      addressSearchStatus: AddressSearchStatus.NotStarted,
-      datesWeather: dates.map(
-        (date): DateWeather => ({
-          date,
-          weatherStatus: WeatherStatus.Loading,
-        }),
-      ),
+      address: address.data.candidates[0].address,
+      latitude: address.data.candidates[0].location.x,
+      longitude: address.data.candidates[0].location.y,
+      datesWeather: [],
     };
+    setSearchingForCoordinates(false);
     onSelectLocation(location);
   };
 
@@ -74,6 +87,7 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
         size="lg"
         sx={{ flex: "auto" }}
         placeholder="e.g. Yosemite Valley"
+        disabled={searchingForCoordinates}
         onInputChange={(event, value) => {
           repository.functions
             .suggest({ location: value })
@@ -121,6 +135,7 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
         variant="solid"
         color="primary"
         onClick={() => selectLocation(selectedSuggestion)}
+        loading={searchingForCoordinates}
       >
         <ArrowForward />
       </IconButton>

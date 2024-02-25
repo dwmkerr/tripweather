@@ -7,11 +7,11 @@ import { parameters } from "../parameters";
 export interface WeatherRequest {
   latitude: number;
   longitude: number;
-  date: Date;
+  date: string; // ISO8601
 }
 
 export interface WeatherResponse {
-  date: Date;
+  date: string; // ISO8601
   weather?: PirateWeatherResponse;
 }
 
@@ -24,7 +24,8 @@ export const weather = onCall<WeatherRequest, Promise<WeatherResponse>>(
       const apiKey = parameters.pirateWeatherApiKey.value();
       const latitude = req.data.latitude;
       const longitude = req.data.latitude;
-      const date = req.data.date.toISOString();
+      // const date = req.data.date;
+      const date = new Date().toISOString();
       const uri = `https://api.pirateweather.net/forecast/${apiKey}/${latitude},${longitude},${date}`;
       //  For reference, full api spec is:
       //    https://api.pirateweather.net/forecast/[apikey]/[latitude],[longitude],[time]?exclude=[excluded]&units=[unit]&extend=[hourly]&tz=[precise]

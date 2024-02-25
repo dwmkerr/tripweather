@@ -153,6 +153,7 @@ Amazing icons at: https://basmilius.github.io/weather-icons/index-line.html
 - [ ] feat: set location label?
 - [ ] chore: recycle arcgis keys
 - [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
+- [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 - [ ] feat: settings drawer
 
 v0.2

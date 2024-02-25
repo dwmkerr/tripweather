@@ -1,4 +1,3 @@
-import { Candidate } from "../../functions/src/arcgis";
 import { PirateWeatherResponse } from "../../functions/src/weather/PirateWeatherTypes";
 
 export enum AddressSearchStatus {
@@ -25,7 +24,8 @@ export interface TripLocation {
     address: string;
     magicKey: string;
   };
-  addressSearchStatus: AddressSearchStatus;
-  candidate?: Candidate;
+  address: string;
+  longitude: number;
+  latitude: number;
   datesWeather: DateWeather[];
 }
