@@ -32,7 +32,8 @@ export type PirateWeatherIcon =
   | "fog"
   | "cloudy"
   | "partly-cloudy-day"
-  | "partly-cloudy-night";
+  | "partly-cloudy-night"
+  | "unknown"; // my fallback, not part of official spec
 
 export interface PirateWeatherAlert {
   title: string; // "Wind Advisory issued January 24 at 9:25AM CST until January 24 at 6:00PM CST by NWS Corpus Christi TX"

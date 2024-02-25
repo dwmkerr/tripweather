@@ -142,13 +142,17 @@ Amazing icons at: https://basmilius.github.io/weather-icons/index-line.html
 - [x] feat: main page search
 - [x] feat: basic weather api call
 - [x] feat: handle weather api errors e.g https://api.pirateweather.net/forecast/bpUlCYTXUho6JuCR7bD0dWdrscOHtlBw/150.37111,150.37111
-- [ ] feat: weather grid, showing three days
+- [ ] feat: basic location grid
+- [ ] feat: settings context with specification of start / end date
+- [ ] feat: start/end date in search bar
+- [ ] feat: weather grid, showing specified days
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location
 - [ ] feat: re-order locations
 - [ ] feat: set location label?
 - [ ] chore: recycle arcgis keys
 - [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
+- [ ] feat: settings drawer
 
 v0.2
 
