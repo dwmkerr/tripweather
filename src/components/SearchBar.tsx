@@ -63,9 +63,11 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
         address: suggestion.text,
         magicKey: suggestion.magicKey,
       },
-      address: address.data.candidates[0].address,
-      latitude: address.data.candidates[0].location.x,
-      longitude: address.data.candidates[0].location.y,
+      location: {
+        address: address.data.candidates[0].address,
+        latitude: address.data.candidates[0].location.x,
+        longitude: address.data.candidates[0].location.y,
+      },
       datesWeather: [],
     };
     setSearchingForCoordinates(false);

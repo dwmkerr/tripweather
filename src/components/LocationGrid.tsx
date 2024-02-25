@@ -112,7 +112,7 @@ export default function LocationGrid({ locations }: LocationGridProps) {
       return {
         id: location.id,
         title: location.originalSearch.address,
-        address: location.address || "<Unknown Address>",
+        address: location.location.address,
         datesWeather: location.datesWeather,
       };
     });

@@ -28,14 +28,14 @@ export default function TripPage() {
           try {
             weatherResponse = (
               await repository.functions.weather({
-                latitude: location.latitude,
-                longitude: location.longitude,
+                longitude: location.location.longitude,
+                latitude: location.location.latitude,
                 date: date.toISOString(),
               })
             ).data;
           } catch (err) {
             console.error(
-              `Error getting weather for ${location.latitude},${location.longitude} on ${date}`,
+              `Error getting weather for ${location.location.longitude},${location.location.latitude} on ${date}`,
               err,
             );
           }

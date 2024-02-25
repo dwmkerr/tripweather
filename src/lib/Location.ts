@@ -24,8 +24,10 @@ export interface TripLocation {
     address: string;
     magicKey: string;
   };
-  address: string;
-  longitude: number;
-  latitude: number;
+  location: {
+    address: string;
+    longitude: number;
+    latitude: number;
+  };
   datesWeather: DateWeather[];
 }

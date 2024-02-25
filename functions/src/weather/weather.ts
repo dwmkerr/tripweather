@@ -22,11 +22,10 @@ export const weather = onCall<WeatherRequest, Promise<WeatherResponse>>(
 
     try {
       const apiKey = parameters.pirateWeatherApiKey.value();
-      const latitude = req.data.latitude;
       const longitude = req.data.latitude;
-      // const date = req.data.date;
+      const latitude = req.data.latitude;
       const date = new Date().toISOString();
-      const uri = `https://api.pirateweather.net/forecast/${apiKey}/${latitude},${longitude},${date}`;
+      const uri = `https://api.pirateweather.net/forecast/${apiKey}/${longitude},${latitude},${date}`;
       //  For reference, full api spec is:
       //    https://api.pirateweather.net/forecast/[apikey]/[latitude],[longitude],[time]?exclude=[excluded]&units=[unit]&extend=[hourly]&tz=[precise]
       //  See:
