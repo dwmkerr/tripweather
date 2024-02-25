@@ -1,49 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Box from "@mui/joy/Box";
-import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import ArrowForward from "@mui/icons-material/ArrowForward";
-import Autocomplete from "@mui/joy/Autocomplete";
 import Grid from "@mui/joy/Grid";
-import AutocompleteOption from "@mui/joy/AutocompleteOption";
-import parse from "autosuggest-highlight/parse";
-import match from "autosuggest-highlight/match";
 
 import {
   AddressSearchStatus,
+  DateWeather,
   TripLocation,
   WeatherStatus,
 } from "../lib/Location";
 import { Suggestion } from "../../functions/src/arcgis";
-import { useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
-import { TripWeatherError } from "../lib/Errors";
 import LocationGrid from "../components/LocationGrid";
+import SearchBar from "../components/SearchBar";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
 
-  const { setAlertFromError } = useAlertContext();
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [selectedSuggestion, setSelectedSuggestion] =
-    useState<Suggestion | null>(null);
+  useState<Suggestion | null>(null);
   const [locations, setLocations] = useState<TripLocation[]>([]);
-  const selectLocation = async (suggestion: Suggestion | null) => {
-    if (!suggestion) {
-      throw new Error("no suggestion selected");
-      //  TODO error context
-    }
-    //  Add a new trip location, and then start the search for it's candidate
-    //  addresses.
-    const location: TripLocation = {
-      id: crypto.randomUUID(),
-      originalSearch: {
-        address: suggestion.text,
-        magicKey: suggestion.magicKey,
-      },
-      addressSearchStatus: AddressSearchStatus.NotStarted,
-      weatherStatus: WeatherStatus.Loading,
-    };
+  const onSelectLocation = async (location: TripLocation) => {
     setLocations([...locations, location]);
 
     //  Hydrate the address.
@@ -55,56 +31,51 @@ export default function TripPage() {
     //  Hydate the weather.
     const latitude = result.data.candidates[0].location.x;
     const longitude = result.data.candidates[0].location.x;
-    try {
-      const weatherResponse = await repository.functions.weather({
-        latitude,
-        longitude,
-      });
 
-      //  Update the location with the address and weather.
-      setLocations((previousLocations) => {
-        return previousLocations.map((l) => {
-          if (l.id !== location.id) {
-            return l;
-          }
+    const getWeatherCalls = location.datesWeather.map(
+      async ({ date }): Promise<DateWeather> => {
+        try {
+          const weatherResponse = await repository.functions.weather({
+            latitude,
+            longitude,
+            date,
+          });
           return {
-            ...l,
-            addressSearchStatus: AddressSearchStatus.Complete,
-            candidate: result.data.candidates[0],
             weatherStatus: WeatherStatus.Loaded,
-            weather: weatherResponse.data,
+            date: weatherResponse.data.date,
+            weather: weatherResponse.data.weather,
           };
-        });
-      });
-    } catch (error) {
-      setAlertFromError(TripWeatherError.fromError("Weather Error", error));
-      return;
-    }
-  };
+        } catch (error) {
+          console.error(
+            `Error getting weather for ${latitude},${longitude} on ${date}`,
+            error,
+          );
+          return {
+            date,
+            weatherStatus: WeatherStatus.Error,
+            weather: undefined,
+          };
+        }
+      },
+    );
+    const datesWeather = await Promise.all(getWeatherCalls);
 
-  useEffect(() => {
-    // const search = async () => {
-    //   //  Check to see if any locations need an address search.
-    //   locations.forEach(async (location) => {
-    //     const searchingLocation = {
-    //       ...location,
-    //       addressSearchStatus: AddressSearchStatus.InProgress,
-    //     };
-    //     setLocations([...locations, searchingLocation]);
-    //     const result = await repository.functions.findAddress({
-    //       singleLineAddress: location.originalSearch.address,
-    //       magicKey: location.originalSearch.magicKey,
-    //     });
-    //     const searchedLocation = {
-    //       ...location,
-    //       candidate: result.data.candidates[0],
-    //       addressSearchStatus: AddressSearchStatus.Complete,
-    //     };
-    //     setLocations([...locations, searchedLocation]);
-    //   });
-    // };
-    // search();
-  }, [locations]);
+    //  Update the location with the address and weather.
+    setLocations((previousLocations) => {
+      return previousLocations.map((l) => {
+        if (l.id !== location.id) {
+          return l;
+        }
+        return {
+          ...l,
+          addressSearchStatus: AddressSearchStatus.Complete,
+          candidate: result.data.candidates[0],
+          weatherStatus: WeatherStatus.Loaded,
+          datesWeather,
+        };
+      });
+    });
+  };
 
   return (
     <Grid
@@ -124,76 +95,10 @@ export default function TripPage() {
         </Typography>
       </Grid>
       <Grid xs={12}>
-        <Box
-          component="form"
-          sx={{
-            display: "flex",
-            gap: 1,
-            my: 2,
-            alignSelf: "stretch",
-            flexBasis: "80%",
-          }}
-        >
-          <Autocomplete
-            size="lg"
-            sx={{ flex: "auto" }}
-            placeholder="e.g. Yosemite Valley"
-            onInputChange={(event, value) => {
-              repository.functions
-                .suggest({ location: value })
-                .then((result) => {
-                  const { suggestions } = result.data;
-                  setSuggestions(suggestions);
-                  console.log(suggestions);
-                })
-                .catch(setAlertFromError);
-            }}
-            onChange={(event, value) => {
-              setSelectedSuggestion(value);
-            }}
-            options={suggestions}
-            getOptionLabel={(option) => option.text}
-            renderOption={(props, option, { inputValue }) => {
-              const matches = match(option.text, inputValue);
-              const parts = parse(option.text, matches);
-
-              return (
-                <AutocompleteOption {...props}>
-                  <Typography level="inherit">
-                    {option.text === inputValue
-                      ? option.text
-                      : parts.map((part, index) => (
-                          <Typography
-                            key={index}
-                            {...(part.highlight && {
-                              variant: "soft",
-                              color: "primary",
-                              fontWeight: "lg",
-                              px: "2px",
-                            })}
-                          >
-                            {part.text}
-                          </Typography>
-                        ))}
-                  </Typography>
-                </AutocompleteOption>
-              );
-            }}
-          />
-          <IconButton
-            size="lg"
-            variant="solid"
-            color="primary"
-            onClick={() => selectLocation(selectedSuggestion)}
-          >
-            <ArrowForward />
-          </IconButton>
-        </Box>
+        <SearchBar onSelectLocation={onSelectLocation} />
       </Grid>
       <Box sx={{ height: 400, width: "100%" }}>
-        <Grid xs={12}>
-          <LocationGrid locations={locations} />
-        </Grid>
+        <LocationGrid locations={locations} />
       </Box>
     </Grid>
   );

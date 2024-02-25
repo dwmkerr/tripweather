@@ -1,5 +1,5 @@
 import { Candidate } from "../../functions/src/arcgis";
-import { PirateWeatherIcon } from "../../functions/src/weather/PirateWeatherTypes";
+import { PirateWeatherResponse } from "../../functions/src/weather/PirateWeatherTypes";
 
 export enum AddressSearchStatus {
   NotStarted,
@@ -10,7 +10,15 @@ export enum WeatherStatus {
   Loading,
   Loaded,
   Stale,
+  Error,
 }
+
+export interface DateWeather {
+  date: Date;
+  weatherStatus: WeatherStatus;
+  weather?: PirateWeatherResponse;
+}
+
 export interface TripLocation {
   id: string;
   originalSearch: {
@@ -19,9 +27,5 @@ export interface TripLocation {
   };
   addressSearchStatus: AddressSearchStatus;
   candidate?: Candidate;
-  weatherStatus: WeatherStatus;
-  weather?: {
-    summary: string;
-    icon: PirateWeatherIcon;
-  };
+  datesWeather: DateWeather[];
 }

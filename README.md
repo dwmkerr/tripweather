@@ -142,10 +142,11 @@ Amazing icons at: https://basmilius.github.io/weather-icons/index-line.html
 - [x] feat: main page search
 - [x] feat: basic weather api call
 - [x] feat: handle weather api errors e.g https://api.pirateweather.net/forecast/bpUlCYTXUho6JuCR7bD0dWdrscOHtlBw/150.37111,150.37111
-- [ ] feat: basic location grid
-- [ ] feat: settings context with specification of start / end date
-- [ ] feat: start/end date in search bar
+- [x] feat: basic location grid
+- [x] feat: settings context with specification of start / end date
+- [x] feat: start/end date in search bar
 - [ ] feat: weather grid, showing specified days
+- [ ] feat: when change dates, mark weather as stale and refresh
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location
 - [ ] feat: re-order locations
@@ -164,6 +165,10 @@ v0.2
 - [ ] feat: name trips
 - [ ] feat: 'my trips'
 - [ ] feat: debounce search input
+
+v0.3
+
+- [ ] better date range selector, before search bar
 
 - [ ] feat: show weather for selected location
 - [ ] feat: save location as favourite, quick search for favourites
