@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Grid from "@mui/joy/Grid";
+import moment from "moment";
 
 import { TripLocation, WeatherStatus } from "../lib/Location";
 import { Suggestion } from "../../functions/src/arcgis";
@@ -10,103 +11,151 @@ import LocationGrid from "../components/LocationGrid";
 import SearchBar from "../components/SearchBar";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../lib/Time";
-import { WeatherResponse } from "../../functions/src/weather/weather";
+import { useAlertContext } from "../components/AlertContext";
+import { TripWeatherError } from "../lib/Errors";
+import { updateLocationWeatherDates } from "../lib/TripLocationWeather";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
   const { settings } = useSettingsContext();
+  const { setAlertFromError } = useAlertContext();
 
   useState<Suggestion | null>(null);
   const [locations, setLocations] = useState<TripLocation[]>([]);
 
-  useEffect(() => {
-    const hydrateDatesWeather = async () => {
-      const dates = getMidnightDates(settings.startDate, settings.endDate);
-      const updateLocationDatesWeather = locations.map(async (location) => {
-        return dates.map(async (date) => {
-          let weatherResponse: WeatherResponse | undefined = undefined;
-          try {
-            weatherResponse = (
-              await repository.functions.weather({
-                longitude: location.location.longitude,
-                latitude: location.location.latitude,
-                date: date.toISOString(),
-              })
-            ).data;
-          } catch (err) {
-            console.error(
-              `Error getting weather for ${location.location.longitude},${location.location.latitude} on ${date}`,
-              err,
-            );
-          }
+  //  Get weather data, or if missing show an alert.
+  const getWeather = async (
+    longitude: number,
+    latitude: number,
+    startDate: Date,
+  ) => {
+    try {
+      return (
+        await repository.functions.weather({
+          longitude: longitude,
+          latitude: latitude,
+          date: startDate.toISOString(),
+        })
+      ).data;
+      //  Errors are always of type 'any' so disable the warning.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setAlertFromError(
+        new TripWeatherError(
+          "Error Getting Weather Data",
+          `Error getting weather for ${longitude},${latitude} on ${startDate}`,
+          err,
+        ),
+      );
+      return null;
+    }
+  };
 
-          let anyChanges = false;
-          const newLocations = locations.map((l) => {
-            if (l.id !== location.id) {
-              return l;
-            }
-            //  Update the arrays of dates, filling in the weather for the
-            //  date we've just loaded.
-            const existingDate = location.datesWeather.find(
-              (d) => d.date.getDate() === date.getDate(),
-            );
-            //  If there are no changes for a date, return the location.
-            if (
-              existingDate &&
-              existingDate.weatherStatus !== WeatherStatus.Loading
-            ) {
-              return l;
-            }
+  const hydrateDatesWeather = async (locations: TripLocation[]) => {
+    //  Get our date range. We currently will only use the start date as the
+    //  weather API will always return 7 days of data.
+    const dates = getMidnightDates(settings.startDate, settings.endDate);
+    const startDate = dates[0];
 
-            if (existingDate) {
-              existingDate.weatherStatus = weatherResponse
-                ? WeatherStatus.Loaded
-                : WeatherStatus.Error;
-              existingDate.weather = weatherResponse?.weather;
-            } else {
-              location.datesWeather.push({
-                date,
-                weatherStatus: weatherResponse
-                  ? WeatherStatus.Loaded
-                  : WeatherStatus.Error,
-                weather: weatherResponse?.weather,
-              });
-              //  We've changed the data.
+    await Promise.all(
+      locations.map(async (location) => {
+        //  Take a location add any dates that are missing, and sort the dates.
+        //  Will not remove data for existing valid dates.
+        const locationWithWeatherDataPlaceholders = updateLocationWeatherDates(
+          location,
+          true, // keep any existing dates not in our range
+          dates,
+        );
+
+        //  Try and get the weather. If we couldn't then we'll set the error
+        //  state for each of the weather values.
+        const weatherResponseOrNull = await getWeather(
+          location.location.longitude,
+          location.location.latitude,
+          startDate,
+        );
+
+        //  If the weather response is null, we have shown an error alert.
+        //  Now just set the state of any weather dates in the location that
+        //  have not been loaded to 'error' and return it.
+        if (weatherResponseOrNull === null) {
+          return {
+            ...location,
+            datesWeather: location.datesWeather.map((dw) =>
+              dw.weatherStatus === WeatherStatus.Loaded
+                ? {
+                    ...dw,
+                    weatherStatus: WeatherStatus.Error,
+                  }
+                : dw,
+            ),
+          };
+        }
+
+        //  We're now sure we've got valid weather data. Go through each
+        //  WeatherData for the location and enrich it.
+        const weather = weatherResponseOrNull.weather;
+        const updatedDateWeathers =
+          locationWithWeatherDataPlaceholders.datesWeather.map((dw) => {
+            const weatherData = weather.daily.data.find((daily) =>
+              moment.unix(daily.time).isSame(moment(dw.date), "date"),
+            );
+            if (!weatherData) {
+              setAlertFromError(
+                new TripWeatherError(
+                  "Unable to map Weather Data",
+                  `Cannot find requested weather data for date ${dw.date}`,
+                ),
+              );
+              return {
+                ...dw,
+                weatherStatus: WeatherStatus.Error,
+              };
             }
-            anyChanges = true;
-            return l;
+            return {
+              ...dw,
+              weatherStatus: WeatherStatus.Loaded,
+              weather: weatherData,
+            };
           });
 
-          if (anyChanges) {
-            setLocations(newLocations);
-          }
+        //  Set the updated location.
+        setLocations((previousLocations) => {
+          return previousLocations.map((pl) =>
+            pl.id === location.id
+              ? {
+                  ...location,
+                  datesWeather: updatedDateWeathers,
+                }
+              : pl,
+          );
         });
-      });
+      }),
+    );
+  };
 
-      await Promise.all(updateLocationDatesWeather.flat());
-    };
-    hydrateDatesWeather();
-  }, [locations, settings]);
+  useEffect(() => {
+    hydrateDatesWeather(locations);
+  }, [settings]);
 
   const onSelectLocation = async (location: TripLocation) => {
-    setLocations([...locations, location]);
+    const dates = getMidnightDates(settings.startDate, settings.endDate);
+    const newLocations = [...locations, location].map((l) => {
+      if (l.id !== location.id) {
+        return l;
+      }
+      return {
+        ...l,
+        datesWeather: dates.map((date) => ({
+          date,
+          weatherStatus: WeatherStatus.Loading,
+        })),
+      };
+    });
 
     //  Update location with the (initially empty) weather.
-    const dates = getMidnightDates(settings.startDate, settings.endDate);
-    setLocations((previousLocations) => {
-      return previousLocations.map((l) => {
-        if (l.id !== location.id) {
-          return l;
-        }
-        return {
-          ...l,
-          datesWeather: dates.map((date) => ({
-            date,
-            weatherStatus: WeatherStatus.Loading,
-          })),
-        };
-      });
-    });
+    setLocations(newLocations);
+    await hydrateDatesWeather(newLocations);
   };
 
   return (

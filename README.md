@@ -131,6 +131,9 @@ Weather icons:
 
 Amazing icons at: https://basmilius.github.io/weather-icons/index-line.html
 
+Example weather forecast in the dark sky style: https://merrysky.net/forecast/howden/si
+Use for reference in my own.
+
 ## TODO
 
 - [x] check name 'trip weather'
@@ -145,7 +148,10 @@ Amazing icons at: https://basmilius.github.io/weather-icons/index-line.html
 - [x] feat: basic location grid
 - [x] feat: settings context with specification of start / end date
 - [x] feat: start/end date in search bar
-- [ ] feat: weather grid, showing specified days
+- [x] feat: weather grid, showing specified days
+- [ ] feat: weather grid format day titles better
+- [ ] feat: smaller progress indicator for loading weather
+- [ ] feat: add temp to weather cells, add feels like
 - [ ] feat: when change dates, mark weather as stale and refresh
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location

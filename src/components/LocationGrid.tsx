@@ -4,7 +4,7 @@ import {
   GridRenderCellParams,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
-import { ReactNode, useEffect, useState } from "react";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 import { DateWeather, TripLocation, WeatherStatus } from "../lib/Location";
 import WeatherIcon from "./WeatherIcon/WeatherIcon";
 import { Stack, Typography } from "@mui/joy";
@@ -18,9 +18,11 @@ import { getMidnightDates } from "../lib/Time";
 const renderWeatherCell = (
   params: GridRenderCellParams<LocationRow>,
 ): ReactNode => {
-  console.log(params);
   const value = params.value as DateWeather;
   const weather = value.weather;
+  if (weather) {
+    console.log("finally got weather", weather);
+  }
   switch (value.weatherStatus) {
     case WeatherStatus.Loading:
       return (
@@ -31,11 +33,8 @@ const renderWeatherCell = (
     case WeatherStatus.Loaded:
       return (
         <Stack direction="column" justifyContent="center" alignItems="center">
-          <WeatherIcon
-            weather={weather?.currently.icon || "unknown"}
-            size={32}
-          />
-          <Typography level="body-xs">{weather?.currently.summary}</Typography>
+          <WeatherIcon weather={weather?.icon || "unknown"} size={32} />
+          <Typography level="body-xs">{weather?.summary}</Typography>
         </Stack>
       );
     case WeatherStatus.Error:
@@ -152,8 +151,6 @@ export default function LocationGrid({ locations }: LocationGridProps) {
         },
       }}
       pageSizeOptions={[5]}
-      checkboxSelection
-      disableRowSelectionOnClick
     />
   );
 }

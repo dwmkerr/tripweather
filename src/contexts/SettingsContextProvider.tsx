@@ -24,8 +24,8 @@ export const SettingsContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const today = new Date();
   const initialSettings: Settings = {
-    startDate: today,
-    endDate: new Date(today.setDate(today.getDate() + 3)),
+    startDate: new Date(today.setDate(today.getDate() - 2)),
+    endDate: new Date(today.setDate(today.getDate() + 5)),
   };
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
