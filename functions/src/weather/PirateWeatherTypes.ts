@@ -1,3 +1,76 @@
+export interface PirateWeatherDataMinutely {
+  time: number; // 1708934640
+  precipIntensity: number; // 0.0072
+  precipProbability: number; // 0.32
+  precipIntensityError: number; // 0.0
+  precipType: string; // "rain"
+}
+
+export interface PirateWeatherDataHourly {
+  time: number; // 1708930800
+  icon: PirateWeatherIcon; // "rain"
+  summary: string; // "Rain"
+  precipIntensity: number; // 0.0134
+  precipProbability: number; // 0.6
+  precipIntensityError: number; // 0.01
+  precipAccumulation: number; // 0.0134
+  precipType: string; // "rain"
+  temperature: number; // 82.91
+  apparentTemperature: number; // 103.17
+  dewPoint: number; // 75.16
+  humidity: number; // 0.78
+  pressure: number; // 1011.21
+  windSpeed: number; // 8.4
+  windGust: number; // 9.36
+  windBearing: number; // 127
+  cloudCover: number; // 1.0
+  uvIndex: number; // 0.0
+  visibility: number; // 10.0
+  ozone: number; // 250.3
+}
+
+export interface PirateWeatherDataDaily {
+  time: number; // 1708905600
+  icon: PirateWeatherIcon; // "cloudy"
+  summary: string; // "Cloudy"
+  sunriseTime: number; // 1708928345
+  sunsetTime: number; // 1708972128
+  moonPhase: number; // 0.56
+  precipIntensity: number; // 0.0014
+  precipIntensityMax: number; // 0.0134
+  precipIntensityMaxTime: number; // 1708930800
+  precipProbability: number; // 0.6
+  precipAccumulation: number; // 0.0231
+  precipType: string; // "rain"
+  temperatureHigh: number; // 83.48
+  temperatureHighTime: number; // 1708963200
+  temperatureLow: number; // 81.81
+  temperatureLowTime: number; // 1709006400
+  apparentTemperatureHigh: number; // 104.68
+  apparentTemperatureHighTime: number; // 1708941600
+  apparentTemperatureLow: number; // 103.17
+  apparentTemperatureLowTime: number; // 1709002800
+  dewPoint: number; // 75.35
+  humidity: number; // 0.77
+  pressure: number; // 1010.51
+  windSpeed: number; // 6.78
+  windGust: number; // 6.89
+  windGustTime: number; // 1708934400
+  windBearing: number; // 126
+  cloudCover: number; // 0.82
+  uvIndex: number; // 10.06
+  uvIndexTime: number; // 1708952400
+  visibility: number; // 10.0
+  temperatureMin: number; // 82.91
+  temperatureMinTime: number; // 1708930800
+  temperatureMax: number; // 83.7
+  temperatureMaxTime: number; // 1708974000
+  apparentTemperatureMin: number; // 103.17
+  apparentTemperatureMinTime: number; // 1708930800
+  apparentTemperatureMax: number; // 104.68
+  apparentTemperatureMaxTime: number; // 170898120
+}
+
 export interface PirateWeatherData {
   time: number; // 1674318840;
   summary: string; // "Clear"
@@ -63,17 +136,17 @@ export interface PirateWeatherResponse {
   minutely: {
     summary: string; // "Clear"
     icon: PirateWeatherIcon; // "clear"
-    data: PirateWeatherData[];
+    data: PirateWeatherDataMinutely[];
   };
   hourly: {
     summary: string; // "Cloudy"
     icon: PirateWeatherIcon; // "cloudy"
-    data: PirateWeatherData[];
+    data: PirateWeatherDataHourly[];
   };
   daily: {
     summary: string; // "Snow"
     icon: PirateWeatherIcon; // "cloudy"
-    data: PirateWeatherData[];
+    data: PirateWeatherDataDaily[];
   };
   alerts: PirateWeatherAlert[];
   flags: {

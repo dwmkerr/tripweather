@@ -96,7 +96,6 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
             .then((result) => {
               const { suggestions } = result.data;
               setSuggestions(suggestions);
-              console.log(suggestions);
             })
             .catch(setAlertFromError);
         }}

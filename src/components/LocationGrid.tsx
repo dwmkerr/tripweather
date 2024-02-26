@@ -4,48 +4,81 @@ import {
   GridRenderCellParams,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
-import { ReactNode, useEffect, useState } from "react";
+import moment from "moment";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 import { DateWeather, TripLocation, WeatherStatus } from "../lib/Location";
 import WeatherIcon from "./WeatherIcon/WeatherIcon";
-import { Stack, Typography } from "@mui/joy";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Stack, Typography } from "@mui/joy";
 import {
   useSettingsContext,
   Settings,
 } from "../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../lib/Time";
+import { PirateWeatherDataDaily } from "../../functions/src/weather/PirateWeatherTypes";
+
+const WeatherSummary = ({ weather }: { weather: PirateWeatherDataDaily }) => (
+  <Fragment>
+    <Typography level="body-sm" fontWeight="bold">
+      {weather.summary}
+    </Typography>
+    <Typography level="body-xs">
+      {weather.apparentTemperatureLow}° - {weather.apparentTemperatureHigh}°{" "}
+    </Typography>
+  </Fragment>
+);
 
 const renderWeatherCell = (
   params: GridRenderCellParams<LocationRow>,
 ): ReactNode => {
   const value = params.value as DateWeather;
   const weather = value.weather;
-  if (weather) {
-    console.log("finally got weather", weather);
-  }
   switch (value.weatherStatus) {
     case WeatherStatus.Loading:
       return (
-        <Stack direction="column" justifyContent="center" alignItems="center">
-          <CircularProgress />
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ marginLeft: "auto", marginRight: "auto" }}
+        >
+          <CircularProgress size="sm" />
         </Stack>
       );
     case WeatherStatus.Loaded:
       return (
-        <Stack direction="column" justifyContent="center" alignItems="center">
-          <WeatherIcon weather={weather?.icon || "unknown"} size={32} />
-          <Typography level="body-xs">{weather?.summary}</Typography>
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ marginLeft: "auto", marginRight: "auto" }}
+        >
+          {weather && (
+            <Fragment>
+              <WeatherSummary weather={weather} />
+              <WeatherIcon weather={weather.icon} size={48} />
+            </Fragment>
+          )}
         </Stack>
       );
     case WeatherStatus.Error:
       return (
-        <Stack direction="column" justifyContent="center" alignItems="center">
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ marginLeft: "auto", marginRight: "auto" }}
+        >
           Error
         </Stack>
       );
     case WeatherStatus.Stale:
       return (
-        <Stack direction="column" justifyContent="center" alignItems="center">
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ marginLeft: "auto", marginRight: "auto" }}
+        >
           Stale
         </Stack>
       );
@@ -72,11 +105,28 @@ const buildColumns = (settings: Settings) => {
 
   const dates = getMidnightDates(settings.startDate, settings.endDate);
 
-  const dateColumns = dates.map((date) => {
+  const formatDateHeader = (date: Date) => {
+    return moment(date).calendar(null, {
+      sameDay: "[Today]",
+      nextDay: "[Tomorrow]",
+      nextWeek: "dddd",
+      lastDay: "[Yesterday]",
+      lastWeek: "[Last] dddd",
+      sameElse: "DD/MM/YYYY",
+    });
+  };
+
+  console.log(
+    "tripweather: mapping dates",
+    dates.map((d) => d.toISOString()),
+  );
+  const dateColumns = dates.map((date): GridColDef<LocationRow> => {
     return {
       field: `date${date.toISOString()}`,
-      headerName: date.toISOString(),
-      width: 80,
+      headerName: formatDateHeader(date),
+      width: 160,
+      align: "center",
+      headerAlign: "center",
       valueGetter: (params: GridValueGetterParams<LocationRow>) => {
         return params.row.datesWeather.find(
           (dw) => dw.date.getDate() === date.getDate(),
@@ -150,6 +200,7 @@ export default function LocationGrid({ locations }: LocationGridProps) {
           },
         },
       }}
+      rowHeight={96}
       pageSizeOptions={[5]}
     />
   );

@@ -149,9 +149,10 @@ Use for reference in my own.
 - [x] feat: settings context with specification of start / end date
 - [x] feat: start/end date in search bar
 - [x] feat: weather grid, showing specified days
-- [ ] feat: weather grid format day titles better
-- [ ] feat: smaller progress indicator for loading weather
-- [ ] feat: add temp to weather cells, add feels like
+- [x] feat: weather grid format day titles better
+- [x] feat: smaller progress indicator for loading weather
+- [x] bug: weather data fields for day are different to minute/hour - fix the mapping. This will fix the temperatures.
+- [ ] feat: add temp to weather cells, add feels like, ensure units are correct.
 - [ ] feat: when change dates, mark weather as stale and refresh
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location
@@ -160,7 +161,7 @@ Use for reference in my own.
 - [ ] chore: recycle arcgis keys
 - [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
-- [ ] feat: settings drawer
+- [ ] feat: settings drawer with farhenhiet / celcius selector
 
 v0.2
 

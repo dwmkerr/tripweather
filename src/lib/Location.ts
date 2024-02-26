@@ -1,4 +1,4 @@
-import { PirateWeatherData } from "../../functions/src/weather/PirateWeatherTypes";
+import { PirateWeatherDataDaily } from "../../functions/src/weather/PirateWeatherTypes";
 
 export enum AddressSearchStatus {
   NotStarted,
@@ -15,7 +15,7 @@ export enum WeatherStatus {
 export interface DateWeather {
   date: Date;
   weatherStatus: WeatherStatus;
-  weather?: PirateWeatherData;
+  weather?: PirateWeatherDataDaily;
 }
 
 export interface TripLocation {
