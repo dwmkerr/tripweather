@@ -4,7 +4,7 @@ import {
   GridRenderCellParams,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
-import { Fragment, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { DateWeather, TripLocation, WeatherStatus } from "../lib/Location";
 import WeatherIcon from "./WeatherIcon/WeatherIcon";
 import { Stack, Typography } from "@mui/joy";
