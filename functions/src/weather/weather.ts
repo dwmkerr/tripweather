@@ -1,26 +1,31 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
-import { PirateWeatherIcon, PirateWeatherResponse } from "./PirateWeatherTypes";
+import { PirateWeatherResponse } from "./PirateWeatherTypes";
 import { parameters } from "../parameters";
 
 export interface WeatherRequest {
   latitude: number;
   longitude: number;
+  date: string; // ISO8601
 }
 
 export interface WeatherResponse {
-  summary: string;
-  icon: PirateWeatherIcon;
+  date: string; // ISO8601
+  weather: PirateWeatherResponse;
 }
+
 export const weather = onCall<WeatherRequest, Promise<WeatherResponse>>(
   { cors: ["localhost:3000"] },
   async (req): Promise<WeatherResponse> => {
+    //  Get the dates we are requesting weather for.
+
     try {
       const apiKey = parameters.pirateWeatherApiKey.value();
-      const latitude = req.data.latitude;
       const longitude = req.data.latitude;
-      const uri = `https://api.pirateweather.net/forecast/${apiKey}/${latitude},${longitude}`;
+      const latitude = req.data.latitude;
+      const date = new Date(req.data.date).toISOString();
+      const uri = `https://api.pirateweather.net/forecast/${apiKey}/${longitude},${latitude},${date}`;
       //  For reference, full api spec is:
       //    https://api.pirateweather.net/forecast/[apikey]/[latitude],[longitude],[time]?exclude=[excluded]&units=[unit]&extend=[hourly]&tz=[precise]
       //  See:
@@ -48,8 +53,8 @@ export const weather = onCall<WeatherRequest, Promise<WeatherResponse>>(
       );
 
       return {
-        summary: weatherResponse.currently.summary,
-        icon: weatherResponse.currently.icon,
+        date: req.data.date,
+        weather: weatherResponse,
       };
     } catch (err) {
       console.error(err);

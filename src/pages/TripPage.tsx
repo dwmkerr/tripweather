@@ -1,110 +1,162 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
-import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import ArrowForward from "@mui/icons-material/ArrowForward";
-import Autocomplete from "@mui/joy/Autocomplete";
 import Grid from "@mui/joy/Grid";
-import AutocompleteOption from "@mui/joy/AutocompleteOption";
-import parse from "autosuggest-highlight/parse";
-import match from "autosuggest-highlight/match";
+import moment from "moment";
 
-import {
-  AddressSearchStatus,
-  TripLocation,
-  WeatherStatus,
-} from "../lib/Location";
+import { TripLocation, WeatherStatus } from "../lib/Location";
 import { Suggestion } from "../../functions/src/arcgis";
-import { useAlertContext } from "../components/AlertContext";
 import { Repository } from "../lib/Repository";
-import { TripWeatherError } from "../lib/Errors";
 import LocationGrid from "../components/LocationGrid";
+import SearchBar from "../components/SearchBar";
+import { useSettingsContext } from "../contexts/SettingsContextProvider";
+import { getMidnightDates } from "../lib/Time";
+import { useAlertContext } from "../components/AlertContext";
+import { TripWeatherError } from "../lib/Errors";
+import { updateLocationWeatherDates } from "../lib/TripLocationWeather";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
-
+  const { settings } = useSettingsContext();
   const { setAlertFromError } = useAlertContext();
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [selectedSuggestion, setSelectedSuggestion] =
-    useState<Suggestion | null>(null);
+
+  useState<Suggestion | null>(null);
   const [locations, setLocations] = useState<TripLocation[]>([]);
-  const selectLocation = async (suggestion: Suggestion | null) => {
-    if (!suggestion) {
-      throw new Error("no suggestion selected");
-      //  TODO error context
-    }
-    //  Add a new trip location, and then start the search for it's candidate
-    //  addresses.
-    const location: TripLocation = {
-      id: crypto.randomUUID(),
-      originalSearch: {
-        address: suggestion.text,
-        magicKey: suggestion.magicKey,
-      },
-      addressSearchStatus: AddressSearchStatus.NotStarted,
-      weatherStatus: WeatherStatus.Loading,
-    };
-    setLocations([...locations, location]);
 
-    //  Hydrate the address.
-    const result = await repository.functions.findAddress({
-      singleLineAddress: location.originalSearch.address,
-      magicKey: location.originalSearch.magicKey,
-    });
-
-    //  Hydate the weather.
-    const latitude = result.data.candidates[0].location.x;
-    const longitude = result.data.candidates[0].location.x;
+  //  Get weather data, or if missing show an alert.
+  const getWeather = async (
+    longitude: number,
+    latitude: number,
+    startDate: Date,
+  ) => {
     try {
-      const weatherResponse = await repository.functions.weather({
-        latitude,
-        longitude,
-      });
-
-      //  Update the location with the address and weather.
-      setLocations((previousLocations) => {
-        return previousLocations.map((l) => {
-          if (l.id !== location.id) {
-            return l;
-          }
-          return {
-            ...l,
-            addressSearchStatus: AddressSearchStatus.Complete,
-            candidate: result.data.candidates[0],
-            weatherStatus: WeatherStatus.Loaded,
-            weather: weatherResponse.data,
-          };
-        });
-      });
-    } catch (error) {
-      setAlertFromError(TripWeatherError.fromError("Weather Error", error));
-      return;
+      return (
+        await repository.functions.weather({
+          longitude: longitude,
+          latitude: latitude,
+          date: startDate.toISOString(),
+        })
+      ).data;
+      //  Errors are always of type 'any' so disable the warning.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setAlertFromError(
+        new TripWeatherError(
+          "Error Getting Weather Data",
+          `Error getting weather for ${longitude},${latitude} on ${startDate}`,
+          err,
+        ),
+      );
+      return null;
     }
   };
 
+  const hydrateDatesWeather = async (locations: TripLocation[]) => {
+    //  Get our date range. We currently will only use the start date as the
+    //  weather API will always return 7 days of data.
+    const dates = getMidnightDates(settings.startDate, settings.endDate);
+    const startDate = dates[0];
+
+    await Promise.all(
+      locations.map(async (location) => {
+        //  Take a location add any dates that are missing, and sort the dates.
+        //  Will not remove data for existing valid dates.
+        const locationWithWeatherDataPlaceholders = updateLocationWeatherDates(
+          location,
+          true, // keep any existing dates not in our range
+          dates,
+        );
+
+        //  Try and get the weather. If we couldn't then we'll set the error
+        //  state for each of the weather values.
+        const weatherResponseOrNull = await getWeather(
+          location.location.longitude,
+          location.location.latitude,
+          startDate,
+        );
+
+        //  If the weather response is null, we have shown an error alert.
+        //  Now just set the state of any weather dates in the location that
+        //  have not been loaded to 'error' and return it.
+        if (weatherResponseOrNull === null) {
+          return {
+            ...location,
+            datesWeather: location.datesWeather.map((dw) =>
+              dw.weatherStatus === WeatherStatus.Loaded
+                ? {
+                    ...dw,
+                    weatherStatus: WeatherStatus.Error,
+                  }
+                : dw,
+            ),
+          };
+        }
+
+        //  We're now sure we've got valid weather data. Go through each
+        //  WeatherData for the location and enrich it.
+        const weather = weatherResponseOrNull.weather;
+        const updatedDateWeathers =
+          locationWithWeatherDataPlaceholders.datesWeather.map((dw) => {
+            const weatherData = weather.daily.data.find((daily) =>
+              moment.unix(daily.time).isSame(moment(dw.date), "date"),
+            );
+            if (!weatherData) {
+              setAlertFromError(
+                new TripWeatherError(
+                  "Unable to map Weather Data",
+                  `Cannot find requested weather data for date ${dw.date}`,
+                ),
+              );
+              return {
+                ...dw,
+                weatherStatus: WeatherStatus.Error,
+              };
+            }
+            return {
+              ...dw,
+              weatherStatus: WeatherStatus.Loaded,
+              weather: weatherData,
+            };
+          });
+
+        //  Set the updated location.
+        setLocations((previousLocations) => {
+          return previousLocations.map((pl) =>
+            pl.id === location.id
+              ? {
+                  ...location,
+                  datesWeather: updatedDateWeathers,
+                }
+              : pl,
+          );
+        });
+      }),
+    );
+  };
+
   useEffect(() => {
-    // const search = async () => {
-    //   //  Check to see if any locations need an address search.
-    //   locations.forEach(async (location) => {
-    //     const searchingLocation = {
-    //       ...location,
-    //       addressSearchStatus: AddressSearchStatus.InProgress,
-    //     };
-    //     setLocations([...locations, searchingLocation]);
-    //     const result = await repository.functions.findAddress({
-    //       singleLineAddress: location.originalSearch.address,
-    //       magicKey: location.originalSearch.magicKey,
-    //     });
-    //     const searchedLocation = {
-    //       ...location,
-    //       candidate: result.data.candidates[0],
-    //       addressSearchStatus: AddressSearchStatus.Complete,
-    //     };
-    //     setLocations([...locations, searchedLocation]);
-    //   });
-    // };
-    // search();
-  }, [locations]);
+    hydrateDatesWeather(locations);
+  }, [settings]);
+
+  const onSelectLocation = async (location: TripLocation) => {
+    const dates = getMidnightDates(settings.startDate, settings.endDate);
+    const newLocations = [...locations, location].map((l) => {
+      if (l.id !== location.id) {
+        return l;
+      }
+      return {
+        ...l,
+        datesWeather: dates.map((date) => ({
+          date,
+          weatherStatus: WeatherStatus.Loading,
+        })),
+      };
+    });
+
+    //  Update location with the (initially empty) weather.
+    setLocations(newLocations);
+    await hydrateDatesWeather(newLocations);
+  };
 
   return (
     <Grid
@@ -124,76 +176,10 @@ export default function TripPage() {
         </Typography>
       </Grid>
       <Grid xs={12}>
-        <Box
-          component="form"
-          sx={{
-            display: "flex",
-            gap: 1,
-            my: 2,
-            alignSelf: "stretch",
-            flexBasis: "80%",
-          }}
-        >
-          <Autocomplete
-            size="lg"
-            sx={{ flex: "auto" }}
-            placeholder="e.g. Yosemite Valley"
-            onInputChange={(event, value) => {
-              repository.functions
-                .suggest({ location: value })
-                .then((result) => {
-                  const { suggestions } = result.data;
-                  setSuggestions(suggestions);
-                  console.log(suggestions);
-                })
-                .catch(setAlertFromError);
-            }}
-            onChange={(event, value) => {
-              setSelectedSuggestion(value);
-            }}
-            options={suggestions}
-            getOptionLabel={(option) => option.text}
-            renderOption={(props, option, { inputValue }) => {
-              const matches = match(option.text, inputValue);
-              const parts = parse(option.text, matches);
-
-              return (
-                <AutocompleteOption {...props}>
-                  <Typography level="inherit">
-                    {option.text === inputValue
-                      ? option.text
-                      : parts.map((part, index) => (
-                          <Typography
-                            key={index}
-                            {...(part.highlight && {
-                              variant: "soft",
-                              color: "primary",
-                              fontWeight: "lg",
-                              px: "2px",
-                            })}
-                          >
-                            {part.text}
-                          </Typography>
-                        ))}
-                  </Typography>
-                </AutocompleteOption>
-              );
-            }}
-          />
-          <IconButton
-            size="lg"
-            variant="solid"
-            color="primary"
-            onClick={() => selectLocation(selectedSuggestion)}
-          >
-            <ArrowForward />
-          </IconButton>
-        </Box>
+        <SearchBar onSelectLocation={onSelectLocation} />
       </Grid>
       <Box sx={{ height: 400, width: "100%" }}>
-        <Grid xs={12}>
-          <LocationGrid locations={locations} />
-        </Grid>
+        <LocationGrid locations={locations} />
       </Box>
     </Grid>
   );

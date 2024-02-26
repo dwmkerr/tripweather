@@ -13,6 +13,7 @@ import TripPage from "./pages/TripPage";
 import { AlertContextProvider } from "./components/AlertContext";
 import PageContainer from "./components/PageContainer";
 import ErrorPage from "./pages/ErrorPage";
+import { SettingsContextProvider } from "./contexts/SettingsContextProvider";
 
 const materialTheme = materialExtendTheme();
 
@@ -39,10 +40,12 @@ export default function App() {
     <StrictMode>
       <MaterialCssVarsProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
         <AlertContextProvider>
-          <JoyCssVarsProvider>
-            <CssBaseline />
-            <RouterProvider router={router} />
-          </JoyCssVarsProvider>
+          <SettingsContextProvider>
+            <JoyCssVarsProvider>
+              <CssBaseline />
+              <RouterProvider router={router} />
+            </JoyCssVarsProvider>
+          </SettingsContextProvider>
         </AlertContextProvider>
       </MaterialCssVarsProvider>
     </StrictMode>
