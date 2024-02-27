@@ -17,6 +17,7 @@ import WeatherSummary from "./WeatherSummary";
 const renderWeatherCell = (
   params: GridRenderCellParams<LocationRow>,
 ): ReactNode => {
+  const { settings } = useSettingsContext();
   const value = params.value as DateWeather;
   const weather = value.weather;
   switch (value.weatherStatus) {
@@ -41,7 +42,7 @@ const renderWeatherCell = (
         >
           {weather && (
             <Fragment>
-              <WeatherSummary weather={weather} />
+              <WeatherSummary weather={weather} units={settings.units} />
               <WeatherIcon weather={weather.icon} size={48} />
             </Fragment>
           )}

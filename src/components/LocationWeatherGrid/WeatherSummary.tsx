@@ -1,25 +1,29 @@
 import { Fragment } from "react";
 import { Typography } from "@mui/joy";
-import { useSettingsContext } from "../../contexts/SettingsContextProvider";
-import { PirateWeatherDataDaily } from "../../../functions/src/weather/PirateWeatherTypes";
+import {
+  PirateWeatherDataDaily,
+  WeatherUnits,
+} from "../../../functions/src/weather/PirateWeatherTypes";
 import { formatTemperature } from "../../lib/FormatWeather";
 
 export interface WeatherSummaryProps {
   weather: PirateWeatherDataDaily;
+  units: WeatherUnits;
 }
 
-export default function WeatherSummary({ weather }: WeatherSummaryProps) {
-  const { settings } = useSettingsContext();
-
+export default function WeatherSummary({
+  weather,
+  units,
+}: WeatherSummaryProps) {
   //  Format the temperatures.
   const temperatureLow = formatTemperature(
     weather.apparentTemperatureLow,
-    settings.units,
+    units,
     1,
   );
   const temperatureHigh = formatTemperature(
     weather.apparentTemperatureHigh,
-    settings.units,
+    units,
     1,
   );
 
