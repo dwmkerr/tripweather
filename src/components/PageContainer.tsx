@@ -5,6 +5,7 @@ import { Stack } from "@mui/joy";
 import { useAlertContext } from "./AlertContext";
 import { AlertSnackbar } from "./AlertSnackbar";
 import NavBar from "../components/NavBar";
+import SettingsDrawer from "./SettingsDrawer";
 
 export default function PageContainer() {
   const { alertInfo, setAlertInfo } = useAlertContext();
@@ -28,6 +29,7 @@ export default function PageContainer() {
           height: "100%",
         }}
       >
+        <SettingsDrawer />
         <Outlet />
         {alertInfo && (
           <AlertSnackbar

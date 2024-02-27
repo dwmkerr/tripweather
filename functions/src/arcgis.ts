@@ -86,7 +86,8 @@ export const arcGisSuggest = onCall<SuggestRequest, Promise<SuggestResponse>>(
       console.log(candidates);
 
       return {
-        suggestions: response.suggestions.slice(0, 3),
+        suggestions: response.suggestions,
+        // suggestions: response.suggestions.slice(0, 3),
         // candidates,
       };
     } catch (err) {

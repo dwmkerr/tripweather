@@ -6,26 +6,13 @@ import {
 } from "@mui/x-data-grid";
 import moment from "moment";
 import { Fragment, ReactNode, useEffect, useState } from "react";
-import { DateWeather, TripLocation, WeatherStatus } from "../lib/Location";
-import WeatherIcon from "./WeatherIcon/WeatherIcon";
+import { DateWeather, TripLocation, WeatherStatus } from "../../lib/Location";
+import WeatherIcon from "../WeatherIcon/WeatherIcon";
 import { CircularProgress, Stack, Typography } from "@mui/joy";
-import {
-  useSettingsContext,
-  Settings,
-} from "../contexts/SettingsContextProvider";
-import { getMidnightDates } from "../lib/Time";
-import { PirateWeatherDataDaily } from "../../functions/src/weather/PirateWeatherTypes";
-
-const WeatherSummary = ({ weather }: { weather: PirateWeatherDataDaily }) => (
-  <Fragment>
-    <Typography level="body-sm" fontWeight="bold">
-      {weather.summary}
-    </Typography>
-    <Typography level="body-xs">
-      {weather.apparentTemperatureLow}° - {weather.apparentTemperatureHigh}°{" "}
-    </Typography>
-  </Fragment>
-);
+import { useSettingsContext } from "../../contexts/SettingsContextProvider";
+import { getMidnightDates } from "../../lib/Time";
+import { Settings } from "../../lib/Settings";
+import WeatherSummary from "./WeatherSummary";
 
 const renderWeatherCell = (
   params: GridRenderCellParams<LocationRow>,
@@ -116,10 +103,6 @@ const buildColumns = (settings: Settings) => {
     });
   };
 
-  console.log(
-    "tripweather: mapping dates",
-    dates.map((d) => d.toISOString()),
-  );
   const dateColumns = dates.map((date): GridColDef<LocationRow> => {
     return {
       field: `date${date.toISOString()}`,

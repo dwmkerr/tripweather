@@ -7,7 +7,7 @@ import moment from "moment";
 import { TripLocation, WeatherStatus } from "../lib/Location";
 import { Suggestion } from "../../functions/src/arcgis";
 import { Repository } from "../lib/Repository";
-import LocationGrid from "../components/LocationGrid";
+import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid";
 import SearchBar from "../components/SearchBar";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../lib/Time";
@@ -35,6 +35,7 @@ export default function TripPage() {
           longitude: longitude,
           latitude: latitude,
           date: startDate.toISOString(),
+          units: settings.units,
         })
       ).data;
       //  Errors are always of type 'any' so disable the warning.

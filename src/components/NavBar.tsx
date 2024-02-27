@@ -6,8 +6,13 @@ import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 
 import NavigationList from "./NavigationMenu";
 import logo from "../images/logo.png";
+import { useSettingsContext } from "../contexts/SettingsContextProvider";
+import UnitsSelect from "./UnitsSelect";
 
 export default function NavBar() {
+  const { settings, setSettings, showSettings, setShowSettings } =
+    useSettingsContext();
+
   return (
     <Box
       sx={{
@@ -34,7 +39,11 @@ export default function NavBar() {
           gap: 1.5,
         }}
       >
-        <IconButton size="sm" variant="soft" onClick={() => undefined}>
+        <IconButton
+          size="sm"
+          variant="soft"
+          onClick={() => setShowSettings(!showSettings)}
+        >
           <TuneIcon />
         </IconButton>
         <Typography component="h1" fontWeight="xl">
@@ -60,7 +69,15 @@ export default function NavBar() {
         <Button startDecorator={<LightbulbOutlinedIcon />}>
           Share Feedback
         </Button>
-        {/*<UserMenuDropdown user={user || undefined} />*/}
+        <UnitsSelect
+          units={settings.units}
+          onChange={(units) => {
+            setSettings({
+              ...settings,
+              units,
+            });
+          }}
+        />
       </Box>
     </Box>
   );

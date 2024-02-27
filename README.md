@@ -152,7 +152,7 @@ Use for reference in my own.
 - [x] feat: weather grid format day titles better
 - [x] feat: smaller progress indicator for loading weather
 - [x] bug: weather data fields for day are different to minute/hour - fix the mapping. This will fix the temperatures.
-- [ ] feat: add temp to weather cells, add feels like, ensure units are correct.
+- [x] feat: add temp to weather cells, add feels like, ensure units are correct.
 - [ ] feat: when change dates, mark weather as stale and refresh
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location
@@ -162,9 +162,11 @@ Use for reference in my own.
 - [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 - [ ] feat: settings drawer with farhenhiet / celcius selector
+- [ ] bug: on settings change (e.g. change units) units change immediately but instead we should show a reloader for each weather setting
 
 v0.2
 
+- [ ] feat: weather icon is link to details on Merry Sky
 - [ ] feat: pinned/favourite locations
 - [ ] feat: activity select in navbar
 - [ ] feat: save search details
@@ -173,11 +175,12 @@ v0.2
 - [ ] feat: name trips
 - [ ] feat: 'my trips'
 - [ ] feat: debounce search input
+- [ ] feat(settings): temperature: apparent/recorded low/high/max/min
 
 v0.3
 
 - [ ] better date range selector, before search bar
-
+- [ ] feat: save units as a user preference
 - [ ] feat: show weather for selected location
 - [ ] feat: save location as favourite, quick search for favourites
 - [ ] score icons for walking/climbing
