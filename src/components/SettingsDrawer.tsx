@@ -7,15 +7,14 @@ import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
 import ModalClose from "@mui/joy/ModalClose";
 import Stack from "@mui/joy/Stack";
-import { IconButton, Radio, RadioGroup, Tooltip, Typography } from "@mui/joy";
+import { IconButton, Typography } from "@mui/joy";
 
 import ClearIcon from "@mui/icons-material/Clear";
 
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 
 export default function SettingsDrawer() {
-  const { showSettings, setShowSettings, settings, setSettings } =
-    useSettingsContext();
+  const { showSettings, setShowSettings } = useSettingsContext();
 
   return (
     <Stack
@@ -53,19 +52,6 @@ export default function SettingsDrawer() {
         </Box>
         <Stack useFlexGap spacing={3} sx={{ p: 2 }}>
           <DialogTitle>Settings</DialogTitle>
-          <FormControl>
-            <FormLabel sx={{ typography: "title-md", fontWeight: "bold" }}>
-              Unit Presets
-            </FormLabel>
-            <RadioGroup defaultValue="outlined" name="radio-buttons-group">
-              <Tooltip title="CA units" placement="left-start">
-                <Radio value="ca" label="C˚, km/h" />
-              </Tooltip>
-              <Radio value="us" label="F˚, mph" />
-              <Radio value="uk" label="C˚, mph" />
-              <Radio value="si" label="C˚, m/s" />
-            </RadioGroup>
-          </FormControl>
           <FormControl>
             <FormLabel sx={{ typography: "title-md", fontWeight: "bold" }}>
               Start Date
