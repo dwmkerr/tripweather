@@ -4,11 +4,7 @@ import React, {
   useContext,
   useState,
 } from "react";
-
-export interface Settings {
-  startDate: Date;
-  endDate: Date;
-}
+import { Settings } from "../lib/Settings";
 
 interface SettingsContextValue {
   showSettings: boolean;
@@ -26,6 +22,7 @@ export const SettingsContextProvider: React.FC<PropsWithChildren> = ({
   const initialSettings: Settings = {
     startDate: new Date(today.setDate(today.getDate() - 2)),
     endDate: new Date(today.setDate(today.getDate() + 5)),
+    units: "uk",
   };
 
   const [showSettings, setShowSettings] = useState<boolean>(false);

@@ -1,3 +1,9 @@
+export type WeatherUnits =
+  | "ca" // e.g: C˚, km/h
+  | "us" // e.g: F˚, mph
+  | "uk" // e.g: C˚, mph
+  | "si"; // e.g: C˚, m/s
+
 export interface PirateWeatherDataMinutely {
   time: number; // 1708934640
   precipIntensity: number; // 0.0072
