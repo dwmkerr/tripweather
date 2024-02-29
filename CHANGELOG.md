@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.1.2](https://github.com/dwmkerr/tripweather/compare/v0.1.1...v0.1.2) (2024-02-29)
+
+
+### Features
+
+* credits in footer ([d86e5ea](https://github.com/dwmkerr/tripweather/commit/d86e5ea7c53da52a6a132dd4f34572f743845350))
+* delete location ([#10](https://github.com/dwmkerr/tripweather/issues/10)) ([98ae04a](https://github.com/dwmkerr/tripweather/commit/98ae04ad6485181f0fe94e0e523776341d55d219))
+* location grid ([#5](https://github.com/dwmkerr/tripweather/issues/5)) ([44148bc](https://github.com/dwmkerr/tripweather/commit/44148bc9eeeed1285b3570b0d07992339c9c9ebd))
+* weather for dates ([#7](https://github.com/dwmkerr/tripweather/issues/7)) ([043e67a](https://github.com/dwmkerr/tripweather/commit/043e67a155de0b37d060918d9cf3b5d441b048f1))
+* weather units ([#8](https://github.com/dwmkerr/tripweather/issues/8)) ([a6b53e6](https://github.com/dwmkerr/tripweather/commit/a6b53e6235624b157c447afd1346f400e269f2e3))
+
+
+### Bug Fixes
+
+* correct change dates/units ([#9](https://github.com/dwmkerr/tripweather/issues/9)) ([410424c](https://github.com/dwmkerr/tripweather/commit/410424cbc4cd080e18b360194f0f26076af3abec))
+* correct weather data mapping ([5b9edaf](https://github.com/dwmkerr/tripweather/commit/5b9edaf55345400120f1977abdfffe0cb64a943b))
+* wrap text in cells ([f37b301](https://github.com/dwmkerr/tripweather/commit/f37b3015c4427eac506139b608d4cad06eac7b3d))
+
+
+### Miscellaneous Chores
+
+* release 0.1.2 ([ce588b7](https://github.com/dwmkerr/tripweather/commit/ce588b775dc94d1652b5789b7ec765e2470f151e))
+
 ## [0.1.1](https://github.com/dwmkerr/tripweather/compare/v0.1.0...v0.1.1) (2024-02-24)
 
 
