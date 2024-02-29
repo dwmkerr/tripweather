@@ -5,77 +5,21 @@ import {
   GridValueGetterParams,
 } from "@mui/x-data-grid";
 import moment from "moment";
-import { Fragment, ReactNode, useEffect, useState } from "react";
-import { DateWeather, TripLocation, WeatherStatus } from "../../lib/Location";
-import WeatherIcon from "../WeatherIcon/WeatherIcon";
-import { CircularProgress, Stack, Typography } from "@mui/joy";
+import { useEffect, useState } from "react";
+import { TripLocation } from "../../lib/Location";
+import { Stack, Typography } from "@mui/joy";
 import { useSettingsContext } from "../../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../../lib/Time";
 import { Settings } from "../../lib/Settings";
-import WeatherSummary from "./WeatherSummary";
+import { LocationRow } from "./LocationRow";
+import renderWeatherCell from "./RenderWeatherCell";
+import renderActionsCell from "./RenderActionsCell";
+import { DeleteLocationFunc } from "./Actions";
 
-const renderWeatherCell = (
-  params: GridRenderCellParams<LocationRow>,
-): ReactNode => {
-  const { settings } = useSettingsContext();
-  const value = params.value as DateWeather;
-  const weather = value.weather;
-  switch (value.weatherStatus) {
-    case WeatherStatus.Loading:
-      return (
-        <Stack
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          sx={{ marginLeft: "auto", marginRight: "auto" }}
-        >
-          <CircularProgress size="sm" />
-        </Stack>
-      );
-    case WeatherStatus.Loaded:
-      return (
-        <Stack
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          sx={{ marginLeft: "auto", marginRight: "auto" }}
-        >
-          {weather && (
-            <Fragment>
-              <WeatherSummary weather={weather} units={settings.units} />
-              <WeatherIcon weather={weather.icon} size={48} />
-            </Fragment>
-          )}
-        </Stack>
-      );
-    case WeatherStatus.Error:
-      return (
-        <Stack
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          sx={{ marginLeft: "auto", marginRight: "auto" }}
-        >
-          Error
-        </Stack>
-      );
-    case WeatherStatus.Stale:
-      return (
-        <Stack
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          sx={{ marginLeft: "auto", marginRight: "auto" }}
-        >
-          Stale
-        </Stack>
-      );
-    default:
-      return undefined;
-  }
-};
-
-const buildColumns = (settings: Settings) => {
+const buildColumns = (
+  settings: Settings,
+  deleteLocation: DeleteLocationFunc,
+) => {
   const initialColumns: GridColDef<LocationRow>[] = [
     {
       field: "title",
@@ -120,26 +64,34 @@ const buildColumns = (settings: Settings) => {
     };
   });
 
-  return [...initialColumns, ...dateColumns];
-};
+  const actionColumn: GridColDef<LocationRow> = {
+    field: "id",
+    headerName: "Actions",
+    width: 150,
+    editable: false,
+    valueGetter: (params: GridValueGetterParams<LocationRow>) =>
+      params.row.location,
+    renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
+      renderActionsCell(params, deleteLocation),
+  };
 
-export interface LocationRow {
-  id: string;
-  title: string;
-  address: string;
-  datesWeather: DateWeather[];
-}
+  return [...initialColumns, ...dateColumns, actionColumn];
+};
 
 export interface LocationGridProps {
   locations: TripLocation[];
+  onDeleteLocation: DeleteLocationFunc;
 }
 
-export default function LocationGrid({ locations }: LocationGridProps) {
+export default function LocationGrid({
+  locations,
+  onDeleteLocation,
+}: LocationGridProps) {
   const { settings } = useSettingsContext();
   const [locationRows, setLocationRows] = useState<LocationRow[]>([]);
   const [columnDefinitions, setColumnDefinitions] = useState<
     GridColDef<LocationRow>[]
-  >(buildColumns(settings));
+  >(buildColumns(settings, onDeleteLocation));
   useEffect(() => {
     const locationRows = locations.map((location): LocationRow => {
       return {
@@ -147,6 +99,7 @@ export default function LocationGrid({ locations }: LocationGridProps) {
         title: location.originalSearch.address,
         address: location.location.address,
         datesWeather: location.datesWeather,
+        location,
       };
     });
     setLocationRows(locationRows);
@@ -154,7 +107,7 @@ export default function LocationGrid({ locations }: LocationGridProps) {
 
   //  When the settings change, build the columns.
   useEffect(() => {
-    setColumnDefinitions(buildColumns(settings));
+    setColumnDefinitions(buildColumns(settings, onDeleteLocation));
   }, [settings]);
 
   if (locations.length === 0) {

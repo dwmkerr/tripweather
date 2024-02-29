@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Grid from "@mui/joy/Grid";
@@ -173,29 +173,38 @@ export default function TripPage() {
     await hydrateDatesWeather(newLocations);
   };
 
+  const onDeleteLocation = async (location: TripLocation) => {
+    setLocations((locations) => locations.filter((l) => l.id !== location.id));
+  };
+
   return (
-    <Grid
-      spacing={2}
-      sx={{
-        flexGrow: 1,
-        maxWidth: 1024,
-        marginLeft: "auto",
-        marginRight: "auto",
-        paddingTop: 2,
-      }}
-    >
-      <Grid xs={12}>
-        <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
-          Start by searching for a location or adding a GPS coordinate, then add
-          as many other locations to compare as you like!
-        </Typography>
+    <Fragment>
+      <Grid
+        spacing={2}
+        sx={{
+          flexGrow: 1,
+          maxWidth: 1024,
+          marginLeft: "auto",
+          marginRight: "auto",
+          paddingTop: 2,
+        }}
+      >
+        <Grid xs={12}>
+          <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
+            Start by searching for a location or adding a GPS coordinate, then
+            add as many other locations to compare as you like!
+          </Typography>
+        </Grid>
+        <Grid xs={12}>
+          <SearchBar onSelectLocation={onSelectLocation} />
+        </Grid>
       </Grid>
-      <Grid xs={12}>
-        <SearchBar onSelectLocation={onSelectLocation} />
-      </Grid>
-      <Box sx={{ height: 400, width: "100%" }}>
-        <LocationGrid locations={locations} />
+      <Box sx={{ height: "100%", width: "100%" }}>
+        <LocationGrid
+          locations={locations}
+          onDeleteLocation={onDeleteLocation}
+        />
       </Box>
-    </Grid>
+    </Fragment>
   );
 }
