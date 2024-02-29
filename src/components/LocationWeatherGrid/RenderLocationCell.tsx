@@ -30,6 +30,7 @@ export function LocationCell({
       justifyContent="center"
       alignItems="flex-start"
       spacing={1}
+      padding={1}
     >
       <Typography level="body-sm" fontWeight="bold">
         {label}

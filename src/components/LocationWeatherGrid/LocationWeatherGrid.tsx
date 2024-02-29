@@ -22,23 +22,15 @@ const buildColumns = (
   onDeleteLocation: DeleteLocationFunc,
   onRenameLocationLabel: RenameLocationLabelFunc,
 ) => {
-  const initialColumns: GridColDef<LocationRow>[] = [
-    {
-      field: "title",
-      headerName: "Location",
-      width: 150,
-      valueGetter: (params: GridValueGetterParams<LocationRow>) =>
-        params.row.location,
-      renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
-        renderLocationCell(params, onRenameLocationLabel),
-    },
-    {
-      field: "address",
-      headerName: "Address",
-      width: 150,
-      editable: true,
-    },
-  ];
+  const addressColumn: GridColDef<LocationRow> = {
+    field: "title",
+    headerName: "Location",
+    width: 150,
+    valueGetter: (params: GridValueGetterParams<LocationRow>) =>
+      params.row.location,
+    renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
+      renderLocationCell(params, onRenameLocationLabel),
+  };
 
   const dates = getMidnightDates(settings.startDate, settings.endDate);
 
@@ -80,7 +72,7 @@ const buildColumns = (
       renderActionsCell(params, onDeleteLocation),
   };
 
-  return [...initialColumns, ...dateColumns, actionColumn];
+  return [addressColumn, ...dateColumns, actionColumn];
 };
 
 export interface LocationGridProps {
