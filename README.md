@@ -18,6 +18,7 @@ https://lifeline.rocks
     - [Subscriber](#subscriber)
 - [Research](#research)
 - [TODO](#todo)
+    - [0.1.0](#010)
 
 <!-- vim-markdown-toc -->
 
@@ -136,6 +137,8 @@ Use for reference in my own.
 
 ## TODO
 
+### 0.1.0
+
 - [x] check name 'trip weather'
 - [x] feat: weather icon - sunshine
 - [x] feat: basic structure - search bar and suggest function
@@ -154,17 +157,21 @@ Use for reference in my own.
 - [x] bug: weather data fields for day are different to minute/hour - fix the mapping. This will fix the temperatures.
 - [x] feat: add temp to weather cells, add feels like, ensure units are correct.
 - [x] feat: when change dates or units, mark weather as stale and refresh
-- [ ] minor bug (settings): on date change, when make starting day current val + 1 get pop error
-- [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [x] bug: on settings change (e.g. change units) units change immediately but instead we should show a reloader for each weather setting
-- [ ] feat: main page list, with location details having a loader
-- [ ] feat: delete location
+- [x] feat: main page list, with location details having a loader
+- [x] feat: delete location
 - [ ] feat: re-order locations
 - [ ] feat: set location label?
 - [ ] chore: recycle arcgis keys
 - [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 - [ ] feat: settings drawer with farhenhiet / celcius selector
+
+**Nice to have**
+
+- [ ] minor bug (settings): on date change, when make starting day current val + 1 get pop error
+- [ ] minor bug (settings): on unit change, new units flash before the loader updates
+
 
 v0.2
 
