@@ -1,41 +1,25 @@
 import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
-import { IExtent, IPoint, suggest, geocode } from "@esri/arcgis-rest-geocoding";
+import {
+  suggest,
+  geocode,
+  reverseGeocode as arcGisReverseGeocode,
+  ILocation,
+} from "@esri/arcgis-rest-geocoding";
 import { request } from "@esri/arcgis-rest-request";
 import { ApplicationSession } from "@esri/arcgis-rest-auth";
 
-import { parameters } from "./parameters";
-
-export interface SuggestRequest {
-  location: string;
-}
-
-export interface Suggestion {
-  text: string;
-  magicKey: string;
-  isCollection: boolean;
-}
-
-export interface SuggestResponse {
-  suggestions: Suggestion[];
-}
-
-export interface FindAddressFromSuggestionRequest {
-  singleLineAddress: string;
-  magicKey: string;
-}
-
-export interface Candidate {
-  address: string;
-  location: IPoint;
-  extent?: IExtent;
-  score: number;
-}
-
-export interface FindAddressFromSuggestionResponse {
-  candidates: Candidate[];
-}
+import { parameters } from "../parameters";
+import {
+  Candidate,
+  FindAddressFromSuggestionRequest,
+  FindAddressFromSuggestionResponse,
+  ReverseGeocodeRequest,
+  ReverseGeocodeResponse,
+  SuggestRequest,
+  SuggestResponse,
+} from "./LocationTypes";
 
 function getSession() {
   const session = new ApplicationSession({
@@ -75,23 +59,13 @@ export const arcGisSuggest = onCall<SuggestRequest, Promise<SuggestResponse>>(
       const response = await suggest(locationText, {
         authentication: session,
       });
-      console.log(response);
-
-      //  Get the first suggestion and then geocode it.
-      const candidates = await geocode({
-        authentication: session,
-        singleLine: response.suggestions[0].text,
-        magicKey: response.suggestions[0].magicKey,
-      });
-      console.log(candidates);
+      logger.debug(response);
 
       return {
         suggestions: response.suggestions,
-        // suggestions: response.suggestions.slice(0, 3),
-        // candidates,
       };
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       throw new HttpsError("internal", `arcgis error: ${err}`);
     }
   },
@@ -102,8 +76,8 @@ export const findAddressFromSuggestion = onCall<
   Promise<FindAddressFromSuggestionResponse>
 >({ cors: ["localhost:3000"] }, async (req) => {
   const session = getSession();
-  const singleLine = req.data.singleLineAddress as string;
-  const magicKey = req.data.magicKey as string;
+  const singleLine = req.data.singleLineAddress;
+  const magicKey = req.data.magicKey;
   logger.info(`Find Address, query: ${singleLine} - ${magicKey}`);
   try {
     //  Get the first suggestion and then geocode it.
@@ -112,13 +86,48 @@ export const findAddressFromSuggestion = onCall<
       singleLine,
       magicKey,
     });
-    console.log(result);
+    logger.debug(result);
 
     return {
       candidates: result.candidates,
     };
   } catch (err) {
-    console.error(err);
+    logger.error(err);
+    throw new HttpsError("internal", `arcgis error: ${err}`);
+  }
+});
+
+export const reverseGeocode = onCall<
+  ReverseGeocodeRequest,
+  Promise<ReverseGeocodeResponse>
+>({ cors: ["localhost:3000"] }, async (req) => {
+  const session = getSession();
+  const longitude = req.data.longitude;
+  const latitude = req.data.latitude;
+  logger.info(`reverse geocode query: ${longitude}, ${latitude}`);
+  try {
+    //  Get the first suggestion and then geocode it.
+
+    const location: ILocation = {
+      longitude,
+      latitude,
+    };
+    const result = await arcGisReverseGeocode(location, {
+      authentication: session,
+    });
+    logger.debug(result);
+
+    const candidate: Candidate = {
+      address: result.address["LongLabel"] || "Unknown Address",
+      score: 100,
+      location: result.location,
+    };
+
+    return {
+      candidate,
+    };
+  } catch (err) {
+    logger.error(err);
     throw new HttpsError("internal", `arcgis error: ${err}`);
   }
 });

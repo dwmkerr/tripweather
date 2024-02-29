@@ -17,7 +17,9 @@ import {
   FindAddressFromSuggestionResponse,
   SuggestRequest,
   SuggestResponse,
-} from "../../functions/src/arcgis";
+  ReverseGeocodeRequest,
+  ReverseGeocodeResponse,
+} from "../../functions/src/location/LocationTypes";
 import {
   WeatherRequest,
   WeatherResponse,
@@ -40,6 +42,7 @@ interface Functions {
     FindAddressFromSuggestionRequest,
     FindAddressFromSuggestionResponse
   >;
+  reverseGeocode: HttpsCallable<ReverseGeocodeRequest, ReverseGeocodeResponse>;
   weather: HttpsCallable<WeatherRequest, WeatherResponse>;
 }
 
@@ -79,6 +82,11 @@ export class Repository {
         FindAddressFromSuggestionRequest,
         FindAddressFromSuggestionResponse
       >(functions, "findAddressFromSuggestion"),
+      reverseGeocode: httpsCallable<
+        ReverseGeocodeRequest,
+        ReverseGeocodeResponse
+      >(functions, "reverseGeocode"),
+
       weather: httpsCallable<WeatherRequest, WeatherResponse>(
         functions,
         "weather",

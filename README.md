@@ -1,6 +1,6 @@
 # tripweather
 
-[![main](https://github.com/dwmkerr/lifeline/actions/workflows/main.yaml/badge.svg)](https://github.com/dwmkerr/lifeline/actions/workflows/main.yaml) [![codecov](https://codecov.io/gh/dwmkerr/tripweather/graph/badge.svg?token=7e6XaNFvoG)](https://codecov.io/gh/dwmkerr/tripweather)
+[![main](https://github.com/dwmkerr/tripweather/actions/workflows/main.yaml/badge.svg)](https://github.com/dwmkerr/tripweather/actions/workflows/main.yaml) [![codecov](https://codecov.io/gh/dwmkerr/tripweather/graph/badge.svg?token=7e6XaNFvoG)](https://codecov.io/gh/dwmkerr/tripweather)
 
 Experimentation project for a climbing trip planner app
 
@@ -19,7 +19,7 @@ https://dwmkerr-tripweather.web.app/
 - [Research](#research)
 - [TODO](#todo)
     - [0.1.0](#010)
-    - [0.2.0](#020)
+    - [0.2.x](#02x)
     - [Future](#future)
 
 <!-- vim-markdown-toc -->
@@ -166,14 +166,17 @@ Use for reference in my own.
 - [x] chore: recycle arcgis keys
 - [x] feat: weather icon credits in footer - other credits too? arcgis/pirate
 - [x] build: check new firebase api key works
+- [x] build: ensure https://dwmkerr-tripweather.web.app/ deploys
 
-### 0.2.0
+### 0.2.x
 
-- [ ] build: ensure https://dwmkerr-tripweather.web.app/ deploys
-- [ ] feat: address/gps/favourite selector left of search bar
+- [x] feat: address/gps/favourite selector left of search bar
+- [ ] feat: add address by coordinate
+- [ ] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong
 - [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message
 - [ ] feat: set location label?
 - [ ] feat: debounce search input
+- [ ] bug: undefined cell value when shortening end date range
 
 **Nice to have**
 

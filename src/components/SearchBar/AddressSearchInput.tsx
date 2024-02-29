@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Box from "@mui/joy/Box";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -8,34 +7,36 @@ import AutocompleteOption from "@mui/joy/AutocompleteOption";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
-import { TripLocation } from "../lib/Location";
-import { Suggestion } from "../../functions/src/arcgis";
-import { AlertType, useAlertContext } from "../components/AlertContext";
-import { Repository } from "../lib/Repository";
-import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
-import { useSettingsContext } from "../contexts/SettingsContextProvider";
+import { TripLocation } from "../../lib/Location";
+import { Suggestion } from "../../../functions/src/location/LocationTypes";
+import { AlertType, useAlertContext } from "../AlertContext";
+import { Repository } from "../../lib/Repository";
+import { Stack } from "@mui/joy";
+import { TripWeatherError } from "../../lib/Errors";
 
-export interface SearchBarProps {
+export interface AddressSearchInputProps {
   onSelectLocation: (location: TripLocation) => void;
 }
 
-export default function SearchBar({ onSelectLocation }: SearchBarProps) {
+export default function AddressSearchInput({
+  onSelectLocation,
+}: AddressSearchInputProps) {
   const repository = Repository.getInstance();
-  const { settings, setSettings } = useSettingsContext();
 
   const { setAlertInfo, setAlertFromError } = useAlertContext();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] =
     useState<Suggestion | null>(null);
-  const [searchingForCoordinates, setSearchingForCoordinates] =
-    useState<boolean>(false);
+  const [searching, setSearching] = useState<boolean>(false);
 
   const selectLocation = async (suggestion: Suggestion | null) => {
     if (!suggestion) {
-      throw new Error("no suggestion selected");
-      //  TODO error context
+      setAlertFromError(
+        new TripWeatherError("Address Search Error", "No address selected"),
+      );
+      return;
     }
-    setSearchingForCoordinates(true);
+    setSearching(true);
 
     //  Find the location candidates.
     const address = await repository.functions.findAddress({
@@ -50,7 +51,7 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
         title: "Cannot Find Coordinates",
         message: `Unable to find GPS coordinates for ${suggestion.text}, please try a different address or enter GPS coordinates manually.`,
       });
-      setSearchingForCoordinates(false);
+      setSearching(false);
       setSelectedSuggestion(null);
       return;
     }
@@ -77,26 +78,17 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
       },
       datesWeather: [],
     };
-    setSearchingForCoordinates(false);
+    setSearching(false);
     onSelectLocation(location);
   };
 
   return (
-    <Box
-      component="form"
-      sx={{
-        display: "flex",
-        gap: 1,
-        my: 2,
-        alignSelf: "stretch",
-        flexBasis: "80%",
-      }}
-    >
+    <Stack direction="row" spacing={1}>
       <Autocomplete
         size="lg"
         sx={{ flex: "auto" }}
         placeholder="e.g. Yosemite Valley"
-        disabled={searchingForCoordinates}
+        disabled={searching}
         onInputChange={(event, value) => {
           repository.functions
             .suggest({ location: value })
@@ -143,42 +135,10 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
         variant="solid"
         color="primary"
         onClick={() => selectLocation(selectedSuggestion)}
-        loading={searchingForCoordinates}
+        loading={searching}
       >
         <ArrowForward />
       </IconButton>
-      <Stack direction="row" useFlexGap spacing={3}>
-        <FormControl orientation="horizontal">
-          <FormLabel sx={{ typography: "body-sm" }}>From</FormLabel>
-          <Input
-            id="start-date"
-            type="date"
-            aria-label="Date"
-            value={settings.startDate.toISOString().substring(0, 10) || ""}
-            onChange={(e) => {
-              setSettings({
-                ...settings,
-                startDate: new Date(e.target.value),
-              });
-            }}
-          />
-        </FormControl>
-        <FormControl orientation="horizontal">
-          <FormLabel sx={{ typography: "body-sm" }}>To</FormLabel>
-          <Input
-            id="end-date"
-            type="date"
-            aria-label="Date"
-            value={settings.endDate?.toISOString().substring(0, 10) || ""}
-            onChange={(e) => {
-              setSettings({
-                ...settings,
-                endDate: new Date(e.target.value),
-              });
-            }}
-          />
-        </FormControl>
-      </Stack>
-    </Box>
+    </Stack>
   );
 }
