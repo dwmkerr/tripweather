@@ -20,6 +20,7 @@ export interface DateWeather {
 
 export interface TripLocation {
   id: string;
+  label: string;
   originalSearch: {
     address: string;
     magicKey: string;

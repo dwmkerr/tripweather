@@ -14,18 +14,23 @@ import { Settings } from "../../lib/Settings";
 import { LocationRow } from "./LocationRow";
 import renderWeatherCell from "./RenderWeatherCell";
 import renderActionsCell from "./RenderActionsCell";
-import { DeleteLocationFunc } from "./Actions";
+import { DeleteLocationFunc, RenameLocationLabelFunc } from "./Actions";
+import renderLocationCell from "./RenderLocationCell";
 
 const buildColumns = (
   settings: Settings,
-  deleteLocation: DeleteLocationFunc,
+  onDeleteLocation: DeleteLocationFunc,
+  onRenameLocationLabel: RenameLocationLabelFunc,
 ) => {
   const initialColumns: GridColDef<LocationRow>[] = [
     {
       field: "title",
       headerName: "Location",
       width: 150,
-      editable: true,
+      valueGetter: (params: GridValueGetterParams<LocationRow>) =>
+        params.row.location,
+      renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
+        renderLocationCell(params, onRenameLocationLabel),
     },
     {
       field: "address",
@@ -72,7 +77,7 @@ const buildColumns = (
     valueGetter: (params: GridValueGetterParams<LocationRow>) =>
       params.row.location,
     renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
-      renderActionsCell(params, deleteLocation),
+      renderActionsCell(params, onDeleteLocation),
   };
 
   return [...initialColumns, ...dateColumns, actionColumn];
@@ -81,17 +86,19 @@ const buildColumns = (
 export interface LocationGridProps {
   locations: TripLocation[];
   onDeleteLocation: DeleteLocationFunc;
+  onRenameLocationLabel: RenameLocationLabelFunc;
 }
 
 export default function LocationGrid({
   locations,
   onDeleteLocation,
+  onRenameLocationLabel,
 }: LocationGridProps) {
   const { settings } = useSettingsContext();
   const [locationRows, setLocationRows] = useState<LocationRow[]>([]);
   const [columnDefinitions, setColumnDefinitions] = useState<
     GridColDef<LocationRow>[]
-  >(buildColumns(settings, onDeleteLocation));
+  >(buildColumns(settings, onDeleteLocation, onRenameLocationLabel));
   useEffect(() => {
     const locationRows = locations.map((location): LocationRow => {
       return {
@@ -107,7 +114,7 @@ export default function LocationGrid({
 
   //  When the settings change, build the columns.
   useEffect(() => {
-    setColumnDefinitions(buildColumns(settings, onDeleteLocation));
+    setColumnDefinitions(columnDefinitions);
   }, [settings]);
 
   if (locations.length === 0) {
@@ -137,8 +144,8 @@ export default function LocationGrid({
           },
         },
       }}
-      rowHeight={96}
       pageSizeOptions={[5]}
+      getRowHeight={() => "auto"}
     />
   );
 }

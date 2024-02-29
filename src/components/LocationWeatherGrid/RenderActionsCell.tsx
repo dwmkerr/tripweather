@@ -8,12 +8,12 @@ import { LocationRow } from "./LocationRow";
 import { ReactNode, useState } from "react";
 import { DeleteLocationFunc } from "./Actions";
 
-export interface WeatherCellProps {
+export interface ActionsCellProps {
   location: TripLocation;
   onDeleteLocation: DeleteLocationFunc;
 }
 
-export function ActionsCell({ location, onDeleteLocation }: WeatherCellProps) {
+export function ActionsCell({ location, onDeleteLocation }: ActionsCellProps) {
   const [deleting, setDeleting] = useState(false);
 
   const deleteLocation = async (location: TripLocation) => {

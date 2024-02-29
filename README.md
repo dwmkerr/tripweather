@@ -160,7 +160,7 @@ Use for reference in my own.
 - [x] bug: on settings change (e.g. change units) units change immediately but instead we should show a reloader for each weather setting
 - [x] feat: main page list, with location details having a loader
 - [x] feat: delete location
-- [ ] feat: re-order locations
+- [x] bug: wrap text in cell
 - [ ] feat: set location label?
 - [ ] chore: recycle arcgis keys
 - [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
@@ -195,3 +195,8 @@ v0.3
 - [ ] score icons for walking/climbing
 - [ ] ads based on score icons, e.g. climbing books for selected area
 - [ ] feat: spinner when loading location suggestions
+
+**X-Data-Grid Pro**
+
+- [ ] feat: re-order locations
+- [ ] feat: resize columns

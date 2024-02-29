@@ -55,10 +55,17 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
       return;
     }
 
+    const buildLabel = (address: string) => {
+      //  If we have a comma, assume anything following it is the address.
+      const commaLocation = address.indexOf(",");
+      return address.substring(0, commaLocation);
+    };
+
     //  Add a new trip location, and then start the search for it's candidate
     //  addresses.
     const location: TripLocation = {
       id: crypto.randomUUID(),
+      label: buildLabel(suggestion.text),
       originalSearch: {
         address: suggestion.text,
         magicKey: suggestion.magicKey,

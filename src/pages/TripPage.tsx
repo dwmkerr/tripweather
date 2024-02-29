@@ -177,6 +177,17 @@ export default function TripPage() {
     setLocations((locations) => locations.filter((l) => l.id !== location.id));
   };
 
+  const onRenameLocationLabel = async (
+    location: TripLocation,
+    label: string,
+  ) => {
+    setLocations((locations) =>
+      locations.map((l) =>
+        l.id !== location.id ? location : { ...location, label },
+      ),
+    );
+  };
+
   return (
     <Fragment>
       <Grid
@@ -203,6 +214,7 @@ export default function TripPage() {
         <LocationGrid
           locations={locations}
           onDeleteLocation={onDeleteLocation}
+          onRenameLocationLabel={onRenameLocationLabel}
         />
       </Box>
     </Fragment>

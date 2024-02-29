@@ -10,6 +10,7 @@ describe("TripLocationWeather", () => {
 
       const location: TripLocation = {
         id: "1",
+        label: "Yosemite",
         originalSearch: {
           address: "Yosemite Valley",
           magicKey: "123",
@@ -66,6 +67,7 @@ describe("TripLocationWeather", () => {
 
       const location: TripLocation = {
         id: "1",
+        label: "Yosemite",
         originalSearch: {
           address: "Yosemite Valley",
           magicKey: "123",
