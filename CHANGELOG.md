@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.3](https://github.com/dwmkerr/tripweather/compare/v0.1.2...v0.1.3) (2024-02-29)
+
+
+### Bug Fixes
+
+* correct public deploy path ([167467a](https://github.com/dwmkerr/tripweather/commit/167467a41640f379ad18a11b8caad4ab89de75e6))
+
+
+### Miscellaneous Chores
+
+* release 0.1.3 ([a3339d9](https://github.com/dwmkerr/tripweather/commit/a3339d9f34a70517f4239dfcd195dcc3b51b30fe))
+
 ## [0.1.2](https://github.com/dwmkerr/tripweather/compare/v0.1.1...v0.1.2) (2024-02-29)
 
 
