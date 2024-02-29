@@ -153,8 +153,10 @@ Use for reference in my own.
 - [x] feat: smaller progress indicator for loading weather
 - [x] bug: weather data fields for day are different to minute/hour - fix the mapping. This will fix the temperatures.
 - [x] feat: add temp to weather cells, add feels like, ensure units are correct.
-- [ ] feat: when change dates or units, mark weather as stale and refresh
-- [ ] bug: on settings change (e.g. change units) units change immediately but instead we should show a reloader for each weather setting
+- [x] feat: when change dates or units, mark weather as stale and refresh
+- [ ] minor bug (settings): on date change, when make starting day current val + 1 get pop error
+- [ ] minor bug (settings): on unit change, new units flash before the loader updates
+- [x] bug: on settings change (e.g. change units) units change immediately but instead we should show a reloader for each weather setting
 - [ ] feat: main page list, with location details having a loader
 - [ ] feat: delete location
 - [ ] feat: re-order locations
@@ -167,7 +169,7 @@ Use for reference in my own.
 v0.2
 
 - [ ] feat: weather icon is link to details on Merry Sky
-- [ ] feat: pinned/favourite locations
+- [ ] feat: pinned/favourite locations, use AirBnB trips as an example of UI
 - [ ] feat: activity select in navbar
 - [ ] feat: save search details
 - [ ] feat: share button offers link to share
