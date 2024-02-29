@@ -14,6 +14,7 @@ import { getMidnightDates } from "../lib/Time";
 import { useAlertContext } from "../components/AlertContext";
 import { TripWeatherError } from "../lib/Errors";
 import { updateLocationWeatherDates } from "../lib/TripLocationWeather";
+import Footer from "../components/Footer";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
@@ -192,8 +193,8 @@ export default function TripPage() {
     <Fragment>
       <Grid
         spacing={2}
+        justifyContent="flex-start"
         sx={{
-          flexGrow: 1,
           maxWidth: 1024,
           marginLeft: "auto",
           marginRight: "auto",
@@ -210,12 +211,15 @@ export default function TripPage() {
           <SearchBar onSelectLocation={onSelectLocation} />
         </Grid>
       </Grid>
-      <Box sx={{ height: "100%", width: "100%" }}>
+      <Box sx={{ width: "100%", flexGrow: 1 }}>
         <LocationGrid
           locations={locations}
           onDeleteLocation={onDeleteLocation}
           onRenameLocationLabel={onRenameLocationLabel}
         />
+      </Box>
+      <Box sx={{ width: "100%" }}>
+        <Footer />
       </Box>
     </Fragment>
   );

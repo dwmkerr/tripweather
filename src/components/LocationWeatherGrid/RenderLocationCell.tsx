@@ -24,6 +24,8 @@ export function LocationCell({
     setRenaming(false);
   };
 
+  console.log("tripweather: TODO unused", renaming, setLabel, renameLocation);
+
   return (
     <Stack
       direction="column"

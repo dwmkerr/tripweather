@@ -19,6 +19,7 @@ https://lifeline.rocks
 - [Research](#research)
 - [TODO](#todo)
     - [0.1.0](#010)
+    - [0.2.0](#020)
 
 <!-- vim-markdown-toc -->
 
@@ -161,17 +162,22 @@ Use for reference in my own.
 - [x] feat: main page list, with location details having a loader
 - [x] feat: delete location
 - [x] bug: wrap text in cell
+- [x] chore: recycle arcgis keys
+- [x] feat: weather icon credits in footer - other credits too? arcgis/pirate
+- [x] build: check new firebase api key works
+
+### 0.2.0
+
+- [ ] feat: address/gps/favourite selector left of search bar
+- [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message
 - [ ] feat: set location label?
-- [ ] chore: recycle arcgis keys
-- [ ] feat: weather icon credits in footer - other credits too? arcgis/pirate
-- [ ] refactor: hydrate dates weather can ignore weather we've already loaded
-- [ ] feat: settings drawer with farhenhiet / celcius selector
+- [ ] feat: debounce search input
 
 **Nice to have**
 
 - [ ] minor bug (settings): on date change, when make starting day current val + 1 get pop error
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
-
+- [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 
 v0.2
 
@@ -183,8 +189,8 @@ v0.2
 - [ ] feat: open saved trip from URL
 - [ ] feat: name trips
 - [ ] feat: 'my trips'
-- [ ] feat: debounce search input
 - [ ] feat(settings): temperature: apparent/recorded low/high/max/min
+- [ ] feat: settings drawer with farhenhiet / celcius selector
 
 v0.3
 

@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import Box from "@mui/joy/Box";
 import { Stack } from "@mui/joy";
 
 import { useAlertContext } from "./AlertContext";
@@ -11,7 +10,7 @@ export default function PageContainer() {
   const { alertInfo, setAlertInfo } = useAlertContext();
 
   return (
-    <Box
+    <Stack
       sx={{
         height: "100vh",
         overflowY: "scroll",
@@ -25,9 +24,8 @@ export default function PageContainer() {
       <Stack
         component="main"
         direction="column"
-        sx={{
-          height: "100%",
-        }}
+        flexGrow={1}
+        alignItems="flex-start"
       >
         <SettingsDrawer />
         <Outlet />
@@ -38,6 +36,6 @@ export default function PageContainer() {
           />
         )}
       </Stack>
-    </Box>
+    </Stack>
   );
 }
