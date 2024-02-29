@@ -4,7 +4,7 @@
 
 Experimentation project for a climbing trip planner app
 
-https://lifeline.rocks
+https://dwmkerr-tripweather.web.app/
 
 <!-- vim-markdown-toc GFM -->
 
@@ -20,6 +20,7 @@ https://lifeline.rocks
 - [TODO](#todo)
     - [0.1.0](#010)
     - [0.2.0](#020)
+    - [Future](#future)
 
 <!-- vim-markdown-toc -->
 
@@ -168,6 +169,7 @@ Use for reference in my own.
 
 ### 0.2.0
 
+- [ ] build: ensure https://dwmkerr-tripweather.web.app/ deploys
 - [ ] feat: address/gps/favourite selector left of search bar
 - [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message
 - [ ] feat: set location label?
@@ -201,6 +203,10 @@ v0.3
 - [ ] score icons for walking/climbing
 - [ ] ads based on score icons, e.g. climbing books for selected area
 - [ ] feat: spinner when loading location suggestions
+
+### Future
+
+- Location map
 
 **X-Data-Grid Pro**
 
