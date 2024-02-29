@@ -136,6 +136,20 @@ export default function TripPage() {
   };
 
   useEffect(() => {
+    //  If the settings/days have changed, we should mark everything as loading.
+    setLocations(
+      locations.map(
+        (location): TripLocation => ({
+          ...location,
+          datesWeather: location.datesWeather.map((dw) => ({
+            ...dw,
+            weatherStatus: WeatherStatus.Loading,
+          })),
+        }),
+      ),
+    );
+
+    //  Hydrate the weather values.
     hydrateDatesWeather(locations);
   }, [settings]);
 
