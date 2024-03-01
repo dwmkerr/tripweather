@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Box, Button, IconButton } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 
@@ -8,10 +9,24 @@ import NavigationList from "./NavigationMenu";
 import logo from "../images/logo.png";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import UnitsSelect from "./UnitsSelect";
+import { Repository } from "../lib/Repository";
+import { User, onAuthStateChanged } from "firebase/auth";
+import UserMenuDropdown from "./UserMenuDropdown";
 
 export default function NavBar() {
+  const repository = Repository.getInstance();
   const { settings, setSettings, showSettings, setShowSettings } =
     useSettingsContext();
+
+  const [user, setUser] = useState<User | null>(repository.getUser() || null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(repository.getAuth(), (user) => {
+      setUser(user || null);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <Box
@@ -78,6 +93,7 @@ export default function NavBar() {
             });
           }}
         />
+        <UserMenuDropdown user={user || undefined} />
       </Box>
     </Box>
   );

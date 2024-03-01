@@ -171,12 +171,13 @@ Use for reference in my own.
 ### 0.2.x
 
 - [x] feat: address/gps/favourite selector left of search bar
-- [ ] feat: add address by coordinate
-- [ ] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong
-- [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message
+- [x] feat: add address by coordinate
+- [x] feat: basic sign in menu
+- [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message `await requireSignIn` - with the 'then' letting you chain operations
 - [ ] feat: set location label?
 - [ ] feat: debounce search input
 - [ ] bug: undefined cell value when shortening end date range
+- [ ] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK
 
 **Nice to have**
 

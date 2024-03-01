@@ -1,5 +1,11 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
-import { Auth, getAuth } from "firebase/auth";
+import {
+  Auth,
+  GoogleAuthProvider,
+  User,
+  getAuth,
+  signInWithPopup,
+} from "firebase/auth";
 import {
   getFirestore,
   connectFirestoreEmulator,
@@ -24,6 +30,7 @@ import {
   WeatherRequest,
   WeatherResponse,
 } from "../../functions/src/weather/weather";
+import { TripWeatherError } from "./Errors";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -287,6 +294,8 @@ export class Repository {
     });
   }
 
+  */
+
   getAuth(): Auth {
     return this.auth;
   }
@@ -320,5 +329,4 @@ export class Repository {
   async signOut() {
     this.auth.signOut();
   }
-  */
 }

@@ -14,6 +14,7 @@ import { AlertContextProvider } from "./components/AlertContext";
 import PageContainer from "./components/PageContainer";
 import ErrorPage from "./pages/ErrorPage";
 import { SettingsContextProvider } from "./contexts/SettingsContextProvider";
+import { UserContextProvider } from "./contexts/UserContextProvider";
 
 const materialTheme = materialExtendTheme();
 
@@ -39,14 +40,16 @@ export default function App() {
   return (
     <StrictMode>
       <MaterialCssVarsProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
-        <AlertContextProvider>
-          <SettingsContextProvider>
-            <JoyCssVarsProvider>
-              <CssBaseline />
-              <RouterProvider router={router} />
-            </JoyCssVarsProvider>
-          </SettingsContextProvider>
-        </AlertContextProvider>
+        <JoyCssVarsProvider>
+          <CssBaseline />
+          <AlertContextProvider>
+            <SettingsContextProvider>
+              <UserContextProvider>
+                <RouterProvider router={router} />
+              </UserContextProvider>
+            </SettingsContextProvider>
+          </AlertContextProvider>
+        </JoyCssVarsProvider>
       </MaterialCssVarsProvider>
     </StrictMode>
   );
