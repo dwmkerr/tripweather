@@ -174,10 +174,12 @@ Use for reference in my own.
 - [x] feat: add address by coordinate
 - [x] feat: basic sign in menu
 - [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message `await requireSignIn` - with the 'then' letting you chain operations
+- [ ] bug: if can't set weather show an error icon in the weather panel
+- [ ] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
 - [ ] feat: set location label?
 - [ ] feat: debounce search input
 - [ ] bug: undefined cell value when shortening end date range
-- [ ] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK
+- [x] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK. Update: checking the coordinates manually seems they are OK
 
 **Nice to have**
 
@@ -185,7 +187,7 @@ Use for reference in my own.
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 
-v0.2
+v0.3
 
 - [ ] feat: weather icon is link to details on Merry Sky
 - [ ] feat: pinned/favourite locations, use AirBnB trips as an example of UI
@@ -198,9 +200,10 @@ v0.2
 - [ ] feat(settings): temperature: apparent/recorded low/high/max/min
 - [ ] feat: settings drawer with farhenhiet / celcius selector
 
-v0.3
+v0.4
 
 - [ ] better date range selector, before search bar
+- [ ] feat: toggle grid/map/grid+map view
 - [ ] feat: save units as a user preference
 - [ ] feat: show weather for selected location
 - [ ] feat: save location as favourite, quick search for favourites

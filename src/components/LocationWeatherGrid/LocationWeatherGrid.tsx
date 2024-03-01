@@ -14,12 +14,17 @@ import { Settings } from "../../lib/Settings";
 import { LocationRow } from "./LocationRow";
 import renderWeatherCell from "./RenderWeatherCell";
 import renderActionsCell from "./RenderActionsCell";
-import { DeleteLocationFunc, RenameLocationLabelFunc } from "./Actions";
+import {
+  DeleteLocationFunc,
+  FavoriteLocationFunc,
+  RenameLocationLabelFunc,
+} from "./Actions";
 import renderLocationCell from "./RenderLocationCell";
 
 const buildColumns = (
   settings: Settings,
   onDeleteLocation: DeleteLocationFunc,
+  onFavoriteLocation: FavoriteLocationFunc,
   onRenameLocationLabel: RenameLocationLabelFunc,
 ) => {
   const addressColumn: GridColDef<LocationRow> = {
@@ -69,7 +74,7 @@ const buildColumns = (
     valueGetter: (params: GridValueGetterParams<LocationRow>) =>
       params.row.location,
     renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
-      renderActionsCell(params, onDeleteLocation),
+      renderActionsCell(params, onDeleteLocation, onFavoriteLocation),
   };
 
   return [addressColumn, ...dateColumns, actionColumn];
@@ -78,19 +83,28 @@ const buildColumns = (
 export interface LocationGridProps {
   locations: TripLocation[];
   onDeleteLocation: DeleteLocationFunc;
+  onFavoriteLocation: FavoriteLocationFunc;
   onRenameLocationLabel: RenameLocationLabelFunc;
 }
 
 export default function LocationGrid({
   locations,
   onDeleteLocation,
+  onFavoriteLocation,
   onRenameLocationLabel,
 }: LocationGridProps) {
   const { settings } = useSettingsContext();
   const [locationRows, setLocationRows] = useState<LocationRow[]>([]);
   const [columnDefinitions, setColumnDefinitions] = useState<
     GridColDef<LocationRow>[]
-  >(buildColumns(settings, onDeleteLocation, onRenameLocationLabel));
+  >(
+    buildColumns(
+      settings,
+      onDeleteLocation,
+      onFavoriteLocation,
+      onRenameLocationLabel,
+    ),
+  );
   useEffect(() => {
     const locationRows = locations.map((location): LocationRow => {
       return {

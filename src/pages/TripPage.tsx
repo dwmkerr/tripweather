@@ -215,6 +215,7 @@ export default function TripPage() {
         <LocationGrid
           locations={locations}
           onDeleteLocation={onDeleteLocation}
+          onFavoriteLocation={onDeleteLocation}
           onRenameLocationLabel={onRenameLocationLabel}
         />
       </Box>
