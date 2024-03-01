@@ -12,8 +12,9 @@ import * as logger from "firebase-functions/logger";
 import {
   arcGisStatus,
   arcGisSuggest,
+  reverseGeocode,
   findAddressFromSuggestion,
-} from "./arcgis";
+} from "./location/location";
 import { weather } from "./weather/weather";
 
 // Start writing functions
@@ -24,4 +25,4 @@ export const helloWorld = onRequest((request, response) => {
   response.send({ message: "Hello from Firebase!" });
 });
 
-export { arcGisStatus, arcGisSuggest, findAddressFromSuggestion, weather };
+export { arcGisStatus, arcGisSuggest, findAddressFromSuggestion, reverseGeocode, weather };

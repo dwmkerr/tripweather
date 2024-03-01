@@ -5,10 +5,10 @@ import Grid from "@mui/joy/Grid";
 import moment from "moment";
 
 import { TripLocation, WeatherStatus } from "../lib/Location";
-import { Suggestion } from "../../functions/src/arcgis";
+import { Suggestion } from "../../functions/src/location/LocationTypes";
 import { Repository } from "../lib/Repository";
 import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid";
-import SearchBar from "../components/SearchBar";
+import SearchBar from "../components/SearchBar/SearchBar";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../lib/Time";
 import { useAlertContext } from "../components/AlertContext";
