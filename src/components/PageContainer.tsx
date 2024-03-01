@@ -5,37 +5,52 @@ import { useAlertContext } from "./AlertContext";
 import { AlertSnackbar } from "./AlertSnackbar";
 import NavBar from "../components/NavBar";
 import SettingsDrawer from "./SettingsDrawer";
+import { useUserContext } from "../contexts/UserContextProvider";
+import RequireLoginDialog from "../dialogs/RequireLoginDialog";
+import { Fragment } from "react";
+import { User } from "firebase/auth";
 
 export default function PageContainer() {
   const { alertInfo, setAlertInfo } = useAlertContext();
+  const { showLoginDialog, setShowLoginDialog } = useUserContext();
 
   return (
-    <Stack
-      sx={{
-        height: "100vh",
-        overflowY: "scroll",
-        scrollSnapType: "y mandatory",
-        "& > div": {
-          scrollSnapAlign: "start",
-        },
-      }}
-    >
-      <NavBar />
+    <Fragment>
       <Stack
-        component="main"
-        direction="column"
-        flexGrow={1}
-        alignItems="flex-start"
+        sx={{
+          height: "100vh",
+          overflowY: "scroll",
+          scrollSnapType: "y mandatory",
+          "& > div": {
+            scrollSnapAlign: "start",
+          },
+        }}
       >
-        <SettingsDrawer />
-        <Outlet />
-        {alertInfo && (
-          <AlertSnackbar
-            alertInfo={alertInfo}
-            onDismiss={() => setAlertInfo(null)}
-          />
-        )}
+        <NavBar />
+        <Stack
+          component="main"
+          direction="column"
+          flexGrow={1}
+          alignItems="flex-start"
+        >
+          <SettingsDrawer />
+          <Outlet />
+          {alertInfo && (
+            <AlertSnackbar
+              alertInfo={alertInfo}
+              onDismiss={() => setAlertInfo(null)}
+            />
+          )}
+        </Stack>
       </Stack>
-    </Stack>
+      {showLoginDialog && (
+        <RequireLoginDialog
+          onClose={(user: User | null) => {
+            setShowLoginDialog(false);
+            console.log("tripweather: user", user);
+          }}
+        />
+      )}
+    </Fragment>
   );
 }
