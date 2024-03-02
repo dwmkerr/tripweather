@@ -53,7 +53,9 @@ export default function TripPage() {
     if (!user) {
       return;
     }
-    return repository.favoriteLocations.subscribe(setFavoriteLocations);
+    return repository.favoriteLocations.subscribe((favoriteLocations) => {
+      setFavoriteLocations(favoriteLocations);
+    });
   }, [user]);
 
   //  Get weather data, or if missing show an alert.

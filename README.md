@@ -176,7 +176,7 @@ Use for reference in my own.
 - [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message `await requireSignIn` - with the 'then' letting you chain operations
 - [ ] bug: if can't set weather show an error icon in the weather panel
 - [x] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
-- [ ] feat: set location label?
+- [ ] feat: set location label? (see TODO in code)
 - [ ] feat: debounce search input
 - [ ] bug: undefined cell value when shortening end date range
 - [x] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK. Update: checking the coordinates manually seems they are OK

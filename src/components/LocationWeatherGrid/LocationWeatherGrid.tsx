@@ -147,7 +147,7 @@ export default function LocationGrid({
       };
     });
     setLocationRows(locationRows);
-  }, [locations]);
+  }, [locations, favoriteLocations]);
 
   //  When the settings change, build the columns.
   useEffect(() => {
