@@ -7,12 +7,18 @@ import SearchModeToggleGroup, { SearchMode } from "./SearchModeToggleGroup";
 import AddressSearchInput from "./AddressSearchInput";
 import DateRangeInput from "./DateRangeInput";
 import GPSSearchInput from "./GPSSearchInput";
+import { FavoriteLocationModel } from "../../lib/repository/RepositoryModels";
+import FavoriteLocationInput from "./FavoriteLocationInput";
 
 export interface SearchBarProps {
   onSelectLocation: (location: TripLocation) => void;
+  favoriteLocations: FavoriteLocationModel[];
 }
 
-export default function SearchBar({ onSelectLocation }: SearchBarProps) {
+export default function SearchBar({
+  onSelectLocation,
+  favoriteLocations,
+}: SearchBarProps) {
   const { settings, setSettings } = useSettingsContext();
   const [searchMode, setSearchMode] = useState<SearchMode>(SearchMode.Address);
 
@@ -33,6 +39,12 @@ export default function SearchBar({ onSelectLocation }: SearchBarProps) {
       )}
       {searchMode === SearchMode.GPS && (
         <GPSSearchInput onSelectLocation={onSelectLocation} />
+      )}
+      {searchMode === SearchMode.Favorite && (
+        <FavoriteLocationInput
+          favoriteLocations={favoriteLocations}
+          onSelectLocation={onSelectLocation}
+        />
       )}
       <DateRangeInput
         startDate={settings.startDate}

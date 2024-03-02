@@ -31,7 +31,8 @@ export default function SearchModeToggleGroup(
         if (newValue !== null) {
           props.onChange(newValue);
           if (newValue === SearchMode.Favorite) {
-            setShowLoginDialog(true);
+            //  TODO; replace with show alert.
+            console.log(setShowLoginDialog);
           }
         }
       }}

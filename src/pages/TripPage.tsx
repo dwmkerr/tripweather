@@ -18,6 +18,7 @@ import Footer from "../components/Footer";
 import {
   FavoriteLocationModel,
   findFavoriteLocationFromTripLocation,
+  findTripLocationFromFavoriteLocation,
 } from "../lib/repository/RepositoryModels";
 
 export default function TripPage() {
@@ -29,6 +30,8 @@ export default function TripPage() {
   const [favoriteLocations, setFavoriteLocations] = useState<
     FavoriteLocationModel[]
   >([]);
+  const [unselectedFavoriteLocations, setUnselectedFavoriteLocations] =
+    useState<FavoriteLocationModel[]>([]);
 
   const [user, setUser] = useState<User | null>(null);
 
@@ -57,6 +60,15 @@ export default function TripPage() {
       setFavoriteLocations(favoriteLocations);
     });
   }, [user]);
+
+  //  When our trip locations or favourite locations change, create the set of
+  //  unselected favorites that the search bar can add.
+  useEffect(() => {
+    const filteredLocations = favoriteLocations.filter(
+      (fl) => findTripLocationFromFavoriteLocation(fl, locations) === undefined,
+    );
+    setUnselectedFavoriteLocations(filteredLocations);
+  }, [locations, favoriteLocations]);
 
   //  Get weather data, or if missing show an alert.
   const getWeather = async (
@@ -270,7 +282,10 @@ export default function TripPage() {
           </Typography>
         </Grid>
         <Grid xs={12}>
-          <SearchBar onSelectLocation={onSelectLocation} />
+          <SearchBar
+            onSelectLocation={onSelectLocation}
+            favoriteLocations={unselectedFavoriteLocations}
+          />
         </Grid>
       </Grid>
       <Box sx={{ width: "100%", flexGrow: 1 }}>

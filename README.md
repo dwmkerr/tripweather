@@ -182,6 +182,7 @@ Use for reference in my own.
 - [x] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK. Update: checking the coordinates manually seems they are OK
 - [ ] refactor: favourites as a sub-collection of user
 - [ ] bug: after address or GPS (or favorite) is selected and added, clear the selection
+- [ ] feat: when using favorites if not logged in use set alert context to show a login alert with a login action
 
 **Nice to have**
 
