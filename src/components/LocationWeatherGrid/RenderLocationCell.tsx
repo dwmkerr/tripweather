@@ -1,5 +1,5 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { Stack, Typography } from "@mui/joy";
+import { CircularProgress, Stack, Typography } from "@mui/joy";
 
 import { TripLocation } from "../../lib/Location";
 import { LocationRow } from "./LocationRow";
@@ -18,13 +18,13 @@ export function LocationCell({
   const [renaming, setRenaming] = useState(false);
   const [label, setLabel] = useState(location.label);
 
+  //  TODO: work to do here.
   const renameLocation = async (location: TripLocation, label: string) => {
     setRenaming(true);
+    setLabel(label);
     await onRenameLocationLabel(location, label);
     setRenaming(false);
   };
-
-  console.log("tripweather: TODO unused", renaming, setLabel, renameLocation);
 
   return (
     <Stack
@@ -34,6 +34,7 @@ export function LocationCell({
       spacing={1}
       padding={1}
     >
+      {renaming && <CircularProgress />}
       <Typography level="body-sm" fontWeight="bold">
         {label}
       </Typography>

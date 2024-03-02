@@ -2,11 +2,11 @@ import { Fragment, useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Grid from "@mui/joy/Grid";
+import { User, onAuthStateChanged } from "@firebase/auth";
 import moment from "moment";
 
 import { TripLocation, WeatherStatus } from "../lib/Location";
-import { Suggestion } from "../../functions/src/location/LocationTypes";
-import { Repository } from "../lib/Repository";
+import { Repository } from "../lib/repository/Repository";
 import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
@@ -15,14 +15,46 @@ import { useAlertContext } from "../components/AlertContext";
 import { TripWeatherError } from "../lib/Errors";
 import { updateLocationWeatherDates } from "../lib/TripLocationWeather";
 import Footer from "../components/Footer";
+import {
+  FavoriteLocationModel,
+  findFavoriteLocationFromTripLocation,
+} from "../lib/repository/RepositoryModels";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
   const { settings } = useSettingsContext();
   const { setAlertFromError } = useAlertContext();
 
-  useState<Suggestion | null>(null);
   const [locations, setLocations] = useState<TripLocation[]>([]);
+  const [favoriteLocations, setFavoriteLocations] = useState<
+    FavoriteLocationModel[]
+  >([]);
+
+  const [user, setUser] = useState<User | null>(null);
+
+  //  On load, wait for the user and watch for changes.
+  useEffect(() => {
+    const waitForUser = async () => {
+      const user = await repository.waitForUser();
+      setUser(user);
+    };
+    waitForUser();
+
+    //  ...the watch for the auth state changing.
+    const unsubscribe = onAuthStateChanged(repository.getAuth(), (user) => {
+      setUser(user || null);
+    });
+    return () => unsubscribe();
+  });
+
+  //  On user, watch for changes to the favorite locations.
+  useEffect(() => {
+    //  Only watch for changes to favorites if we're logged in.
+    if (!user) {
+      return;
+    }
+    return repository.favoriteLocations.subscribe(setFavoriteLocations);
+  }, [user]);
 
   //  Get weather data, or if missing show an alert.
   const getWeather = async (
@@ -53,6 +85,7 @@ export default function TripPage() {
     }
   };
 
+  //  TODO extract.
   const hydrateDatesWeather = async (locations: TripLocation[]) => {
     //  Get our date range. We currently will only use the start date as the
     //  weather API will always return 7 days of data.
@@ -178,6 +211,33 @@ export default function TripPage() {
     setLocations((locations) => locations.filter((l) => l.id !== location.id));
   };
 
+  const onAddFavoriteLocation = async (location: TripLocation) => {
+    //  Add a new favorite location to the colleciton.
+    const favoriteLocation: Omit<FavoriteLocationModel, "id" | "userId"> = {
+      label: location.label,
+      originalSearch: location.originalSearch,
+      location: location.location,
+    };
+    repository.favoriteLocations.create(favoriteLocation);
+  };
+
+  const onRemoveFavoriteLocation = async (location: TripLocation) => {
+    const fl = findFavoriteLocationFromTripLocation(
+      location,
+      favoriteLocations,
+    );
+    if (fl === undefined) {
+      setAlertFromError(
+        new TripWeatherError(
+          "Favorite Error",
+          "Cannot find favorite for location",
+        ),
+      );
+      return;
+    }
+    repository.favoriteLocations.delete(fl.id);
+  };
+
   const onRenameLocationLabel = async (
     location: TripLocation,
     label: string,
@@ -214,8 +274,10 @@ export default function TripPage() {
       <Box sx={{ width: "100%", flexGrow: 1 }}>
         <LocationGrid
           locations={locations}
+          favoriteLocations={favoriteLocations}
           onDeleteLocation={onDeleteLocation}
-          onFavoriteLocation={onDeleteLocation}
+          onAddFavoriteLocation={onAddFavoriteLocation}
+          onRemoveFavoriteLocation={onRemoveFavoriteLocation}
           onRenameLocationLabel={onRenameLocationLabel}
         />
       </Box>

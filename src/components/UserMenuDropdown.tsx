@@ -12,7 +12,7 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import GoogleIcon from "@mui/icons-material/Google";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-import { Repository } from "../lib/Repository";
+import { Repository } from "../lib/repository/Repository";
 import { TripWeatherError } from "../lib/Errors";
 import { useAlertContext } from "./AlertContext";
 import pkg from "../../package.json";

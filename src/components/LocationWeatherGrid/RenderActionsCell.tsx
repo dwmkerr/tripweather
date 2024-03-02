@@ -8,18 +8,20 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { TripLocation } from "../../lib/Location";
 import { LocationRow } from "./LocationRow";
 import { ReactNode, useState } from "react";
-import { DeleteLocationFunc, FavoriteLocationFunc } from "./Actions";
+import { CheckFavoriteLocationFunc, DeleteLocationFunc } from "./Actions";
 
 export interface ActionsCellProps {
   location: TripLocation;
   onDeleteLocation: DeleteLocationFunc;
-  onFavoriteLocation: FavoriteLocationFunc;
+  isFavorite: boolean;
+  onCheckFavorite: (checked: boolean) => Promise<void>;
 }
 
 export function ActionsCell({
   location,
   onDeleteLocation,
-  onFavoriteLocation,
+  isFavorite,
+  onCheckFavorite,
 }: ActionsCellProps) {
   const [deleting, setDeleting] = useState(false);
   const [favoriting, setFavoriting] = useState(false);
@@ -30,9 +32,9 @@ export function ActionsCell({
     setDeleting(false);
   };
 
-  const favoriteLocation = async (location: TripLocation) => {
+  const checkFavorite = async (check: boolean) => {
     setFavoriting(true);
-    await onFavoriteLocation(location);
+    await onCheckFavorite(check);
     setFavoriting(false);
   };
 
@@ -53,8 +55,8 @@ export function ActionsCell({
         variant="outlined"
         color="primary"
         loading={favoriting}
-        startDecorator={<FavoriteBorderIcon />}
-        onClick={() => favoriteLocation(location)}
+        startDecorator={isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        onClick={() => checkFavorite(!isFavorite)}
       >
         Favorite
       </Button>
@@ -65,7 +67,8 @@ export function ActionsCell({
 export default function renderActionsCell(
   params: GridRenderCellParams<LocationRow, TripLocation>,
   onDeleteLocation: DeleteLocationFunc,
-  onFavoriteLocation: FavoriteLocationFunc,
+  isFavorite: boolean,
+  onCheckFavorite: CheckFavoriteLocationFunc,
 ): ReactNode {
   const location = params.value;
   if (location === undefined) {
@@ -75,7 +78,10 @@ export default function renderActionsCell(
     <ActionsCell
       location={location}
       onDeleteLocation={onDeleteLocation}
-      onFavoriteLocation={onFavoriteLocation}
+      isFavorite={isFavorite}
+      onCheckFavorite={async (checked: boolean) =>
+        await onCheckFavorite(checked, location)
+      }
     />
   );
 }

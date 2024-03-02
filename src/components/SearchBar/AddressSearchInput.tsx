@@ -10,7 +10,7 @@ import match from "autosuggest-highlight/match";
 import { TripLocation } from "../../lib/Location";
 import { Suggestion } from "../../../functions/src/location/LocationTypes";
 import { AlertType, useAlertContext } from "../AlertContext";
-import { Repository } from "../../lib/Repository";
+import { Repository } from "../../lib/repository/Repository";
 import { Stack } from "@mui/joy";
 import { TripWeatherError } from "../../lib/Errors";
 
@@ -70,6 +70,7 @@ export default function AddressSearchInput({
       originalSearch: {
         address: suggestion.text,
         magicKey: suggestion.magicKey,
+        gps: "",
       },
       location: {
         address: address.data.candidates[0].address,

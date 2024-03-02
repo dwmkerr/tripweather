@@ -14,6 +14,7 @@ describe("TripLocationWeather", () => {
         originalSearch: {
           address: "Yosemite Valley",
           magicKey: "123",
+          gps: "",
         },
         location: {
           address: "Yosemite Valley",
@@ -71,6 +72,7 @@ describe("TripLocationWeather", () => {
         originalSearch: {
           address: "Yosemite Valley",
           magicKey: "123",
+          gps: "",
         },
         location: {
           address: "Yosemite Valley",
@@ -102,7 +104,7 @@ describe("TripLocationWeather", () => {
         },
         {
           date: getDate("2024-06-12"),
-          weatherStatus: WeatherStatus.Loading,
+          weatherfavoriteLocationStatus: WeatherStatus.Loading,
         },
         {
           date: getDate("2024-06-13"),

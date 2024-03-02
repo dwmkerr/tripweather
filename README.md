@@ -175,14 +175,16 @@ Use for reference in my own.
 - [x] feat: basic sign in menu
 - [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message `await requireSignIn` - with the 'then' letting you chain operations
 - [ ] bug: if can't set weather show an error icon in the weather panel
-- [ ] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
+- [x] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
 - [ ] feat: set location label?
 - [ ] feat: debounce search input
 - [ ] bug: undefined cell value when shortening end date range
 - [x] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK. Update: checking the coordinates manually seems they are OK
+- [ ] refactor: favourites as a sub-collection of user
 
 **Nice to have**
 
+- [ ] warnings in console when searching for location
 - [ ] minor bug (settings): on date change, when make starting day current val + 1 get pop error
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded

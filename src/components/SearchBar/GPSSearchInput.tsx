@@ -4,7 +4,7 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 
 import { TripLocation } from "../../lib/Location";
 import { useAlertContext } from "../AlertContext";
-import { Repository } from "../../lib/Repository";
+import { Repository } from "../../lib/repository/Repository";
 import { Input, Stack } from "@mui/joy";
 import { TripWeatherError } from "../../lib/Errors";
 
@@ -46,8 +46,9 @@ export default function GPSSearchInput({
         id: crypto.randomUUID(),
         label: buildLabel(coordinates),
         originalSearch: {
-          address: coordinates,
+          address: "",
           magicKey: "",
+          gps: coordinates,
         },
         location: {
           address: candidate.address,

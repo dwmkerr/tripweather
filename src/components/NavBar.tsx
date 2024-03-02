@@ -9,7 +9,7 @@ import NavigationList from "./NavigationMenu";
 import logo from "../images/logo.png";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import UnitsSelect from "./UnitsSelect";
-import { Repository } from "../lib/Repository";
+import { Repository } from "../lib/repository/Repository";
 import { User, onAuthStateChanged } from "firebase/auth";
 import UserMenuDropdown from "./UserMenuDropdown";
 
