@@ -176,6 +176,7 @@ Use for reference in my own.
 - [x] feat: require sign in alert 
 - [x] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
 - [x] feat: when using favorites if not logged in use set alert context to show a login alert with a login action
+- [ ] feat: favorite icon in red, on the left, require sign in to use
 - [ ] feat: set location label? (see TODO in code)
 - [ ] feat: debounce search input
 - [ ] bug: undefined cell value when shortening end date range
