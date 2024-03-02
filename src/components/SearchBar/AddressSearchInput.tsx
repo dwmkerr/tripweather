@@ -104,6 +104,9 @@ export default function AddressSearchInput({
         }}
         options={suggestions}
         getOptionLabel={(option) => option.text}
+        isOptionEqualToValue={(option, value) => {
+          return option.text === value.text;
+        }}
         renderOption={(props, option, { inputValue }) => {
           const matches = match(option.text, inputValue);
           const parts = parse(option.text, matches);
