@@ -173,16 +173,16 @@ Use for reference in my own.
 - [x] feat: address/gps/favourite selector left of search bar
 - [x] feat: add address by coordinate
 - [x] feat: basic sign in menu
-- [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message `await requireSignIn` - with the 'then' letting you chain operations
-- [ ] bug: if can't set weather show an error icon in the weather panel
+- [x] feat: require sign in alert 
 - [x] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
+- [x] feat: when using favorites if not logged in use set alert context to show a login alert with a login action
 - [ ] feat: set location label? (see TODO in code)
 - [ ] feat: debounce search input
 - [ ] bug: undefined cell value when shortening end date range
 - [x] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK. Update: checking the coordinates manually seems they are OK
 - [ ] refactor: favourites as a sub-collection of user
 - [ ] bug: after address or GPS (or favorite) is selected and added, clear the selection
-- [ ] feat: when using favorites if not logged in use set alert context to show a login alert with a login action
+- [ ] bug: if can't set weather show an error icon in the weather panel
 
 **Nice to have**
 

@@ -9,7 +9,7 @@ import match from "autosuggest-highlight/match";
 
 import { TripLocation } from "../../lib/Location";
 import { Suggestion } from "../../../functions/src/location/LocationTypes";
-import { AlertType, useAlertContext } from "../AlertContext";
+import { AlertDisplayMode, AlertType, useAlertContext } from "../AlertContext";
 import { Repository } from "../../lib/repository/Repository";
 import { Stack } from "@mui/joy";
 import { TripWeatherError } from "../../lib/Errors";
@@ -48,6 +48,7 @@ export default function AddressSearchInput({
     if (address.data.candidates.length === 0) {
       setAlertInfo({
         type: AlertType.Warning,
+        displayMode: AlertDisplayMode.Modal,
         title: "Cannot Find Coordinates",
         message: `Unable to find GPS coordinates for ${suggestion.text}, please try a different address or enter GPS coordinates manually.`,
       });

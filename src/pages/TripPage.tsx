@@ -2,7 +2,6 @@ import { Fragment, useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Grid from "@mui/joy/Grid";
-import { User, onAuthStateChanged } from "@firebase/auth";
 import moment from "moment";
 
 import { TripLocation, WeatherStatus } from "../lib/Location";
@@ -20,6 +19,7 @@ import {
   findFavoriteLocationFromTripLocation,
   findTripLocationFromFavoriteLocation,
 } from "../lib/repository/RepositoryModels";
+import useUserEffect from "../lib/UserEffect";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
@@ -33,22 +33,8 @@ export default function TripPage() {
   const [unselectedFavoriteLocations, setUnselectedFavoriteLocations] =
     useState<FavoriteLocationModel[]>([]);
 
-  const [user, setUser] = useState<User | null>(null);
-
   //  On load, wait for the user and watch for changes.
-  useEffect(() => {
-    const waitForUser = async () => {
-      const user = await repository.waitForUser();
-      setUser(user);
-    };
-    waitForUser();
-
-    //  ...the watch for the auth state changing.
-    const unsubscribe = onAuthStateChanged(repository.getAuth(), (user) => {
-      setUser(user || null);
-    });
-    return () => unsubscribe();
-  });
+  const [user] = useUserEffect(repository);
 
   //  On user, watch for changes to the favorite locations.
   useEffect(() => {
