@@ -195,6 +195,7 @@ Use for reference in my own.
 **Nice to have**
 
 - [x] warnings in console when searching for location
+- [ ] feat: manage favorites page
 - [ ] minor bug (settings): on date change, when make starting day current val + 1 get pop error
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
