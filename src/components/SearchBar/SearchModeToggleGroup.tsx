@@ -6,7 +6,6 @@ import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 import { Tooltip } from "@mui/joy";
-import { useUserContext } from "../../contexts/UserContextProvider";
 
 export enum SearchMode {
   Address = "address",
@@ -22,18 +21,12 @@ export interface SearchModeToggleGroupProps {
 export default function SearchModeToggleGroup(
   props: SearchModeToggleGroupProps,
 ) {
-  const { setShowLoginDialog } = useUserContext();
-
   return (
     <ToggleButtonGroup
       value={props.searchMode}
       onChange={(event, newValue) => {
         if (newValue !== null) {
           props.onChange(newValue);
-          if (newValue === SearchMode.Favorite) {
-            //  TODO; replace with show alert.
-            console.log(setShowLoginDialog);
-          }
         }
       }}
     >

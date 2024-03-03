@@ -177,8 +177,10 @@ Use for reference in my own.
 - [x] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
 - [x] feat: when using favorites if not logged in use set alert context to show a login alert with a login action
 - [ ] feat: favorite icon in red, on the left, require sign in to use
-- [ ] feat: set location label? (see TODO in code)
+- [ ] feat: enable add only when valid gps and mask gps input
+- [ ] bug: clear selection on favorite/address/gps add
 - [ ] feat: debounce search input
+- [ ] feat: set location label? (see TODO in code)
 - [ ] bug: undefined cell value when shortening end date range
 - [x] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK. Update: checking the coordinates manually seems they are OK
 - [ ] refactor: favourites as a sub-collection of user
@@ -192,6 +194,7 @@ Use for reference in my own.
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 - [ ] monitor: do we still lose the search from time to time in the address search bar?
+- [ ] bug: state management bug in onRemoveFavoriteLocation
 
 v0.3
 

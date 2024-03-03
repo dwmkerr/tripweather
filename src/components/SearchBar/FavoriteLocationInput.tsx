@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconButton from "@mui/joy/IconButton";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
@@ -22,6 +22,12 @@ export default function FavoriteLocationInput({
 
   const [selectedFavorite, setSelectedFavorite] =
     useState<FavoriteLocationModel | null>(null);
+  const [enableAdd, setEnableAdd] = useState<boolean>(false);
+
+  //  When a favorite is selected, enable the 'add' button.
+  useEffect(() => {
+    setEnableAdd(selectedFavorite !== null);
+  }, [selectedFavorite]);
 
   const selectLocation = async (
     favoriteLocation: FavoriteLocationModel | null,
@@ -43,6 +49,7 @@ export default function FavoriteLocationInput({
       datesWeather: [],
     };
     onSelectLocation(location);
+    setSelectedFavorite(null);
   };
 
   return (
@@ -56,6 +63,7 @@ export default function FavoriteLocationInput({
         size="lg"
         variant="solid"
         color="primary"
+        disabled={!enableAdd}
         onClick={() => selectLocation(selectedFavorite)}
       >
         <ArrowForward />

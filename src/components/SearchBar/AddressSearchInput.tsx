@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -27,7 +27,14 @@ export default function AddressSearchInput({
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] =
     useState<Suggestion | null>(null);
+  const [inputValue, setInputValue] = useState<string>("");
   const [searching, setSearching] = useState<boolean>(false);
+  const [enableAdd, setEnableAdd] = useState<boolean>(false);
+
+  //  When we have a suggestion selected, enable the 'add' button.
+  useEffect(() => {
+    setEnableAdd(selectedSuggestion !== null);
+  }, [selectedSuggestion]);
 
   const selectLocation = async (suggestion: Suggestion | null) => {
     if (!suggestion) {
@@ -53,7 +60,6 @@ export default function AddressSearchInput({
         message: `Unable to find GPS coordinates for ${suggestion.text}, please try a different address or enter GPS coordinates manually.`,
       });
       setSearching(false);
-      setSelectedSuggestion(null);
       return;
     }
 
@@ -82,6 +88,7 @@ export default function AddressSearchInput({
     };
     setSearching(false);
     onSelectLocation(location);
+    setInputValue("");
   };
 
   return (
@@ -91,7 +98,12 @@ export default function AddressSearchInput({
         sx={{ flex: "auto" }}
         placeholder="e.g. Yosemite Valley"
         disabled={searching}
+        inputValue={inputValue}
         onInputChange={(event, value) => {
+          setInputValue(value);
+          if (value === "") {
+            return;
+          }
           repository.functions
             .suggest({ location: value })
             .then((result) => {
@@ -139,6 +151,7 @@ export default function AddressSearchInput({
         size="lg"
         variant="solid"
         color="primary"
+        disabled={!enableAdd}
         onClick={() => selectLocation(selectedSuggestion)}
         loading={searching}
       >

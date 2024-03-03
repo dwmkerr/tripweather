@@ -221,7 +221,11 @@ export default function TripPage() {
     repository.favoriteLocations.create(favoriteLocation);
   };
 
+  //  TODO: bug - whether I use this function as-is, or use 'useCallback', the
+  //  favoriteLocations array is empty, this seems to be a state management bug
+  //  in my code. For now we instead load the favorite locations.
   const onRemoveFavoriteLocation = async (location: TripLocation) => {
+    const favoriteLocations = await repository.favoriteLocations.load();
     const fl = findFavoriteLocationFromTripLocation(
       location,
       favoriteLocations,

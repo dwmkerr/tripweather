@@ -41,7 +41,12 @@ const buildColumns = (
     valueGetter: (params: GridValueGetterParams<LocationRow>) =>
       params.row.location,
     renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
-      renderLocationCell(params, onRenameLocationLabel),
+      renderLocationCell(
+        params,
+        onRenameLocationLabel,
+        params.row.isFavorite,
+        checkFavorite,
+      ),
   };
 
   const dates = getMidnightDates(settings.startDate, settings.endDate);
