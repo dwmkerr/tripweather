@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.0](https://github.com/dwmkerr/tripweather/compare/v0.1.3...v0.2.0) (2024-03-03)
+
+
+### Features
+
+* basic sign in ([#14](https://github.com/dwmkerr/tripweather/issues/14)) ([57b8077](https://github.com/dwmkerr/tripweather/commit/57b8077276d9680785bee00d853bca7b53398ddd))
+* favourite locations ([#15](https://github.com/dwmkerr/tripweather/issues/15)) ([5c46d8a](https://github.com/dwmkerr/tripweather/commit/5c46d8a80748ebaf0916b0fb686e675c92af24eb))
+* search and add location by GPS ([#12](https://github.com/dwmkerr/tripweather/issues/12)) ([5966004](https://github.com/dwmkerr/tripweather/commit/596600475853693cf489302aea64bfaa9f88a99f))
+
 ## [0.1.3](https://github.com/dwmkerr/tripweather/compare/v0.1.2...v0.1.3) (2024-02-29)
 
 
