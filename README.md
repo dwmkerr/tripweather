@@ -176,7 +176,7 @@ Use for reference in my own.
 - [x] feat: require sign in alert 
 - [x] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
 - [x] feat: when using favorites if not logged in use set alert context to show a login alert with a login action
-- [ ] feat: favorite icon in red, on the left, require sign in to use
+- [x] feat: favorite icon in red, on the left
 - [ ] feat: enable add only when valid gps and mask gps input
 - [ ] bug: clear selection on favorite/address/gps add
 - [ ] feat: debounce search input
@@ -187,6 +187,11 @@ Use for reference in my own.
 - [ ] bug: after address or GPS (or favorite) is selected and added, clear the selection
 - [ ] bug: if can't set weather show an error icon in the weather panel
 
+**Needs bug fix**
+
+- [ ] bug: state management bug in onRemoveFavoriteLocation, also user in requirelogin
+- [ ] feat: favorite - require sign in to use
+
 **Nice to have**
 
 - [x] warnings in console when searching for location
@@ -194,7 +199,6 @@ Use for reference in my own.
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 - [ ] monitor: do we still lose the search from time to time in the address search bar?
-- [ ] bug: state management bug in onRemoveFavoriteLocation
 
 v0.3
 
