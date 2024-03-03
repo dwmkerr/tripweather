@@ -104,7 +104,7 @@ describe("TripLocationWeather", () => {
         },
         {
           date: getDate("2024-06-12"),
-          weatherfavoriteLocationStatus: WeatherStatus.Loading,
+          weatherStatus: WeatherStatus.Loading,
         },
         {
           date: getDate("2024-06-13"),
