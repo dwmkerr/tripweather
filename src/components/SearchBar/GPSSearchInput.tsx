@@ -1,5 +1,6 @@
 import { useState } from "react";
 import IconButton from "@mui/joy/IconButton";
+
 import ArrowForward from "@mui/icons-material/ArrowForward";
 
 import { TripLocation } from "../../lib/Location";
@@ -7,6 +8,7 @@ import { useAlertContext } from "../AlertContext";
 import { Repository } from "../../lib/repository/Repository";
 import { Input, Stack } from "@mui/joy";
 import { TripWeatherError } from "../../lib/Errors";
+import CoordinatesMaskedInput from "../CoordinatesMaskedInput";
 
 export interface GPSSearchInputProps {
   onSelectLocation: (location: TripLocation) => void;
@@ -67,6 +69,14 @@ export default function GPSSearchInput({
 
   return (
     <Stack direction="row" spacing={1}>
+      <CoordinatesMaskedInput
+        size="lg"
+        sx={{ flex: "auto" }}
+        placeholder="Latitude, Longitude, e.g. 54.318, -2.792"
+        disabled={searching}
+        // value={coordinates}
+        // onChange={(event) => setCoordinates(event.target.value)}
+      />
       <Input
         size="lg"
         sx={{ flex: "auto" }}
