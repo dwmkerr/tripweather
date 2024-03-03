@@ -10,11 +10,7 @@ import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid"
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../lib/Time";
-import {
-  AlertDisplayMode,
-  AlertType,
-  useAlertContext,
-} from "../components/AlertContext";
+import { useAlertContext } from "../components/AlertContext";
 import { TripWeatherError } from "../lib/Errors";
 import { updateLocationWeatherDates } from "../lib/TripLocationWeather";
 import Footer from "../components/Footer";
@@ -24,12 +20,11 @@ import {
   findTripLocationFromFavoriteLocation,
 } from "../lib/repository/RepositoryModels";
 import useUserEffect from "../lib/UserEffect";
-import { User } from "firebase/auth";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
   const { settings } = useSettingsContext();
-  const { setAlertInfo, setAlertFromError } = useAlertContext();
+  const { setAlertFromError } = useAlertContext();
 
   const [locations, setLocations] = useState<TripLocation[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<
@@ -219,32 +214,33 @@ export default function TripPage() {
     setLocations((locations) => locations.filter((l) => l.id !== location.id));
   };
 
-  const ensureLoggedIn = async (
-    title: string,
-    message: string,
-    action: (user: User | null) => Promise<void>,
-  ) => {
-    //  TODO bug same state issue as below - this is not using our user state.
-    const user = repository.getUser();
-    if (user) {
-      return null;
-    }
-    setAlertInfo({
-      title,
-      type: AlertType.Warning,
-      displayMode: AlertDisplayMode.Modal,
-      message,
-      actions: [
-        {
-          title: "Sign In",
-          onClick: async () => {
-            const user = await repository.signInWithGoogle();
-            await action(user);
-          },
-        },
-      ],
-    });
-  };
+  // TODO: maybe extract into user state provider.
+  // const ensureLoggedIn = async (
+  //   title: string,
+  //   message: string,
+  //   action: (user: User | null) => Promise<void>,
+  // ) => {
+  //   //  TODO bug same state issue as below - this is not using our user state.
+  //   const user = repository.getUser();
+  //   if (user) {
+  //     return null;
+  //   }
+  //   setAlertInfo({
+  //     title,
+  //     type: AlertType.Warning,
+  //     displayMode: AlertDisplayMode.Modal,
+  //     message,
+  //     actions: [
+  //       {
+  //         title: "Sign In",
+  //         onClick: async () => {
+  //           const user = await repository.signInWithGoogle();
+  //           await action(user);
+  //         },
+  //       },
+  //     ],
+  //   });
+  // };
 
   const onAddFavoriteLocation = async (location: TripLocation) => {
     //  TODO: until we fix the user state bug, don't ensure login.

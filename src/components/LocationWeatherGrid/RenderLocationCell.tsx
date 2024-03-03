@@ -18,21 +18,20 @@ export interface LocationCellProps {
 
 export function LocationCell({
   location,
-  onRenameLocationLabel,
   isFavorite,
   onCheckFavorite,
 }: LocationCellProps) {
-  const [renaming, setRenaming] = useState(false);
-  const [label, setLabel] = useState(location.label);
+  const [renaming /*, setRenaming*/] = useState(false);
+  const [label /*, setLabel */] = useState(location.label);
   const [favoriting, setFavoriting] = useState(false);
 
   //  TODO: work to do here.
-  const renameLocation = async (location: TripLocation, label: string) => {
-    setRenaming(true);
-    setLabel(label);
-    await onRenameLocationLabel(location, label);
-    setRenaming(false);
-  };
+  // const renameLocation = async (location: TripLocation, label: string) => {
+  //   setRenaming(true);
+  //   setLabel(label);
+  //   await onRenameLocationLabel(location, label);
+  //   setRenaming(false);
+  // };
 
   const checkFavorite = async (check: boolean) => {
     setFavoriting(true);
