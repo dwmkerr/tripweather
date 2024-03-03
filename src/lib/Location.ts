@@ -24,6 +24,7 @@ export interface TripLocation {
   originalSearch: {
     address: string;
     magicKey: string;
+    gps: string;
   };
   location: {
     address: string;

@@ -173,19 +173,35 @@ Use for reference in my own.
 - [x] feat: address/gps/favourite selector left of search bar
 - [x] feat: add address by coordinate
 - [x] feat: basic sign in menu
-- [ ] feat: require sign in popup with "to" (Sign in to Save Location) and message `await requireSignIn` - with the 'then' letting you chain operations
-- [ ] feat: set location label?
+- [x] feat: require sign in alert 
+- [x] bug: weather outside of UK doesn't ever seem to show, even though GPS coordinates seem correct
+- [x] feat: when using favorites if not logged in use set alert context to show a login alert with a login action
+- [x] feat: favorite icon in red, on the left
+- [ ] feat: enable add only when valid gps and mask gps input
+- [ ] bug: clear selection on favorite/address/gps add
 - [ ] feat: debounce search input
+- [ ] feat: set location label? (see TODO in code)
 - [ ] bug: undefined cell value when shortening end date range
-- [ ] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK
+- [x] bug: TripLocation has longitude and latitude but these seem to be set from IPoint objects so the values are wrong - or are they? Checking blue mountains it seems OK. Update: checking the coordinates manually seems they are OK
+- [ ] refactor: favourites as a sub-collection of user
+- [ ] bug: after address or GPS (or favorite) is selected and added, clear the selection
+- [ ] bug: if can't set weather show an error icon in the weather panel
+
+**Needs bug fix**
+
+- [ ] bug: state management bug in onRemoveFavoriteLocation, also user in requirelogin
+- [ ] feat: favorite - require sign in to use
 
 **Nice to have**
 
+- [x] warnings in console when searching for location
+- [ ] feat: manage favorites page
 - [ ] minor bug (settings): on date change, when make starting day current val + 1 get pop error
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
+- [ ] monitor: do we still lose the search from time to time in the address search bar?
 
-v0.2
+v0.3
 
 - [ ] feat: weather icon is link to details on Merry Sky
 - [ ] feat: pinned/favourite locations, use AirBnB trips as an example of UI
@@ -198,9 +214,10 @@ v0.2
 - [ ] feat(settings): temperature: apparent/recorded low/high/max/min
 - [ ] feat: settings drawer with farhenhiet / celcius selector
 
-v0.3
+v0.4
 
 - [ ] better date range selector, before search bar
+- [ ] feat: toggle grid/map/grid+map view
 - [ ] feat: save units as a user preference
 - [ ] feat: show weather for selected location
 - [ ] feat: save location as favourite, quick search for favourites

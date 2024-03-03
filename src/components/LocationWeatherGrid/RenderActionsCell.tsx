@@ -1,5 +1,5 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { Button, Typography } from "@mui/joy";
+import { Button, Stack, Typography } from "@mui/joy";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
@@ -23,16 +23,18 @@ export function ActionsCell({ location, onDeleteLocation }: ActionsCellProps) {
   };
 
   return (
-    <Button
-      size="md"
-      variant="outlined"
-      color="danger"
-      loading={deleting}
-      startDecorator={<DeleteOutlineIcon />}
-      onClick={() => deleteLocation(location)}
-    >
-      Delete
-    </Button>
+    <Stack direction="row" spacing={1}>
+      <Button
+        size="md"
+        variant="outlined"
+        color="danger"
+        loading={deleting}
+        startDecorator={<DeleteOutlineIcon />}
+        onClick={() => deleteLocation(location)}
+      >
+        Delete
+      </Button>
+    </Stack>
   );
 }
 

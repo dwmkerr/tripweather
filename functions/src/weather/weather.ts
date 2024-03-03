@@ -23,7 +23,7 @@ export const weather = onCall<WeatherRequest, Promise<WeatherResponse>>(
 
     try {
       const apiKey = parameters.pirateWeatherApiKey.value();
-      const longitude = req.data.latitude;
+      const longitude = req.data.longitude;
       const latitude = req.data.latitude;
       const date = new Date(req.data.date).toISOString();
       const units = req.data.units;

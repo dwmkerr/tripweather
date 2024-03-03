@@ -11,8 +11,12 @@ import match from "autosuggest-highlight/match";
 
 import TwoSidedLayout from "../components/TwoSidedLayout";
 import { Suggestion } from "../../functions/src/location/LocationTypes";
-import { AlertType, useAlertContext } from "../components/AlertContext";
-import { Repository } from "../lib/Repository";
+import {
+  AlertDisplayMode,
+  AlertType,
+  useAlertContext,
+} from "../components/AlertContext";
+import { Repository } from "../lib/repository/Repository";
 
 export default function WelcomePage() {
   const repository = Repository.getInstance();
@@ -23,6 +27,7 @@ export default function WelcomePage() {
   const selectLocation = async (suggestion: Suggestion | null) => {
     setAlertInfo({
       type: AlertType.Warning,
+      displayMode: AlertDisplayMode.Snackbar,
       title: "In Progress",
       message: `TODO: add this search result to the trip page: ${suggestion?.text}`,
     });

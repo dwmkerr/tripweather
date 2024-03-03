@@ -14,12 +14,24 @@ import { Settings } from "../../lib/Settings";
 import { LocationRow } from "./LocationRow";
 import renderWeatherCell from "./RenderWeatherCell";
 import renderActionsCell from "./RenderActionsCell";
-import { DeleteLocationFunc, RenameLocationLabelFunc } from "./Actions";
+import {
+  AddFavoriteLocationFunc,
+  CheckFavoriteLocationFunc,
+  DeleteLocationFunc,
+  RemoveFavoriteLocationFunc,
+  RenameLocationLabelFunc,
+} from "./Actions";
 import renderLocationCell from "./RenderLocationCell";
+import {
+  FavoriteLocationModel,
+  findFavoriteLocationFromTripLocation,
+} from "../../lib/repository/RepositoryModels";
 
 const buildColumns = (
   settings: Settings,
   onDeleteLocation: DeleteLocationFunc,
+  onAddFavoriteLocation: AddFavoriteLocationFunc,
+  onRemoveFavoriteLocation: RemoveFavoriteLocationFunc,
   onRenameLocationLabel: RenameLocationLabelFunc,
 ) => {
   const addressColumn: GridColDef<LocationRow> = {
@@ -29,7 +41,12 @@ const buildColumns = (
     valueGetter: (params: GridValueGetterParams<LocationRow>) =>
       params.row.location,
     renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
-      renderLocationCell(params, onRenameLocationLabel),
+      renderLocationCell(
+        params,
+        onRenameLocationLabel,
+        params.row.isFavorite,
+        checkFavorite,
+      ),
   };
 
   const dates = getMidnightDates(settings.startDate, settings.endDate);
@@ -61,6 +78,17 @@ const buildColumns = (
     };
   });
 
+  const checkFavorite: CheckFavoriteLocationFunc = async (
+    checked: boolean,
+    location: TripLocation,
+  ) => {
+    if (checked) {
+      await onAddFavoriteLocation(location);
+    } else {
+      await onRemoveFavoriteLocation(location);
+    }
+  };
+
   const actionColumn: GridColDef<LocationRow> = {
     field: "id",
     headerName: "Actions",
@@ -77,32 +105,49 @@ const buildColumns = (
 
 export interface LocationGridProps {
   locations: TripLocation[];
+  favoriteLocations: FavoriteLocationModel[];
   onDeleteLocation: DeleteLocationFunc;
+  onAddFavoriteLocation: AddFavoriteLocationFunc;
+  onRemoveFavoriteLocation: RemoveFavoriteLocationFunc;
   onRenameLocationLabel: RenameLocationLabelFunc;
 }
 
 export default function LocationGrid({
   locations,
+  favoriteLocations,
   onDeleteLocation,
+  onAddFavoriteLocation,
+  onRemoveFavoriteLocation,
   onRenameLocationLabel,
 }: LocationGridProps) {
   const { settings } = useSettingsContext();
   const [locationRows, setLocationRows] = useState<LocationRow[]>([]);
   const [columnDefinitions, setColumnDefinitions] = useState<
     GridColDef<LocationRow>[]
-  >(buildColumns(settings, onDeleteLocation, onRenameLocationLabel));
+  >(
+    buildColumns(
+      settings,
+      onDeleteLocation,
+      onAddFavoriteLocation,
+      onRemoveFavoriteLocation,
+      onRenameLocationLabel,
+    ),
+  );
   useEffect(() => {
     const locationRows = locations.map((location): LocationRow => {
       return {
+        location,
         id: location.id,
         title: location.originalSearch.address,
         address: location.location.address,
         datesWeather: location.datesWeather,
-        location,
+        isFavorite:
+          findFavoriteLocationFromTripLocation(location, favoriteLocations) !==
+          undefined,
       };
     });
     setLocationRows(locationRows);
-  }, [locations]);
+  }, [locations, favoriteLocations]);
 
   //  When the settings change, build the columns.
   useEffect(() => {

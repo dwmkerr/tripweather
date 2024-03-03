@@ -22,10 +22,23 @@ export enum AlertType {
   Success,
 }
 
+export enum AlertDisplayMode {
+  Snackbar,
+  Modal,
+}
+
+export interface AlertAction {
+  onClick: () => Promise<void>;
+  title: string;
+  variant?: "plain" | "outlined" | "soft" | "solid";
+}
+
 export interface AlertInfo {
   type: AlertType;
+  displayMode: AlertDisplayMode;
   title: string;
   message: string;
+  actions?: AlertAction[];
 }
 
 //  Helper functions that many consumers of the provider might use for styling.
@@ -78,6 +91,7 @@ export const AlertContextProvider: React.FC<PropsWithChildren> = ({
     setAlertFromError: (error: TripWeatherError) =>
       setAlertInfo({
         type: AlertType.Error,
+        displayMode: AlertDisplayMode.Snackbar,
         title: error.title,
         message: error.message,
       }),

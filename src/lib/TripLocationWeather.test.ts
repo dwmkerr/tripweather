@@ -14,6 +14,7 @@ describe("TripLocationWeather", () => {
         originalSearch: {
           address: "Yosemite Valley",
           magicKey: "123",
+          gps: "",
         },
         location: {
           address: "Yosemite Valley",
@@ -71,6 +72,7 @@ describe("TripLocationWeather", () => {
         originalSearch: {
           address: "Yosemite Valley",
           magicKey: "123",
+          gps: "",
         },
         location: {
           address: "Yosemite Valley",
