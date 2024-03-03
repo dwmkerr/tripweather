@@ -10,7 +10,11 @@ import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid"
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../lib/Time";
-import { useAlertContext } from "../components/AlertContext";
+import {
+  AlertDisplayMode,
+  AlertType,
+  useAlertContext,
+} from "../components/AlertContext";
 import { TripWeatherError } from "../lib/Errors";
 import { updateLocationWeatherDates } from "../lib/TripLocationWeather";
 import Footer from "../components/Footer";
@@ -20,11 +24,12 @@ import {
   findTripLocationFromFavoriteLocation,
 } from "../lib/repository/RepositoryModels";
 import useUserEffect from "../lib/UserEffect";
+import { User } from "firebase/auth";
 
 export default function TripPage() {
   const repository = Repository.getInstance();
   const { settings } = useSettingsContext();
-  const { setAlertFromError } = useAlertContext();
+  const { setAlertInfo, setAlertFromError } = useAlertContext();
 
   const [locations, setLocations] = useState<TripLocation[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<
@@ -39,7 +44,10 @@ export default function TripPage() {
   //  On user, watch for changes to the favorite locations.
   useEffect(() => {
     //  Only watch for changes to favorites if we're logged in.
+    //  If the user is logged out ensure we have no favorite locations (i.e.
+    //  clear any we had).
     if (!user) {
+      setFavoriteLocations([]);
       return;
     }
     return repository.favoriteLocations.subscribe((favoriteLocations) => {
@@ -211,7 +219,42 @@ export default function TripPage() {
     setLocations((locations) => locations.filter((l) => l.id !== location.id));
   };
 
+  const ensureLoggedIn = async (
+    title: string,
+    message: string,
+    action: (user: User | null) => Promise<void>,
+  ) => {
+    //  TODO bug same state issue as below - this is not using our user state.
+    const user = repository.getUser();
+    if (user) {
+      return null;
+    }
+    setAlertInfo({
+      title,
+      type: AlertType.Warning,
+      displayMode: AlertDisplayMode.Modal,
+      message,
+      actions: [
+        {
+          title: "Sign In",
+          onClick: async () => {
+            const user = await repository.signInWithGoogle();
+            await action(user);
+          },
+        },
+      ],
+    });
+  };
+
   const onAddFavoriteLocation = async (location: TripLocation) => {
+    //  TODO: until we fix the user state bug, don't ensure login.
+    // await ensureLoggedIn(
+    //   "Sign in for Favorites",
+    //   "You must be signed in to save favorites",
+    //   async (user) => {
+    //     if (!user) {
+    //       return;
+    //     }
     //  Add a new favorite location to the colleciton.
     const favoriteLocation: Omit<FavoriteLocationModel, "id" | "userId"> = {
       label: location.label,
@@ -219,6 +262,8 @@ export default function TripPage() {
       location: location.location,
     };
     repository.favoriteLocations.create(favoriteLocation);
+    //   },
+    // );
   };
 
   //  TODO: bug - whether I use this function as-is, or use 'useCallback', the

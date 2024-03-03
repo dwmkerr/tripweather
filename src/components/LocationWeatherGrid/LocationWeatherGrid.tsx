@@ -97,12 +97,7 @@ const buildColumns = (
     valueGetter: (params: GridValueGetterParams<LocationRow>) =>
       params.row.location,
     renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
-      renderActionsCell(
-        params,
-        onDeleteLocation,
-        params.row.isFavorite,
-        checkFavorite,
-      ),
+      renderActionsCell(params, onDeleteLocation),
   };
 
   return [addressColumn, ...dateColumns, actionColumn];

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Repository } from "./repository/Repository";
 import { User, onAuthStateChanged } from "firebase/auth";
 
-export default function useUserEffect(repository: Repository) {
+export default function useUserEffect(
+  repository: Repository,
+): [User | null, React.Dispatch<React.SetStateAction<User | null>>] {
   const [user, setUser] = useState<User | null>(null);
 
   //  Use an effect to wait for the user.
