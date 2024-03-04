@@ -2,6 +2,11 @@ import * as React from "react";
 
 import { Input, InputProps } from "@mui/joy";
 
+export interface GPSCoordinates {
+  latitude: number;
+  longitude: number;
+}
+
 //  Export the regex for a partial coordinate, i.e. one we are keying in, and a
 //  complete coordinate, i.e. one that is valid to search against.
 //  There are a large number of test fixtures for these rexes.
@@ -24,7 +29,7 @@ export function extractCoordinates(coordinates: string) {
 }
 
 export interface CoordinatesMaskedInputProps extends InputProps {
-  onChangeCoordinates?: (latitude: number, longitude: number) => void;
+  onChangeCoordinates?: (coordinates: GPSCoordinates | null) => void;
 }
 
 //  For Reference:
@@ -36,16 +41,19 @@ export default function CoordinatesMaskedInput(
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
+    const valid = CoordinateRexPartial.test(newValue);
 
     //  If our new value passes the partial rex, set it. Otherwise, leave the
     //  value unchanged.
-    setValue(CoordinateRexPartial.test(newValue) ? newValue : value);
+    setValue((oldValue) => (valid ? newValue : oldValue));
 
     //  If the value is also a valid complete coordinate, we can call the
     //  coordinate changed handler.
-    if (props.onChangeCoordinates && CoordinateRexComplete.test(newValue)) {
+    if (CoordinateRexComplete.test(newValue)) {
       const { latitude, longitude } = extractCoordinates(newValue);
-      props.onChangeCoordinates(latitude, longitude);
+      props.onChangeCoordinates?.({ latitude, longitude });
+    } else {
+      props.onChangeCoordinates?.(null);
     }
   };
 

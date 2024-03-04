@@ -7,6 +7,8 @@ import {
 //  Some coordinate strings as fixtures.
 const validPartialCoordinates = [
   "-",
+  "-1",
+  "-1.",
   "-37",
   "37",
   "-37.745",
@@ -37,6 +39,7 @@ const validCompleteCoordinates = [
   "-37.74505210183359, -119.593",
   "37.74505210183359, -119.59357116788196",
   "37, -119.59357116788196",
+  "1.2,2",
 ];
 const invalidCompleteCoordinates = [
   "3L",

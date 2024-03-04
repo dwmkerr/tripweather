@@ -67,16 +67,20 @@ export default function GPSSearchInput({
     }
   };
 
+  const useNewInput = false;
+
   return (
     <Stack direction="row" spacing={1}>
-      <CoordinatesMaskedInput
-        size="lg"
-        sx={{ flex: "auto" }}
-        placeholder="Latitude, Longitude, e.g. 54.318, -2.792"
-        disabled={searching}
-        // value={coordinates}
-        // onChange={(event) => setCoordinates(event.target.value)}
-      />
+      {useNewInput && (
+        <CoordinatesMaskedInput
+          size="lg"
+          sx={{ flex: "auto" }}
+          placeholder="Latitude, Longitude, e.g. 54.318, -2.792"
+          disabled={searching}
+          // value={coordinates}
+          // onChange={(event) => setCoordinates(event.target.value)}
+        />
+      )}
       <Input
         size="lg"
         sx={{ flex: "auto" }}
