@@ -6,7 +6,7 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import { TripLocation } from "../../lib/Location";
 import { useAlertContext } from "../AlertContext";
 import { Repository } from "../../lib/repository/Repository";
-import { Input, Stack } from "@mui/joy";
+import { Stack } from "@mui/joy";
 import { TripWeatherError } from "../../lib/Errors";
 import CoordinatesMaskedInput from "../CoordinatesMaskedInput";
 
