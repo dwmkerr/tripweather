@@ -92,71 +92,79 @@ export default function AddressSearchInput({
   };
 
   return (
-    <Stack direction="row" spacing={1}>
-      <Autocomplete
-        size="lg"
-        sx={{ flex: "auto" }}
-        placeholder="e.g. Yosemite Valley"
-        disabled={searching}
-        inputValue={inputValue}
-        onInputChange={(event, value) => {
-          setInputValue(value);
-          if (value === "") {
-            return;
-          }
-          repository.functions
-            .suggest({ location: value })
-            .then((result) => {
-              const { suggestions } = result.data;
-              setSuggestions(suggestions);
-            })
-            .catch(setAlertFromError);
-        }}
-        onChange={(event, value) => {
-          setSelectedSuggestion(value);
-        }}
-        options={suggestions}
-        getOptionLabel={(option) => option.text}
-        isOptionEqualToValue={(option, value) => {
-          return option.text === value.text;
-        }}
-        renderOption={(props, option, { inputValue }) => {
-          const matches = match(option.text, inputValue);
-          const parts = parse(option.text, matches);
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        selectLocation(selectedSuggestion);
+      }}
+    >
+      <Stack direction="row" spacing={1}>
+        <Autocomplete
+          size="lg"
+          sx={{ flex: "auto" }}
+          placeholder="e.g. Yosemite Valley"
+          disabled={searching}
+          inputValue={inputValue}
+          onInputChange={(event, value) => {
+            setInputValue(value);
+            if (value === "") {
+              return;
+            }
+            repository.functions
+              .suggest({ location: value })
+              .then((result) => {
+                const { suggestions } = result.data;
+                setSuggestions(suggestions);
+              })
+              .catch(setAlertFromError);
+          }}
+          onChange={(event, value) => {
+            setSelectedSuggestion(value);
+          }}
+          options={suggestions}
+          getOptionLabel={(option) => option.text}
+          isOptionEqualToValue={(option, value) => {
+            return option.text === value.text;
+          }}
+          renderOption={(props, option, { inputValue }) => {
+            const matches = match(option.text, inputValue);
+            const parts = parse(option.text, matches);
 
-          return (
-            <AutocompleteOption {...props}>
-              <Typography level="inherit">
-                {option.text === inputValue
-                  ? option.text
-                  : parts.map((part, index) => (
-                      <Typography
-                        key={index}
-                        {...(part.highlight && {
-                          variant: "soft",
-                          color: "primary",
-                          fontWeight: "lg",
-                          px: "2px",
-                        })}
-                      >
-                        {part.text}
-                      </Typography>
-                    ))}
-              </Typography>
-            </AutocompleteOption>
-          );
-        }}
-      />
-      <IconButton
-        size="lg"
-        variant="solid"
-        color="primary"
-        disabled={!enableAdd}
-        onClick={() => selectLocation(selectedSuggestion)}
-        loading={searching}
-      >
-        <ArrowForward />
-      </IconButton>
-    </Stack>
+            return (
+              <AutocompleteOption {...props}>
+                <Typography level="inherit">
+                  {option.text === inputValue
+                    ? option.text
+                    : parts.map((part, index) => (
+                        <Typography
+                          key={index}
+                          {...(part.highlight && {
+                            variant: "soft",
+                            color: "primary",
+                            fontWeight: "lg",
+                            px: "2px",
+                          })}
+                        >
+                          {part.text}
+                        </Typography>
+                      ))}
+                </Typography>
+              </AutocompleteOption>
+            );
+          }}
+        />
+        <IconButton
+          size="lg"
+          variant="solid"
+          color="primary"
+          type="submit"
+          disabled={!enableAdd}
+          onClick={() => selectLocation(selectedSuggestion)}
+          loading={searching}
+        >
+          <ArrowForward />
+        </IconButton>
+      </Stack>
+    </form>
   );
 }

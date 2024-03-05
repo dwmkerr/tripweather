@@ -69,7 +69,6 @@ export default function SearchBar({
 
   return (
     <Box
-      component="form"
       sx={{
         display: "flex",
         gap: 1,

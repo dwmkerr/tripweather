@@ -7,13 +7,21 @@ export interface GPSCoordinates {
   longitude: number;
 }
 
+export interface CoordinatesMaskedInputProps extends InputProps {
+  coordinates: string;
+  onChangeCoordinates?: (coordinates: string) => void;
+  onCoordinatesValidityChanges?: (valid: boolean) => void;
+}
+
 //  Export the regex for a partial coordinate, i.e. one we are keying in, and a
 //  complete coordinate, i.e. one that is valid to search against.
 //  There are a large number of test fixtures for these rexes.
 //  Use regex101 to debug these and the tests - they are complex.
+export const CoordinateRexPartialStr =
+  "^(-?d*.?d*s*),?(s*(?<!-)-?d*(?<!.).?d*)$";
 export const CoordinateRexPartial =
-  /^(-?\d*\.?\d*\s*),?(\s*(?<!-)-?\d*(?<!\.)\.?\d*)$/gm;
-export const CoordinateRexComplete = /^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/gm;
+  /^(-?\d*\.?\d*\s*),?(\s*(?<!-)-?\d*(?<!\.)\.?\d*)$/;
+export const CoordinateRexComplete = /^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/;
 
 export function extractCoordinates(coordinates: string) {
   //  Apply the regex for the complete coordinates, grab the capture groups.
@@ -28,34 +36,54 @@ export function extractCoordinates(coordinates: string) {
   };
 }
 
-export interface CoordinatesMaskedInputProps extends InputProps {
-  onChangeCoordinates?: (coordinates: GPSCoordinates | null) => void;
-}
-
 //  For Reference:
 //  https://mui.com/joy-ui/react-input/#third-party-formatting
 export default function CoordinatesMaskedInput(
   props: CoordinatesMaskedInputProps,
 ) {
-  const [value, setValue] = React.useState("");
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const [value, setValue] = React.useState(props.coordinates);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //  Check the validity of our input based on the pattern then manually set
+    //  the custom validity.
     const newValue = event.target.value;
-    const valid = CoordinateRexPartial.test(newValue);
-
-    //  If our new value passes the partial rex, set it. Otherwise, leave the
-    //  value unchanged.
-    setValue((oldValue) => (valid ? newValue : oldValue));
-
-    //  If the value is also a valid complete coordinate, we can call the
-    //  coordinate changed handler.
-    if (CoordinateRexComplete.test(newValue)) {
-      const { latitude, longitude } = extractCoordinates(newValue);
-      props.onChangeCoordinates?.({ latitude, longitude });
-    } else {
-      props.onChangeCoordinates?.(null);
+    const input = inputRef.current;
+    if (input !== null && newValue !== "") {
+      const valid = CoordinateRexPartial.test(newValue);
+      console.log(
+        `tripweather: input ${newValue} - ${valid ? "valid" : "not valid"}`,
+      );
+      if (valid === false) {
+        input.setCustomValidity(
+          "Enter a value in the form lat,long, e.g 1.53,-2.37",
+        );
+      } else {
+        input.setCustomValidity("");
+      }
+      input.reportValidity();
     }
+
+    //  We can also now report back whether the coordinates are fully valid and
+    //  ready to add.
+    const fullyValid = CoordinateRexComplete.test(newValue);
+    props.onCoordinatesValidityChanges?.(fullyValid);
+
+    //  Finally, set the new value.
+    setValue(newValue);
+    props.onChangeCoordinates?.(newValue);
   };
 
-  return <Input {...props} value={value} onChange={(e) => onChange(e)} />;
+  return (
+    <Input
+      {...props}
+      value={value}
+      onChange={(e) => onChange(e)}
+      slotProps={{
+        input: {
+          ref: inputRef,
+        },
+      }}
+    />
+  );
 }

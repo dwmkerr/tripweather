@@ -21,6 +21,7 @@ export default function GPSSearchInput({
 
   const { setAlertFromError } = useAlertContext();
   const [coordinates, setCoordinates] = useState<string>("");
+  const [addEnabled, setAddEnabled] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
 
   const buildLabel = (coordinates: string) => {
@@ -67,37 +68,39 @@ export default function GPSSearchInput({
     }
   };
 
-  const useNewInput = false;
+  const useNewInput = true;
 
   return (
-    <Stack direction="row" spacing={1}>
-      {useNewInput && (
-        <CoordinatesMaskedInput
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        selectCoordinates(coordinates);
+      }}
+    >
+      <Stack direction="row" spacing={1}>
+        {useNewInput && (
+          <CoordinatesMaskedInput
+            size="lg"
+            sx={{ flex: "auto" }}
+            placeholder="Latitude, Longitude, e.g. 54.318, -2.792"
+            disabled={searching}
+            onCoordinatesValidityChanges={(valid) => setAddEnabled(valid)}
+            coordinates={coordinates}
+            onChangeCoordinates={(coordinates) => setCoordinates(coordinates)}
+          />
+        )}
+        <IconButton
           size="lg"
-          sx={{ flex: "auto" }}
-          placeholder="Latitude, Longitude, e.g. 54.318, -2.792"
-          disabled={searching}
-          // value={coordinates}
-          // onChange={(event) => setCoordinates(event.target.value)}
-        />
-      )}
-      <Input
-        size="lg"
-        sx={{ flex: "auto" }}
-        placeholder="Latitude, Longitude, e.g. 54.318, -2.792"
-        disabled={searching}
-        value={coordinates}
-        onChange={(event) => setCoordinates(event.target.value)}
-      />
-      <IconButton
-        size="lg"
-        variant="solid"
-        color="primary"
-        onClick={() => selectCoordinates(coordinates)}
-        loading={searching}
-      >
-        <ArrowForward />
-      </IconButton>
-    </Stack>
+          variant="solid"
+          color="primary"
+          type="submit"
+          disabled={!addEnabled}
+          onClick={() => selectCoordinates(coordinates)}
+          loading={searching}
+        >
+          <ArrowForward />
+        </IconButton>
+      </Stack>
+    </form>
   );
 }
