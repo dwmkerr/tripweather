@@ -53,21 +53,29 @@ export default function FavoriteLocationInput({
   };
 
   return (
-    <Stack direction="row" spacing={1}>
-      <Autocomplete
-        options={favoriteLocations}
-        value={selectedFavorite}
-        onChange={(e, favorite) => setSelectedFavorite(favorite)}
-      />
-      <IconButton
-        size="lg"
-        variant="solid"
-        color="primary"
-        disabled={!enableAdd}
-        onClick={() => selectLocation(selectedFavorite)}
-      >
-        <ArrowForward />
-      </IconButton>
-    </Stack>
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        selectLocation(selectedFavorite);
+      }}
+    >
+      <Stack direction="row" spacing={1}>
+        <Autocomplete
+          options={favoriteLocations}
+          value={selectedFavorite}
+          onChange={(e, favorite) => setSelectedFavorite(favorite)}
+        />
+        <IconButton
+          size="lg"
+          variant="solid"
+          color="primary"
+          type="submit"
+          disabled={!enableAdd}
+          onClick={() => selectLocation(selectedFavorite)}
+        >
+          <ArrowForward />
+        </IconButton>
+      </Stack>
+    </form>
   );
 }
