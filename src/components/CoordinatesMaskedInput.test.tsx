@@ -1,7 +1,6 @@
 import {
   CoordinateRexComplete,
   CoordinateRexPartial,
-  extractCoordinates,
 } from "./CoordinatesMaskedInput";
 
 //  Some coordinate strings as fixtures.
@@ -80,41 +79,6 @@ describe("CoordinatesMaskedInput", () => {
     test("correctly fails invalid complete coordinates", () => {
       invalidCompleteCoordinates.forEach((valid) => {
         expect(valid).not.toMatch(CoordinateRexComplete);
-      });
-    });
-  });
-
-  describe("extractCoordinates", () => {
-    test("correctly fails to extract latitude and longitude from invalid coordinates", () => {
-      expect(() => extractCoordinates(validPartialCoordinates[0])).toThrowError(
-        "coordinate string '-' is not valid",
-      );
-      expect(() =>
-        extractCoordinates(invalidCompleteCoordinates[5]),
-      ).toThrowError(
-        "coordinate string '-37.74505210183 , LL119' is not valid",
-      );
-    });
-    test("correctly extracts latitude and longtitude from valid complete coordinates", () => {
-      expect(extractCoordinates(validCompleteCoordinates[0])).toEqual({
-        latitude: 37.74505210183,
-        longitude: -119,
-      });
-      expect(extractCoordinates(validCompleteCoordinates[1])).toEqual({
-        latitude: -37.74505210183,
-        longitude: 119,
-      });
-      expect(extractCoordinates(validCompleteCoordinates[2])).toEqual({
-        latitude: 37.74505210183,
-        longitude: 119,
-      });
-      expect(extractCoordinates(validCompleteCoordinates[3])).toEqual({
-        latitude: -37.74505210183359,
-        longitude: -119.593,
-      });
-      expect(extractCoordinates(validCompleteCoordinates[4])).toEqual({
-        latitude: 37.74505210183359,
-        longitude: -119.59357116788196,
       });
     });
   });

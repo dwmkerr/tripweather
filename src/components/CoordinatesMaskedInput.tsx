@@ -23,19 +23,6 @@ export const CoordinateRexPartial =
   /^(-?\d*\.?\d*\s*),?(\s*(?<!-)-?\d*(?<!\.)\.?\d*)$/;
 export const CoordinateRexComplete = /^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/;
 
-export function extractCoordinates(coordinates: string) {
-  //  Apply the regex for the complete coordinates, grab the capture groups.
-  const matches = Array.from(coordinates.matchAll(CoordinateRexComplete));
-  if (!matches || !matches[0] || matches[0].length < 2) {
-    throw new Error(`coordinate string '${coordinates}' is not valid`);
-  }
-
-  return {
-    latitude: Number.parseFloat(matches[0][1]),
-    longitude: Number.parseFloat(matches[0][2]),
-  };
-}
-
 //  For Reference:
 //  https://mui.com/joy-ui/react-input/#third-party-formatting
 export default function CoordinatesMaskedInput(
