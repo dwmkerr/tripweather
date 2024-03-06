@@ -4,6 +4,7 @@
 
 - [x] feat: enter key for address/gps/favorite search to confirm entry
 - [x] bug: typing doesn't work on GPS, need to work on this it is disabled for now
+- [x] feat: debounce search input
 - [ ] feat: store current trip in browser cache when user not logged in - basially use document.add, work with the document, offer 'save to my trips' and guard save with the user log in, then we're good, use 'isDraft' in the model and when isDraft do not save or persist changes, offer option to save and guard w/ login. find the right moments to use an alert to suggest login
 - [ ] feat: when user logged in, enable 'save trip' option "Save to My Trips"
 - [ ] feat: enable add only when valid gps and mask gps input
@@ -13,7 +14,6 @@
 - [ ] refactor: favourites as a sub-collection of user
 - [ ] bug: after address or GPS (or favorite) is selected and added, clear the selection
 - [ ] bug: if can't set weather show an error icon in the weather panel
-- [ ] feat: debounce search input
 
 **Needs bug fix**
 
