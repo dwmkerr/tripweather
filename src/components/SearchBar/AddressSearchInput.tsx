@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -11,15 +11,17 @@ import { TripLocation } from "../../lib/Location";
 import { Suggestion } from "../../../functions/src/location/LocationTypes";
 import { AlertDisplayMode, AlertType, useAlertContext } from "../AlertContext";
 import { Repository } from "../../lib/repository/Repository";
-import { Stack } from "@mui/joy";
+import { CircularProgress, Stack } from "@mui/joy";
 import { TripWeatherError } from "../../lib/Errors";
 
 export interface AddressSearchInputProps {
   onSelectLocation: (location: TripLocation) => void;
+  debounceTimeout: number;
 }
 
 export default function AddressSearchInput({
   onSelectLocation,
+  debounceTimeout,
 }: AddressSearchInputProps) {
   const repository = Repository.getInstance();
 
@@ -30,6 +32,8 @@ export default function AddressSearchInput({
   const [inputValue, setInputValue] = useState<string>("");
   const [searching, setSearching] = useState<boolean>(false);
   const [enableAdd, setEnableAdd] = useState<boolean>(false);
+  const [findingAddresses, setFindingAddresses] = useState<boolean>(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   //  When we have a suggestion selected, enable the 'add' button.
   useEffect(() => {
@@ -88,8 +92,40 @@ export default function AddressSearchInput({
     };
     setSearching(false);
     onSelectLocation(location);
+    //  TODO this does not clear the input...
     setInputValue("");
   };
+
+  //  When the input value changes, call the search API, but debounce.
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      if (inputValue !== "") {
+        setFindingAddresses(true);
+        repository.functions
+          .suggest({ location: inputValue })
+          .then((result) => {
+            const { suggestions } = result.data;
+            setSuggestions(suggestions);
+          })
+          .catch(setAlertFromError)
+          .finally(() => setFindingAddresses(false));
+      }
+    }, debounceTimeout);
+
+    if (inputValue !== "") {
+      setFindingAddresses(true);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [inputValue]);
 
   return (
     <form
@@ -105,22 +141,13 @@ export default function AddressSearchInput({
           placeholder="e.g. Yosemite Valley"
           disabled={searching}
           inputValue={inputValue}
-          onInputChange={(event, value) => {
-            setInputValue(value);
-            if (value === "") {
-              return;
-            }
-            repository.functions
-              .suggest({ location: value })
-              .then((result) => {
-                const { suggestions } = result.data;
-                setSuggestions(suggestions);
-              })
-              .catch(setAlertFromError);
-          }}
+          onInputChange={(e, value) => setInputValue(value)}
           onChange={(event, value) => {
             setSelectedSuggestion(value);
           }}
+          endDecorator={
+            findingAddresses ? <CircularProgress size="sm" /> : <></>
+          }
           options={suggestions}
           getOptionLabel={(option) => option.text}
           isOptionEqualToValue={(option, value) => {

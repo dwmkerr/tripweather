@@ -82,7 +82,10 @@ export default function SearchBar({
         onChange={safeSetSearchMode}
       />
       {searchMode === SearchMode.Address && (
-        <AddressSearchInput onSelectLocation={onSelectLocation} />
+        <AddressSearchInput
+          onSelectLocation={onSelectLocation}
+          debounceTimeout={500}
+        />
       )}
       {searchMode === SearchMode.GPS && (
         <GPSSearchInput onSelectLocation={onSelectLocation} />

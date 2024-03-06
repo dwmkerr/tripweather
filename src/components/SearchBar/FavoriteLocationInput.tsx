@@ -4,9 +4,7 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
 
 import { TripLocation } from "../../lib/Location";
-import { useAlertContext } from "../AlertContext";
 import { Stack } from "@mui/joy";
-import { TripWeatherError } from "../../lib/Errors";
 import { FavoriteLocationModel } from "../../lib/repository/RepositoryModels";
 
 export interface FavoriteLocationProps {
@@ -18,8 +16,6 @@ export default function FavoriteLocationInput({
   favoriteLocations,
   onSelectLocation,
 }: FavoriteLocationProps) {
-  const { setAlertFromError } = useAlertContext();
-
   const [selectedFavorite, setSelectedFavorite] =
     useState<FavoriteLocationModel | null>(null);
   const [enableAdd, setEnableAdd] = useState<boolean>(false);
@@ -33,9 +29,6 @@ export default function FavoriteLocationInput({
     favoriteLocation: FavoriteLocationModel | null,
   ) => {
     if (!favoriteLocation) {
-      setAlertFromError(
-        new TripWeatherError("Favorite Search Error", "No address selected"),
-      );
       return;
     }
 
