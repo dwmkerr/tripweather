@@ -2,18 +2,18 @@
 
 ## 0.3.x
 
-- [ ] feat: enter key for address/gps/favorite search to confirm entry
+- [x] feat: enter key for address/gps/favorite search to confirm entry
+- [x] bug: typing doesn't work on GPS, need to work on this it is disabled for now
 - [ ] feat: store current trip in browser cache when user not logged in - basially use document.add, work with the document, offer 'save to my trips' and guard save with the user log in, then we're good, use 'isDraft' in the model and when isDraft do not save or persist changes, offer option to save and guard w/ login. find the right moments to use an alert to suggest login
 - [ ] feat: when user logged in, enable 'save trip' option "Save to My Trips"
 - [ ] feat: enable add only when valid gps and mask gps input
-- [ ] bug: typing doesn't work on GPS, need to work on this it is disabled for now
-- [ ] bug: clear selection on favorite/address/gps add
-- [ ] feat: debounce search input
+- [ ] bug: clear selection on address add
 - [ ] feat: set location label? (see TODO in code)
 - [ ] bug: undefined cell value when shortening end date range
 - [ ] refactor: favourites as a sub-collection of user
 - [ ] bug: after address or GPS (or favorite) is selected and added, clear the selection
 - [ ] bug: if can't set weather show an error icon in the weather panel
+- [ ] feat: debounce search input
 
 **Needs bug fix**
 
@@ -32,6 +32,7 @@
 
 vNext
 
+- [ ] feat: better date range selector, more compact
 - [ ] feat: weather icon is link to details on Merry Sky
 - [ ] feat: pinned/favourite locations, use AirBnB trips as an example of UI
 - [ ] feat: activity select in navbar
@@ -57,6 +58,7 @@ vNext
 ### Future
 
 - Location map
+- Omnisearch that handles address, gps or favorite
 
 **X-Data-Grid Pro**
 
