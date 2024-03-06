@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/dwmkerr/tripweather/compare/v0.2.0...v0.3.0) (2024-03-06)
+
+
+### Features
+
+* debounce address search ([#18](https://github.com/dwmkerr/tripweather/issues/18)) ([efa8102](https://github.com/dwmkerr/tripweather/commit/efa810270ec15d6e22726d0d3c1044c2efebef8b))
+* validate input, enter for search location ([#16](https://github.com/dwmkerr/tripweather/issues/16)) ([a0582d2](https://github.com/dwmkerr/tripweather/commit/a0582d2e0a7d9c4f5c01aa6b8ec2787a8423507a))
+
 ## [0.2.0](https://github.com/dwmkerr/tripweather/compare/v0.1.3...v0.2.0) (2024-03-03)
 
 
