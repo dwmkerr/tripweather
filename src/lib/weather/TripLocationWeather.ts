@@ -1,5 +1,5 @@
 import moment from "moment";
-import { TripLocation, WeatherStatus } from "./Location";
+import { TripLocation, WeatherStatus } from "../Location";
 
 export function updateLocationWeatherDates(
   location: TripLocation,

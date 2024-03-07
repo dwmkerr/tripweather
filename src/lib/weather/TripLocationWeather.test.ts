@@ -1,6 +1,6 @@
 import moment from "moment";
 import { updateLocationWeatherDates } from "./TripLocationWeather";
-import { TripLocation, WeatherStatus } from "./Location";
+import { TripLocation, WeatherStatus } from "../Location";
 
 describe("TripLocationWeather", () => {
   describe("updateLocationWeatherDates", () => {

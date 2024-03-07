@@ -32,6 +32,7 @@ import {
 } from "../../../functions/src/weather/weather";
 import { TripWeatherError } from "../Errors";
 import { FavoriteLocationsCollection } from "./FavoritesCollection";
+import { TripsCollection } from "./TripsCollection";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -59,18 +60,9 @@ export class Repository {
   public app: FirebaseApp;
   public auth: Auth;
   public db: Firestore;
-  // private lifeEventsCollection: CollectionReference<
-  //   LifeEvent,
-  //   SerializableLifeEvent
-  // >;
-  // private userSettingsCollection: CollectionReference<
-  //   UserSettings,
-  //   SerializableUserSettings
-  // >;
-  // private feedbackCollection: CollectionReference<Feedback, Feedback>;
-  //
   public functions: Functions;
   public favoriteLocations: FavoriteLocationsCollection;
+  public trips: TripsCollection;
 
   private constructor(emulator: boolean) {
     this.app = initializeApp(firebaseConfig);
@@ -106,6 +98,7 @@ export class Repository {
       this.db,
       this.auth,
     );
+    this.trips = new TripsCollection(this.db, this.auth);
   }
 
   public static getInstance(): Repository {
