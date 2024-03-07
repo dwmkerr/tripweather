@@ -12,6 +12,7 @@ import {
   query,
   updateDoc,
   Firestore,
+  Timestamp,
 } from "firebase/firestore";
 
 import { Auth, Unsubscribe } from "firebase/auth";
@@ -121,16 +122,17 @@ export class TripsCollection {
     endDate: Date,
   ): Promise<TripModel> {
     const newDocumentReference = doc(this.tripsCollection);
+    const now = Timestamp.fromDate(new Date());
     const trip: TripModel = {
       id: newDocumentReference.id,
       ownerId: this.auth.currentUser?.uid || "",
       name,
-      startDate,
-      endDate,
+      startDate: Timestamp.fromDate(startDate),
+      endDate: Timestamp.fromDate(endDate),
       isDraft: true,
       isCurrent: true,
-      dateCreated: new Date(),
-      dateUpdated: new Date(),
+      dateCreated: now,
+      dateUpdated: now,
       locations: [],
     };
 

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 
 import { TripLocation } from "../../lib/Location";
-import { useSettingsContext } from "../../contexts/SettingsContextProvider";
 import SearchModeToggleGroup, { SearchMode } from "./SearchModeToggleGroup";
 import AddressSearchInput from "./AddressSearchInput";
 import DateRangeInput from "./DateRangeInput";
@@ -16,14 +15,21 @@ import { AlertDisplayMode, AlertType, useAlertContext } from "../AlertContext";
 export interface SearchBarProps {
   onSelectLocation: (location: TripLocation) => void;
   favoriteLocations: FavoriteLocationModel[];
+  startDate: Date;
+  onStartDateChange: (startDate: Date) => void;
+  endDate: Date;
+  onEndDateChange: (endDate: Date) => void;
 }
 
 export default function SearchBar({
   onSelectLocation,
   favoriteLocations,
+  startDate,
+  onStartDateChange,
+  endDate,
+  onEndDateChange,
 }: SearchBarProps) {
   const repository = Repository.getInstance();
-  const { settings, setSettings } = useSettingsContext();
   const { setAlertInfo } = useAlertContext();
 
   const [searchMode, setSearchMode] = useState<SearchMode>(SearchMode.Address);
@@ -97,20 +103,10 @@ export default function SearchBar({
         />
       )}
       <DateRangeInput
-        startDate={settings.startDate}
-        onStartDateChange={(startDate) => {
-          setSettings({
-            ...settings,
-            startDate,
-          });
-        }}
-        endDate={settings.endDate}
-        onEndDateChange={(endDate) => {
-          setSettings({
-            ...settings,
-            endDate,
-          });
-        }}
+        startDate={startDate}
+        onStartDateChange={onStartDateChange}
+        endDate={endDate}
+        onEndDateChange={onEndDateChange}
       />
     </Box>
   );

@@ -9,12 +9,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import WelcomePage from "./pages/WelcomePage";
-import TripPage from "./pages/TripPage";
 import { AlertContextProvider } from "./components/AlertContext";
 import PageContainer from "./components/PageContainer";
 import ErrorPage from "./pages/ErrorPage";
 import { SettingsContextProvider } from "./contexts/SettingsContextProvider";
 import { UserContextProvider } from "./contexts/UserContextProvider";
+import TripPageContainer from "./pages/TripPageContainer";
 
 const materialTheme = materialExtendTheme();
 
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       },
       {
         path: "trip",
-        element: <TripPage />,
+        element: <TripPageContainer />,
       },
     ],
   },

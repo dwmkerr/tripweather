@@ -7,7 +7,6 @@ import { TripLocation, WeatherStatus } from "../lib/Location";
 import { Repository } from "../lib/repository/Repository";
 import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../lib/Time";
 import { useAlertContext } from "../components/AlertContext";
 import { TripWeatherError } from "../lib/Errors";
@@ -20,16 +19,29 @@ import {
 import useUserEffect from "../lib/UserEffect";
 import { TripModel } from "../lib/repository/TripModels";
 import { hydrateDatesWeather } from "../lib/weather/HydrateDatesWeather";
+import { WeatherUnits } from "../../functions/src/weather/PirateWeatherTypes";
 
-export default function TripPage() {
+export interface TripPageProps {
+  trip: TripModel;
+  startDate: Date;
+  onStartDateChange: (startDate: Date) => void;
+  endDate: Date;
+  onEndDateChange: (endDate: Date) => void;
+  units: WeatherUnits;
+}
+
+export default function TripPage({
+  trip,
+  units,
+  startDate,
+  onStartDateChange,
+  endDate,
+  onEndDateChange,
+}: TripPageProps) {
   const repository = Repository.getInstance();
-  const { settings } = useSettingsContext();
   const { setAlertFromError } = useAlertContext();
 
-  const [currentTrip, setCurrentTrip] = useState<TripModel | null>(null);
-  const [startDate, setStartDate] = useState<Date>(settings.startDate);
-  const [endDate, setEndDate] = useState<Date>(settings.endDate);
-  const [locations, setLocations] = useState<TripLocation[]>([]);
+  const [locations, setLocations] = useState<TripLocation[]>(trip.locations);
   const [favoriteLocations, setFavoriteLocations] = useState<
     FavoriteLocationModel[]
   >([]);
@@ -48,31 +60,6 @@ export default function TripPage() {
     });
   };
 
-  //  On load, create the current trip draft. If we later see the user is logged
-  //  in from the user effect, we'll load the current trip instead.
-  useEffect(() => {
-    const createDraftTrip = async () => {
-      // const trip = await repository.trips.createCurrentTripDraft(
-      //   "New Trip",
-      //   startDate,
-      //   endDate,
-      // );
-      setCurrentTrip(null); //trip);
-    };
-    createDraftTrip();
-  }, []);
-
-  //  Watch for changes when we set a new current trip.
-  useEffect(() => {
-    //  Don't watch null trips.
-    if (!currentTrip?.id) {
-      return;
-    }
-    return repository.trips.subscribeToChanges(currentTrip.id, (trip) =>
-      setCurrentTrip(trip),
-    );
-  }, [currentTrip]);
-
   //  On user, watch for changes to the favorite locations.
   useEffect(() => {
     //  Only watch for changes to favorites if we're logged in.
@@ -87,8 +74,8 @@ export default function TripPage() {
     });
   }, [user]);
 
-  //  When our trip locations or favourite locations change, create the set of
-  //  unselected favorites that the search bar can add.
+  //  When our current trip locations or favourite locations change, create the
+  //  set of unselected favorites that the search bar can add.
   useEffect(() => {
     const filteredLocations = favoriteLocations.filter(
       (fl) => findTripLocationFromFavoriteLocation(fl, locations) === undefined,
@@ -97,7 +84,7 @@ export default function TripPage() {
   }, [locations, favoriteLocations]);
 
   useEffect(() => {
-    //  If the settings/days have changed, we should mark everything as loading.
+    //  If the units have changed, we should mark everything as loading.
     setLocations(
       locations.map(
         (location): TripLocation => ({
@@ -115,15 +102,15 @@ export default function TripPage() {
     hydrateDatesWeather(
       repository,
       locations,
-      settings.startDate,
-      settings.endDate,
-      settings.units,
+      startDate,
+      endDate,
+      units,
       updateLocation,
     );
-  }, [settings]);
+  }, [units]);
 
   const onSelectLocation = async (location: TripLocation) => {
-    const dates = getMidnightDates(settings.startDate, settings.endDate);
+    const dates = getMidnightDates(startDate, endDate);
     const newLocations = [...locations, location].map((l) => {
       if (l.id !== location.id) {
         return l;
@@ -142,9 +129,9 @@ export default function TripPage() {
     await hydrateDatesWeather(
       repository,
       newLocations,
-      settings.startDate,
-      settings.endDate,
-      settings.units,
+      startDate,
+      endDate,
+      units,
       updateLocation,
     );
   };
@@ -152,34 +139,6 @@ export default function TripPage() {
   const onDeleteLocation = async (location: TripLocation) => {
     setLocations((locations) => locations.filter((l) => l.id !== location.id));
   };
-
-  // TODO: maybe extract into user state provider.
-  // const ensureLoggedIn = async (
-  //   title: string,
-  //   message: string,
-  //   action: (user: User | null) => Promise<void>,
-  // ) => {
-  //   //  TODO bug same state issue as below - this is not using our user state.
-  //   const user = repository.getUser();
-  //   if (user) {
-  //     return null;
-  //   }
-  //   setAlertInfo({
-  //     title,
-  //     type: AlertType.Warning,
-  //     displayMode: AlertDisplayMode.Modal,
-  //     message,
-  //     actions: [
-  //       {
-  //         title: "Sign In",
-  //         onClick: async () => {
-  //           const user = await repository.signInWithGoogle();
-  //           await action(user);
-  //         },
-  //       },
-  //     ],
-  //   });
-  // };
 
   const onAddFavoriteLocation = async (location: TripLocation) => {
     //  TODO: until we fix the user state bug, don't ensure login.
@@ -222,17 +181,6 @@ export default function TripPage() {
     repository.favoriteLocations.delete(fl.id);
   };
 
-  const onRenameLocationLabel = async (
-    location: TripLocation,
-    label: string,
-  ) => {
-    setLocations((locations) =>
-      locations.map((l) =>
-        l.id !== location.id ? location : { ...location, label },
-      ),
-    );
-  };
-
   return (
     <Fragment>
       <Grid
@@ -255,6 +203,10 @@ export default function TripPage() {
           <SearchBar
             onSelectLocation={onSelectLocation}
             favoriteLocations={unselectedFavoriteLocations}
+            startDate={startDate}
+            onStartDateChange={onStartDateChange}
+            endDate={endDate}
+            onEndDateChange={onEndDateChange}
           />
         </Grid>
       </Grid>
@@ -265,7 +217,6 @@ export default function TripPage() {
           onDeleteLocation={onDeleteLocation}
           onAddFavoriteLocation={onAddFavoriteLocation}
           onRemoveFavoriteLocation={onRemoveFavoriteLocation}
-          onRenameLocationLabel={onRenameLocationLabel}
         />
       </Box>
       <Box sx={{ width: "100%" }}>

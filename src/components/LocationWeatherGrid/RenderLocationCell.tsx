@@ -11,7 +11,7 @@ import { CheckFavoriteLocationFunc, RenameLocationLabelFunc } from "./Actions";
 
 export interface LocationCellProps {
   location: TripLocation;
-  onRenameLocationLabel: RenameLocationLabelFunc;
+  onRenameLocationLabel?: RenameLocationLabelFunc;
   isFavorite: boolean;
   onCheckFavorite: (checked: boolean) => Promise<void>;
 }
@@ -70,9 +70,9 @@ export function LocationCell({
 
 export default function renderLocationCell(
   params: GridRenderCellParams<LocationRow, TripLocation>,
-  onRenameLocationLabel: RenameLocationLabelFunc,
   isFavorite: boolean,
   onCheckFavorite: CheckFavoriteLocationFunc,
+  onRenameLocationLabel?: RenameLocationLabelFunc,
 ): ReactNode {
   const location = params.value;
   if (location === undefined) {

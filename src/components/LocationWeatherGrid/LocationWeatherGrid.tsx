@@ -32,7 +32,7 @@ const buildColumns = (
   onDeleteLocation: DeleteLocationFunc,
   onAddFavoriteLocation: AddFavoriteLocationFunc,
   onRemoveFavoriteLocation: RemoveFavoriteLocationFunc,
-  onRenameLocationLabel: RenameLocationLabelFunc,
+  onRenameLocationLabel?: RenameLocationLabelFunc,
 ) => {
   const addressColumn: GridColDef<LocationRow> = {
     field: "title",
@@ -43,9 +43,9 @@ const buildColumns = (
     renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
       renderLocationCell(
         params,
-        onRenameLocationLabel,
         params.row.isFavorite,
         checkFavorite,
+        onRenameLocationLabel,
       ),
   };
 
@@ -109,7 +109,7 @@ export interface LocationGridProps {
   onDeleteLocation: DeleteLocationFunc;
   onAddFavoriteLocation: AddFavoriteLocationFunc;
   onRemoveFavoriteLocation: RemoveFavoriteLocationFunc;
-  onRenameLocationLabel: RenameLocationLabelFunc;
+  onRenameLocationLabel?: RenameLocationLabelFunc;
 }
 
 export default function LocationGrid({

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Box, Button, IconButton } from "@mui/joy";
+import { Box, IconButton } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 
 import TuneIcon from "@mui/icons-material/TuneRounded";
-import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 
 import NavigationList from "./NavigationMenu";
 import logo from "../images/logo.png";
@@ -81,9 +80,6 @@ export default function NavBar() {
           alignItems: "center",
         }}
       >
-        <Button startDecorator={<LightbulbOutlinedIcon />}>
-          Share Feedback
-        </Button>
         <UnitsSelect
           units={settings.units}
           onChange={(units) => {
