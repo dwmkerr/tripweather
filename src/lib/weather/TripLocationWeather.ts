@@ -1,5 +1,5 @@
 import moment from "moment";
-import { TripLocation, WeatherStatus } from "../Location";
+import { TripLocation, WeatherStatus } from "../repository/TripModels";
 
 export function updateLocationWeatherDates(
   location: TripLocation,
@@ -22,6 +22,7 @@ export function updateLocationWeatherDates(
     .map((date) => ({
       date,
       weatherStatus: WeatherStatus.Loading,
+      updated: null,
     }));
 
   //  Join and sort the arrays.

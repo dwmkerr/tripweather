@@ -137,7 +137,8 @@ export class TripsCollection {
     };
 
     //  Store in firebase and we're done.
-    await setDoc(newDocumentReference, trip);
+    //  TODO: we cannot call 'setDoc' as we're offline.
+    // await setDoc(newDocumentReference, trip);
 
     return trip;
   }

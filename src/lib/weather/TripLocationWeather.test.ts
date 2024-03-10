@@ -1,6 +1,6 @@
 import moment from "moment";
 import { updateLocationWeatherDates } from "./TripLocationWeather";
-import { TripLocation, WeatherStatus } from "../Location";
+import { TripLocation, WeatherStatus } from "../repository/TripModels";
 
 describe("TripLocationWeather", () => {
   describe("updateLocationWeatherDates", () => {
@@ -26,11 +26,13 @@ describe("TripLocationWeather", () => {
             date: getDate("2024-06-12"),
             weatherStatus: WeatherStatus.Loaded,
             weather: undefined,
+            updated: null,
           },
           {
             date: getDate("2024-06-13"),
             weatherStatus: WeatherStatus.Loaded,
             weather: undefined,
+            updated: null,
           },
         ],
       };
@@ -49,15 +51,20 @@ describe("TripLocationWeather", () => {
         {
           date: getDate("2024-06-10"),
           weatherStatus: WeatherStatus.Loading,
+          weather: undefined,
+          updated: null,
         },
         {
           date: getDate("2024-06-11"),
           weatherStatus: WeatherStatus.Loading,
+          weather: undefined,
+          updated: null,
         },
         {
           date: getDate("2024-06-12"),
           weatherStatus: WeatherStatus.Loaded, // i.e. unchanged
           weather: undefined,
+          updated: null,
         },
       ]);
     });
@@ -84,6 +91,7 @@ describe("TripLocationWeather", () => {
             date: getDate("2024-06-13"),
             weatherStatus: WeatherStatus.Loaded,
             weather: undefined,
+            updated: null,
           },
         ],
       };
@@ -101,15 +109,18 @@ describe("TripLocationWeather", () => {
         {
           date: getDate("2024-06-11"),
           weatherStatus: WeatherStatus.Loading,
+          updated: null,
         },
         {
           date: getDate("2024-06-12"),
           weatherStatus: WeatherStatus.Loading,
+          updated: null,
         },
         {
           date: getDate("2024-06-13"),
           weatherStatus: WeatherStatus.Loaded, // i.e. unchanged
           weather: undefined,
+          updated: null,
         },
       ]);
     });

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import SearchModeToggleGroup, { SearchMode } from "./SearchModeToggleGroup";
 import AddressSearchInput from "./AddressSearchInput";
 import DateRangeInput from "./DateRangeInput";

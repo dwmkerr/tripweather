@@ -6,7 +6,7 @@ import {
 } from "@mui/x-data-grid";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import { Stack, Typography } from "@mui/joy";
 import { useSettingsContext } from "../../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../../lib/Time";

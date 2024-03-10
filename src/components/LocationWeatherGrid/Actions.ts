@@ -1,4 +1,4 @@
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 
 export type DeleteLocationFunc = (location: TripLocation) => Promise<void>;
 

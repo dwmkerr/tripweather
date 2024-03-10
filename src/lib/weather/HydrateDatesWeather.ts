@@ -1,5 +1,5 @@
 import moment from "moment";
-import { TripLocation, WeatherStatus } from "../Location";
+import { TripLocation, WeatherStatus } from "../repository/TripModels";
 import { getMidnightDates } from "../Time";
 import { updateLocationWeatherDates } from "./TripLocationWeather";
 import { WeatherResponse } from "../../../functions/src/weather/weather";
@@ -117,6 +117,7 @@ export async function hydrateDatesWeather(
       const updatedLocation = {
         ...location,
         datesWeather: updatedDateWeathers,
+        updated: new Date(),
       };
       updateLocation(updatedLocation);
       return updatedLocation;

@@ -7,7 +7,7 @@ import AutocompleteOption from "@mui/joy/AutocompleteOption";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import { Suggestion } from "../../../functions/src/location/LocationTypes";
 import { AlertDisplayMode, AlertType, useAlertContext } from "../AlertContext";
 import { Repository } from "../../lib/repository/Repository";

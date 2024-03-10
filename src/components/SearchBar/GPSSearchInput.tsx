@@ -3,7 +3,7 @@ import IconButton from "@mui/joy/IconButton";
 
 import ArrowForward from "@mui/icons-material/ArrowForward";
 
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import { useAlertContext } from "../AlertContext";
 import { Repository } from "../../lib/repository/Repository";
 import { Stack } from "@mui/joy";

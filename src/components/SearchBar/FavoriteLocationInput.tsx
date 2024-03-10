@@ -3,7 +3,7 @@ import IconButton from "@mui/joy/IconButton";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import Autocomplete from "@mui/joy/Autocomplete";
 
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import { Stack } from "@mui/joy";
 import { FavoriteLocationModel } from "../../lib/repository/RepositoryModels";
 

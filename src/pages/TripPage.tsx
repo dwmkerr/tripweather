@@ -3,7 +3,7 @@ import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Grid from "@mui/joy/Grid";
 
-import { TripLocation, WeatherStatus } from "../lib/Location";
+import { TripLocation, WeatherStatus } from "../lib/repository/TripModels";
 import { Repository } from "../lib/repository/Repository";
 import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid";
 import SearchBar from "../components/SearchBar/SearchBar";
@@ -120,6 +120,7 @@ export default function TripPage({
         datesWeather: dates.map((date) => ({
           date,
           weatherStatus: WeatherStatus.Loading,
+          updated: null,
         })),
       };
     });
