@@ -20,23 +20,22 @@ import useUserEffect from "../lib/UserEffect";
 import { TripModel } from "../lib/repository/TripModels";
 import { hydrateDatesWeather } from "../lib/weather/HydrateDatesWeather";
 import { WeatherUnits } from "../../functions/src/weather/PirateWeatherTypes";
+import { Timestamp } from "firebase/firestore";
 
 export interface TripPageProps {
   trip: TripModel;
+  onTripChanged: (trip: Partial<TripModel>) => Promise<TripModel>;
   startDate: Date;
-  onStartDateChange: (startDate: Date) => void;
   endDate: Date;
-  onEndDateChange: (endDate: Date) => void;
   units: WeatherUnits;
 }
 
 export default function TripPage({
   trip,
+  onTripChanged,
   units,
   startDate,
-  onStartDateChange,
   endDate,
-  onEndDateChange,
 }: TripPageProps) {
   const repository = Repository.getInstance();
   const { setAlertFromError } = useAlertContext();
@@ -51,15 +50,6 @@ export default function TripPage({
   //  On load, wait for the user and watch for changes.
   const [user] = useUserEffect(repository);
 
-  //  Helper function to update a single location.
-  const updateLocation = (location: TripLocation) => {
-    setLocations((previousLocations) => {
-      return previousLocations.map((pl) =>
-        pl.id === location.id ? location : pl,
-      );
-    });
-  };
-
   //  On user, watch for changes to the favorite locations.
   useEffect(() => {
     //  Only watch for changes to favorites if we're logged in.
@@ -73,6 +63,11 @@ export default function TripPage({
       setFavoriteLocations(favoriteLocations);
     });
   }, [user]);
+
+  //  When locations change, update the trip.
+  useEffect(() => {
+    onTripChanged({ locations });
+  }, [locations]);
 
   //  When our current trip locations or favourite locations change, create the
   //  set of unselected favorites that the search bar can add.
@@ -97,15 +92,11 @@ export default function TripPage({
       ),
     );
 
-    //  Hydrate the weather values. This is async but the 'updateLocationState'
-    //  function we pass in will update our state.
-    hydrateDatesWeather(
-      repository,
-      locations,
-      startDate,
-      endDate,
-      units,
-      updateLocation,
+    //  Hydrate the weather values.
+    hydrateDatesWeather(repository, locations, startDate, endDate, units).then(
+      (hydratedLocations) => {
+        setLocations(hydratedLocations.locations);
+      },
     );
   }, [units]);
 
@@ -118,23 +109,23 @@ export default function TripPage({
       return {
         ...l,
         datesWeather: dates.map((date) => ({
-          date,
+          date: Timestamp.fromDate(date),
           weatherStatus: WeatherStatus.Loading,
           updated: null,
         })),
       };
     });
+    setLocations(newLocations);
 
     //  Update location with the (initially empty) weather.
-    setLocations(newLocations);
-    await hydrateDatesWeather(
+    const hydratedLocations = await hydrateDatesWeather(
       repository,
       newLocations,
       startDate,
       endDate,
       units,
-      updateLocation,
     );
+    setLocations(hydratedLocations.locations);
   };
 
   const onDeleteLocation = async (location: TripLocation) => {
@@ -205,9 +196,16 @@ export default function TripPage({
             onSelectLocation={onSelectLocation}
             favoriteLocations={unselectedFavoriteLocations}
             startDate={startDate}
-            onStartDateChange={onStartDateChange}
+            onStartDateChange={(startDate: Date) => {
+              onTripChanged({
+                ...trip,
+                startDate: Timestamp.fromDate(startDate),
+              });
+            }}
             endDate={endDate}
-            onEndDateChange={onEndDateChange}
+            onEndDateChange={(endDate: Date) => {
+              onTripChanged({ ...trip, endDate: Timestamp.fromDate(endDate) });
+            }}
           />
         </Grid>
       </Grid>

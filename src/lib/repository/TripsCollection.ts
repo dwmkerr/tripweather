@@ -13,11 +13,14 @@ import {
   updateDoc,
   Firestore,
   Timestamp,
+  getDoc,
 } from "firebase/firestore";
 
-import { Auth, Unsubscribe } from "firebase/auth";
+import { Auth, Unsubscribe, User } from "firebase/auth";
 import { TripWeatherError } from "../Errors";
 import { TripModel } from "./TripModels";
+
+const DraftTripIdKey = "draftTripId";
 
 const tripConverter = {
   toFirestore(trip: WithFieldValue<TripModel>): TripModel {
@@ -31,6 +34,8 @@ const tripConverter = {
     options: SnapshotOptions,
   ): TripModel {
     const data = snapshot.data(options) as TripModel;
+    //  Our timestamps are just data objects at the moment, so recreate the
+    //  actual timestamp objects.
     return {
       ...data,
     };
@@ -42,6 +47,7 @@ export class TripsCollection {
   private auth: Auth;
 
   private tripsCollection: CollectionReference<TripModel, TripModel>;
+  private draftTripsCollection: CollectionReference<TripModel, TripModel>;
   private currentTrip: TripModel | null;
 
   constructor(db: Firestore, auth: Auth) {
@@ -50,7 +56,72 @@ export class TripsCollection {
     this.tripsCollection = collection(this.db, "trips").withConverter(
       tripConverter,
     );
+    this.draftTripsCollection = collection(this.db, "drafttrips").withConverter(
+      tripConverter,
+    );
     this.currentTrip = null;
+  }
+
+  async createOrLoadCurrentTrip(
+    user: User | null,
+    localStorage: Storage,
+  ): Promise<TripModel> {
+    //  On startup we will:
+    //  If the user is logged in:
+    //  [ ] try and load their current trip
+    //  [ ] create a new draft trip otherwise
+    //  If the user is not logged in
+    //  [ ] check local storage for a draft trip and load it
+    //  [ ] create a new draft trip otherwise store it in the draft trips collection and store the id in local storage
+    //    const today = new Date();
+    if (!user) {
+      const draftTripId = localStorage.getItem(DraftTripIdKey);
+      if (draftTripId === null) {
+        console.log(
+          `tripweather: startup: found no draft trip id - creating new draft`,
+        );
+        const newDraftTrip = this.newDraftTrip("New Draft Trip");
+        await setDoc(
+          doc(this.draftTripsCollection, newDraftTrip.id),
+          newDraftTrip,
+        );
+        localStorage.setItem(DraftTripIdKey, newDraftTrip.id);
+        this.currentTrip = newDraftTrip;
+        return newDraftTrip;
+      } else {
+        console.log(
+          `tripweather: startup: found draft trip id: ${draftTripId}`,
+        );
+        const tripReference = await getDoc(
+          doc(this.draftTripsCollection, draftTripId),
+        );
+        const trip = tripReference.data();
+        console.log(
+          `tripweather: startup: found draft trip with id: ${draftTripId}`,
+        );
+        if (!trip) {
+          console.log(
+            `tripweather: startup: failed to find draft trip with id: ${draftTripId} - creating new draft trip`,
+          );
+          const newDraftTrip = this.newDraftTrip("New Draft Trip");
+          await setDoc(
+            doc(this.draftTripsCollection, newDraftTrip.id),
+            newDraftTrip,
+          );
+          localStorage.setItem(DraftTripIdKey, newDraftTrip.id);
+          this.currentTrip = newDraftTrip;
+          return newDraftTrip;
+        } else {
+          console.log(
+            `tripweather: startup: loaded draft trip with id: ${draftTripId}`,
+          );
+          this.currentTrip = trip;
+          return trip;
+        }
+      }
+    } else {
+      return this.newDraftTrip("TODO");
+    }
   }
 
   async load(): Promise<TripModel[]> {
@@ -70,14 +141,18 @@ export class TripsCollection {
 
   subscribeToChanges(
     id: string,
+    isDraft: boolean,
     onChange: (trip: TripModel) => void,
   ): Unsubscribe {
-    return onSnapshot(doc(this.tripsCollection, id), (doc) => {
-      const trip = doc.data();
-      if (trip) {
-        onChange(trip);
-      }
-    });
+    return onSnapshot(
+      doc(isDraft ? this.draftTripsCollection : this.tripsCollection, id),
+      (doc) => {
+        const trip = doc.data();
+        if (trip) {
+          onChange(trip);
+        }
+      },
+    );
   }
 
   async delete(id: string): Promise<void> {
@@ -111,18 +186,21 @@ export class TripsCollection {
     await setDoc(doc(this.tripsCollection, trip.id), trip);
   }
 
-  async update(id: string, fields: Partial<TripModel>): Promise<void> {
-    const docRef = doc(this.tripsCollection, id);
+  async update(trip: TripModel, fields: Partial<TripModel>): Promise<void> {
+    const docRef = doc(
+      trip.isDraft ? this.draftTripsCollection : this.tripsCollection,
+      trip.id,
+    );
     await updateDoc(docRef, fields);
   }
 
-  async createCurrentTripDraft(
-    name: string,
-    startDate: Date,
-    endDate: Date,
-  ): Promise<TripModel> {
+  newDraftTrip(name: string): TripModel {
     const newDocumentReference = doc(this.tripsCollection);
-    const now = Timestamp.fromDate(new Date());
+    const now = new Date();
+    const nowTimestamp = Timestamp.fromDate(now);
+    const startDate = new Date(now.setDate(now.getDate() - 2));
+    const endDate = new Date(now.setDate(now.getDate() + 5));
+
     const trip: TripModel = {
       id: newDocumentReference.id,
       ownerId: this.auth.currentUser?.uid || "",
@@ -131,14 +209,10 @@ export class TripsCollection {
       endDate: Timestamp.fromDate(endDate),
       isDraft: true,
       isCurrent: true,
-      dateCreated: now,
-      dateUpdated: now,
+      dateCreated: nowTimestamp,
+      dateUpdated: nowTimestamp,
       locations: [],
     };
-
-    //  Store in firebase and we're done.
-    //  TODO: we cannot call 'setDoc' as we're offline.
-    // await setDoc(newDocumentReference, trip);
 
     return trip;
   }

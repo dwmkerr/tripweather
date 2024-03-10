@@ -1,12 +1,13 @@
 import moment from "moment";
 import { updateLocationWeatherDates } from "./TripLocationWeather";
 import { TripLocation, WeatherStatus } from "../repository/TripModels";
+import { Timestamp } from "firebase/firestore";
 
 describe("TripLocationWeather", () => {
   describe("updateLocationWeatherDates", () => {
     test("can set the weather dates on a location, filtering extra dates and adding missing ones and sorting the result", () => {
       //  Helper to build a date.
-      const getDate = (iso: string) => moment(iso).toDate();
+      const getDate = (iso: string) => Timestamp.fromDate(moment(iso).toDate());
 
       const location: TripLocation = {
         id: "1",
@@ -71,7 +72,7 @@ describe("TripLocationWeather", () => {
 
     test("can set the weather dates on a location, keeping extra dates and adding missing ones and sorting the result", () => {
       //  Helper to build a date.
-      const getDate = (iso: string) => moment(iso).toDate();
+      const getDate = (iso: string) => Timestamp.fromDate(moment(iso).toDate());
 
       const location: TripLocation = {
         id: "1",

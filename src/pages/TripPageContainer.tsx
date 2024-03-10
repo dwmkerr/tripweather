@@ -6,42 +6,6 @@ import { TripModel } from "../lib/repository/TripModels";
 import { CircularProgress, Stack } from "@mui/joy";
 import TripPage from "./TripPage";
 import useUserEffect from "../lib/UserEffect";
-import { User } from "firebase/auth";
-
-async function startup(
-  repository: Repository,
-  user: User | null,
-): Promise<TripModel> {
-  //  On startup we will:
-  //  If the user is logged in:
-  //  [ ] try and load their current trip
-  //  [ ] create a new draft trip otherwise
-  //  If the user is not logged in
-  //  [ ] check local storage for a draft trip and load it
-  //  [ ] create a new draft trip otherwise store it in the draft trips collection and store the id in local storage
-
-  const today = new Date();
-  const startDate = new Date(today.setDate(today.getDate() - 2));
-  const endDate = new Date(today.setDate(today.getDate() + 5));
-
-  if (user) {
-    console.log("tripweather: todo load user current trip");
-    const trip = await repository.trips.createCurrentTripDraft(
-      "New Trip",
-      startDate,
-      endDate,
-    );
-    return trip;
-  } else {
-    console.log("tripweather: startup: creating current trip draft...");
-    const trip = await repository.trips.createCurrentTripDraft(
-      "New Trip",
-      startDate,
-      endDate,
-    );
-    return trip;
-  }
-}
 
 export default function TripPageContainer() {
   const repository = Repository.getInstance();
@@ -56,9 +20,16 @@ export default function TripPageContainer() {
   //  On load, create the current trip draft. If we later see the user is logged
   //  in from the user effect, we'll load the current trip instead.
   useEffect(() => {
-    //  Only run the 'startup' logic once.
+    const startup = async () => {
+      //  Only run the 'startup' logic once.
+      const trip = await repository.trips.createOrLoadCurrentTrip(
+        user,
+        window.localStorage,
+      );
+      setCurrentTrip(trip);
+    };
     if (startupHasRunRef.current === false) {
-      startup(repository, user).then(setCurrentTrip);
+      startup();
       startupHasRunRef.current = true;
     }
   }, [user]);
@@ -69,10 +40,22 @@ export default function TripPageContainer() {
     if (!currentTrip?.id) {
       return;
     }
-    return repository.trips.subscribeToChanges(currentTrip.id, (trip) =>
-      setCurrentTrip(trip),
+    return repository.trips.subscribeToChanges(
+      currentTrip.id,
+      currentTrip.isDraft,
+      (trip) => setCurrentTrip(trip),
     );
   }, [currentTrip]);
+
+  const onTripChanged = async (
+    trip: Partial<TripModel>,
+  ): Promise<TripModel> => {
+    if (!currentTrip) {
+      throw new Error("current trip is null");
+    }
+    await repository.trips.update(currentTrip, trip);
+    return { ...currentTrip, ...trip };
+  };
 
   return currentTrip === null ? (
     <Stack
@@ -89,11 +72,10 @@ export default function TripPageContainer() {
   ) : (
     <TripPage
       trip={currentTrip}
+      onTripChanged={onTripChanged}
       units={settings.units}
       startDate={currentTrip.startDate.toDate()}
       endDate={currentTrip.endDate.toDate()}
-      onStartDateChange={() => undefined /*TODO*/}
-      onEndDateChange={() => undefined /*TODO*/}
     />
   );
 }

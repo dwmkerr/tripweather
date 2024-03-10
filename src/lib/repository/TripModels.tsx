@@ -28,10 +28,10 @@ export enum WeatherStatus {
 }
 
 export interface DateWeather {
-  date: Date;
+  date: Timestamp;
   weatherStatus: WeatherStatus;
   weather?: PirateWeatherDataDaily;
-  updated: Date | null;
+  updated: Timestamp | null;
 }
 
 export interface TripLocation {

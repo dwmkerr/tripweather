@@ -21,6 +21,7 @@
 
 - [ ] bug: state management bug in onRemoveFavoriteLocation, also user in requirelogin
 - [ ] feat: favorite - require sign in to use
+- [ ] bug: hydrating weather updates locations, but the user can add another location in parallel, meaning we have a race condition when updating locations. This'll be a tricky one to fix.
 
 **Nice to have**
 

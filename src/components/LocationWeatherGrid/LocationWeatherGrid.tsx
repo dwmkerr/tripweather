@@ -71,7 +71,7 @@ const buildColumns = (
       headerAlign: "center",
       valueGetter: (params: GridValueGetterParams<LocationRow>) => {
         return params.row.datesWeather.find(
-          (dw) => dw.date.getDate() === date.getDate(),
+          (dw) => dw.date.toDate().getDate() === date.getDate(),
         );
       },
       renderCell: renderWeatherCell,

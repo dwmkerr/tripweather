@@ -6,6 +6,7 @@ import { WeatherResponse } from "../../../functions/src/weather/weather";
 import { TripWeatherError } from "../Errors";
 import { Repository } from "../repository/Repository";
 import { WeatherUnits } from "../../../functions/src/weather/PirateWeatherTypes";
+import { Timestamp } from "firebase/firestore";
 
 //  Get weather data, or if missing show an alert.
 export async function getWeather(
@@ -41,7 +42,6 @@ export async function hydrateDatesWeather(
   startDate: Date,
   endDate: Date,
   units: WeatherUnits,
-  updateLocation: (location: TripLocation) => void,
 ): Promise<{ locations: TripLocation[]; errors: TripWeatherError[] }> {
   //  Get our date range. We currently will only use the start date as the
   //  weather API will always return 7 days of data.
@@ -56,7 +56,7 @@ export async function hydrateDatesWeather(
       const locationWithWeatherDataPlaceholders = updateLocationWeatherDates(
         location,
         true, // keep any existing dates not in our range
-        dates,
+        dates.map((date) => Timestamp.fromDate(date)),
       );
 
       //  Try and get the weather. If we couldn't then we'll set the error
@@ -92,7 +92,7 @@ export async function hydrateDatesWeather(
       const updatedDateWeathers =
         locationWithWeatherDataPlaceholders.datesWeather.map((dw) => {
           const weatherData = weather.daily.data.find((daily) =>
-            moment.unix(daily.time).isSame(moment(dw.date), "date"),
+            moment.unix(daily.time).isSame(moment(dw.date.toDate()), "date"),
           );
           if (!weatherData) {
             errors.push(
@@ -119,7 +119,6 @@ export async function hydrateDatesWeather(
         datesWeather: updatedDateWeathers,
         updated: new Date(),
       };
-      updateLocation(updatedLocation);
       return updatedLocation;
     },
   );
