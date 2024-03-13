@@ -58,7 +58,6 @@ export default function GPSSearchInput({
           latitude: candidate.location.x,
           longitude: candidate.location.y,
         },
-        datesWeather: [],
       };
       onSelectLocation(location);
     } catch (err) {

@@ -6,7 +6,11 @@ import {
 } from "@mui/x-data-grid";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { TripLocation } from "../../lib/repository/TripModels";
+import {
+  LocationDateWeather,
+  TripLocation,
+  ldwKey,
+} from "../../lib/repository/TripModels";
 import { Stack, Typography } from "@mui/joy";
 import { useSettingsContext } from "../../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../../lib/Time";
@@ -26,8 +30,11 @@ import {
   FavoriteLocationModel,
   findFavoriteLocationFromTripLocation,
 } from "../../lib/repository/RepositoryModels";
+import { Timestamp } from "firebase/firestore";
 
 const buildColumns = (
+  startDate: Date,
+  endDate: Date,
   settings: Settings,
   onDeleteLocation: DeleteLocationFunc,
   onAddFavoriteLocation: AddFavoriteLocationFunc,
@@ -70,8 +77,8 @@ const buildColumns = (
       align: "center",
       headerAlign: "center",
       valueGetter: (params: GridValueGetterParams<LocationRow>) => {
-        return params.row.datesWeather.find(
-          (dw) => dw.date.toDate().getDate() === date.getDate(),
+        return params.row.weather.get(
+          ldwKey(params.row.location.location, Timestamp.fromDate(date)),
         );
       },
       renderCell: renderWeatherCell,
@@ -105,6 +112,9 @@ const buildColumns = (
 
 export interface LocationGridProps {
   locations: TripLocation[];
+  weather: LocationDateWeather;
+  startDate: Date;
+  endDate: Date;
   favoriteLocations: FavoriteLocationModel[];
   onDeleteLocation: DeleteLocationFunc;
   onAddFavoriteLocation: AddFavoriteLocationFunc;
@@ -114,6 +124,9 @@ export interface LocationGridProps {
 
 export default function LocationGrid({
   locations,
+  weather,
+  startDate,
+  endDate,
   favoriteLocations,
   onDeleteLocation,
   onAddFavoriteLocation,
@@ -126,6 +139,8 @@ export default function LocationGrid({
     GridColDef<LocationRow>[]
   >(
     buildColumns(
+      startDate,
+      endDate,
       settings,
       onDeleteLocation,
       onAddFavoriteLocation,
@@ -140,7 +155,7 @@ export default function LocationGrid({
         id: location.id,
         title: location.originalSearch.address,
         address: location.location.address,
-        datesWeather: location.datesWeather,
+        weather,
         isFavorite:
           findFavoriteLocationFromTripLocation(location, favoriteLocations) !==
           undefined,

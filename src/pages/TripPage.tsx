@@ -3,11 +3,13 @@ import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Grid from "@mui/joy/Grid";
 
-import { TripLocation, WeatherStatus } from "../lib/repository/TripModels";
+import {
+  LocationDateWeather,
+  TripLocation,
+} from "../lib/repository/TripModels";
 import { Repository } from "../lib/repository/Repository";
 import LocationGrid from "../components/LocationWeatherGrid/LocationWeatherGrid";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { getMidnightDates } from "../lib/Time";
 import { useAlertContext } from "../components/AlertContext";
 import { TripWeatherError } from "../lib/Errors";
 import Footer from "../components/Footer";
@@ -18,12 +20,13 @@ import {
 } from "../lib/repository/RepositoryModels";
 import useUserEffect from "../lib/UserEffect";
 import { TripModel } from "../lib/repository/TripModels";
-import { hydrateDatesWeather } from "../lib/weather/HydrateDatesWeather";
 import { WeatherUnits } from "../../functions/src/weather/PirateWeatherTypes";
 import { Timestamp } from "firebase/firestore";
+import { WeatherDataContextProvider } from "../contexts/WeatherDataContextProvider";
 
 export interface TripPageProps {
   trip: TripModel;
+  weather: LocationDateWeather;
   onTripChanged: (trip: Partial<TripModel>) => Promise<TripModel>;
   startDate: Date;
   endDate: Date;
@@ -32,6 +35,7 @@ export interface TripPageProps {
 
 export default function TripPage({
   trip,
+  weather,
   onTripChanged,
   units,
   startDate,
@@ -78,54 +82,40 @@ export default function TripPage({
     setUnselectedFavoriteLocations(filteredLocations);
   }, [locations, favoriteLocations]);
 
-  useEffect(() => {
-    //  If the units have changed, we should mark everything as loading.
-    setLocations(
-      locations.map(
-        (location): TripLocation => ({
-          ...location,
-          datesWeather: location.datesWeather.map((dw) => ({
-            ...dw,
-            weatherStatus: WeatherStatus.Loading,
-          })),
-        }),
-      ),
-    );
+  console.log(
+    `tripweather: rendering TripPage, weather data keys: ${weather.size}`,
+  );
 
-    //  Hydrate the weather values.
-    hydrateDatesWeather(repository, locations, startDate, endDate, units).then(
-      (hydratedLocations) => {
-        setLocations(hydratedLocations.locations);
-      },
-    );
-  }, [units]);
+  // TODO: on units change
+  // useEffect(() => {
+  //   //  If the units have changed, we should reload weather data.
+  //   setLocations(
+  //     locations.map(
+  //       (location): TripLocation => ({
+  //         ...location,
+  //         datesWeather: location.datesWeather.map((dw) => ({
+  //           ...dw,
+  //           weatherStatus: WeatherStatus.Loading,
+  //         })),
+  //       }),
+  //     ),
+  //   );
+
+  //   //  Hydrate the weather values.
+  //   hydrateDatesWeather(repository, locations, startDate, endDate, units).then(
+  //     (hydratedLocations) => {
+  //       setLocations(hydratedLocations.locations);
+  //     },
+  //   );
+  // }, [units]);
+
+  //  When the start/end date changes, update the weather.
+  // useEffect(() => {
+  //   console.log("tripweather: new dates", startDate, endDate);
+  // }, [startDate, endDate]);
 
   const onSelectLocation = async (location: TripLocation) => {
-    const dates = getMidnightDates(startDate, endDate);
-    const newLocations = [...locations, location].map((l) => {
-      if (l.id !== location.id) {
-        return l;
-      }
-      return {
-        ...l,
-        datesWeather: dates.map((date) => ({
-          date: Timestamp.fromDate(date),
-          weatherStatus: WeatherStatus.Loading,
-          updated: null,
-        })),
-      };
-    });
-    setLocations(newLocations);
-
-    //  Update location with the (initially empty) weather.
-    const hydratedLocations = await hydrateDatesWeather(
-      repository,
-      newLocations,
-      startDate,
-      endDate,
-      units,
-    );
-    setLocations(hydratedLocations.locations);
+    setLocations([...locations, location]);
   };
 
   const onDeleteLocation = async (location: TripLocation) => {
@@ -212,6 +202,9 @@ export default function TripPage({
       <Box sx={{ width: "100%", flexGrow: 1 }}>
         <LocationGrid
           locations={locations}
+          weather={weather}
+          startDate={startDate}
+          endDate={endDate}
           favoriteLocations={favoriteLocations}
           onDeleteLocation={onDeleteLocation}
           onAddFavoriteLocation={onAddFavoriteLocation}

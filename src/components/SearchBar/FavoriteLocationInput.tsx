@@ -39,7 +39,6 @@ export default function FavoriteLocationInput({
       label: favoriteLocation.label,
       originalSearch: favoriteLocation.originalSearch,
       location: favoriteLocation.location,
-      datesWeather: [],
     };
     onSelectLocation(location);
     setSelectedFavorite(null);

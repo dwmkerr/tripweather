@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export function setMidnight(date: Date): Date {
   date.setHours(0, 0, 0, 0);
   return date;
@@ -13,4 +15,8 @@ export function getMidnightDates(startDate: Date, endDate: Date): Date[] {
   }
 
   return midnightDates;
+}
+
+export function getMidnightTimestamps(startDate: Date, endDate: Date) {
+  return getMidnightDates(startDate, endDate).map(Timestamp.fromDate);
 }

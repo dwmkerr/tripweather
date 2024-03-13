@@ -88,7 +88,6 @@ export default function AddressSearchInput({
         latitude: address.data.candidates[0].location.x,
         longitude: address.data.candidates[0].location.y,
       },
-      datesWeather: [],
     };
     setSearching(false);
     onSelectLocation(location);
