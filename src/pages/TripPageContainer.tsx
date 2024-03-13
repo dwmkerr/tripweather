@@ -58,17 +58,15 @@ export default function TripPageContainer() {
       return;
     }
 
-    //  Subscribe to changes in the current trip.
+    //  Subscribe to changes in the current trip and update the weather when
+    //  the trip changes.
     const unsubscribe = repository.trips.subscribeToChanges(
       currentTripIdentifier.id,
       currentTripIdentifier.isDraft,
       (trip) => {
         setCurrentTrip(trip);
-        console.log(
-          `tripweather: trip updated with ${trip.locations.length} locations`,
-        );
 
-        //  Fetch weather data for the updated trip.
+        // Fetch weather data for the updated trip
         const fetchWeatherData = async () => {
           const result = startUpdateWeather(
             trip.locations,
@@ -82,8 +80,7 @@ export default function TripPageContainer() {
     );
 
     return () => {
-      //  Clean up the subscription when the component unmounts or when
-      //  currentTripIdentifier changes.
+      // Clean up the subscription when the component unmounts or when currentTripIdentifier changes
       unsubscribe();
     };
   }, [currentTripIdentifier]);
@@ -113,7 +110,7 @@ export default function TripPageContainer() {
   ) : (
     <TripPage
       trip={currentTrip}
-      weather={weatherData}
+      weatherData={weatherData}
       onTripChanged={onTripChanged}
       units={settings.units}
       startDate={currentTrip.startDate.toDate()}

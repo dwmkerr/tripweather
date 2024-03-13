@@ -22,11 +22,10 @@ import useUserEffect from "../lib/UserEffect";
 import { TripModel } from "../lib/repository/TripModels";
 import { WeatherUnits } from "../../functions/src/weather/PirateWeatherTypes";
 import { Timestamp } from "firebase/firestore";
-import { WeatherDataContextProvider } from "../contexts/WeatherDataContextProvider";
 
 export interface TripPageProps {
   trip: TripModel;
-  weather: LocationDateWeather;
+  weatherData: LocationDateWeather;
   onTripChanged: (trip: Partial<TripModel>) => Promise<TripModel>;
   startDate: Date;
   endDate: Date;
@@ -35,8 +34,8 @@ export interface TripPageProps {
 
 export default function TripPage({
   trip,
-  weather,
   onTripChanged,
+  weatherData,
   units,
   startDate,
   endDate,
@@ -81,10 +80,6 @@ export default function TripPage({
     );
     setUnselectedFavoriteLocations(filteredLocations);
   }, [locations, favoriteLocations]);
-
-  console.log(
-    `tripweather: rendering TripPage, weather data keys: ${weather.size}`,
-  );
 
   // TODO: on units change
   // useEffect(() => {
@@ -202,7 +197,7 @@ export default function TripPage({
       <Box sx={{ width: "100%", flexGrow: 1 }}>
         <LocationGrid
           locations={locations}
-          weather={weather}
+          weatherData={weatherData}
           startDate={startDate}
           endDate={endDate}
           favoriteLocations={favoriteLocations}

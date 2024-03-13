@@ -73,8 +73,11 @@ export default function renderWeatherCell(
   params: GridRenderCellParams<LocationRow, DateWeather>,
 ): ReactNode {
   const dateWeather = params.value;
+  //  The dataweather is undefined while it is being hydrated, once it is
+  //  hydrated it is given the loading value. Until that happens, we can safely
+  //  return an empty cell.
   if (dateWeather === undefined) {
-    return <Typography color="danger">Undefined Cell Value</Typography>;
+    return <></>;
   }
 
   return <WeatherCell dateWeather={dateWeather} />;
