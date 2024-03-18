@@ -17,6 +17,29 @@ function isSameDay(lhs: moment.Moment, rhs: moment.Moment): boolean {
   return lhs.isSame(rhs, "date");
 }
 
+export function filterLocations(
+  weatherData: LocationDateWeather,
+  locations: TripLocation[],
+  startDate: Date,
+  endDate: Date,
+): TripLocation[] {
+  //  Get the date range we're gathering data for.
+  const dates = getMidnightTimestamps(startDate, endDate);
+
+  //  Remove any locations that we already have weather data for.
+  return locations.filter((location) => {
+    //  For us to remove this location from the list, we must have weather data
+    //  for every date requested.
+    const keys = dates.map((date) => ldwKey(location.location, date));
+    const hasWeatherData = keys.every(
+      (key) =>
+        weatherData.has(key) &&
+        weatherData.get(key)?.weatherStatus == WeatherStatus.Loaded,
+    );
+    return !hasWeatherData;
+  });
+}
+
 //  Get weather data, or if missing show an alert.
 export async function getWeather(
   repository: Repository,
@@ -110,10 +133,6 @@ export async function updateWeather(
         currentWeatherData.get(key)?.weatherStatus == WeatherStatus.Loaded,
     );
   });
-
-  console.log(
-    `filtered locations: ${filteredLocations.length} / ${locations.length}`,
-  );
 
   //  TODO filtered locations not working
 

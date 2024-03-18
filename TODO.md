@@ -1,5 +1,10 @@
 # TODO
 
+1. Clean slate
+2. Add Howden - loading starts
+3. Add Ellel - Howden is also reloaded
+
+- [ ] bug: add location, refresh, add location - only new locations reloaded
 - [ ] bug: some locations refresh data, some don't fuck me this is driving me crazy
 - [ ] to debug, log each day that we're getting data for at key steps
 - [ ] delete weather data context provider
@@ -11,6 +16,7 @@
 
 ## 0.3.x
 
+- [ ] feat: when loading weather, if weather data already exists keep it visible during reload
 - [x] feat: enter key for address/gps/favorite search to confirm entry
 - [x] bug: typing doesn't work on GPS, need to work on this it is disabled for now
 - [x] feat: debounce search input
