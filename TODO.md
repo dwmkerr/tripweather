@@ -1,9 +1,13 @@
 # TODO
 
-- [ ] provide location date weather to trippage
-- [ ] handle onload
-- [ ] handle date change
-- [ ] handle units change
+- [ ] bug: some locations refresh data, some don't fuck me this is driving me crazy
+- [ ] to debug, log each day that we're getting data for at key steps
+- [ ] delete weather data context provider
+- [ ] fix bug showing errors
+- [ ] 'requested time is in the future' for US addresses
+- [ ] ensure we don't reload weather we already have
+- [ ] handle errors
+- [ ] 'requested time too early' bug
 
 ## 0.3.x
 

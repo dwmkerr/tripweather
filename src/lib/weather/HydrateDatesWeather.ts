@@ -11,6 +11,11 @@ import { TripWeatherError } from "../Errors";
 import { Repository } from "../repository/Repository";
 import { WeatherUnits } from "../../../functions/src/weather/PirateWeatherTypes";
 import { Timestamp } from "firebase/firestore";
+import moment from "moment";
+
+function isSameDay(lhs: moment.Moment, rhs: moment.Moment): boolean {
+  return lhs.isSame(rhs, "date");
+}
 
 //  Get weather data, or if missing show an alert.
 export async function getWeather(
@@ -40,7 +45,9 @@ export async function getWeather(
   }
 }
 
+//  Set the 'loading' status to each LDW value which needs to be loaded.
 export function startUpdateWeather(
+  currentWeatherData: LocationDateWeather,
   locations: TripLocation[],
   startDate: Date,
   endDate: Date,
@@ -50,13 +57,23 @@ export function startUpdateWeather(
     //  Set each location/date value to 'loading'.
     const ldWeathers = dates.map((timestamp) => {
       const key = ldwKey(location.location, timestamp);
-      const dateWeather = {
-        date: timestamp,
-        weatherStatus: WeatherStatus.Loading,
-        weather: undefined,
-        updated: null,
+      //  Use the existing weather data or load it otherwise.
+      const existingData = currentWeatherData.has(key)
+        ? currentWeatherData.get(key)
+        : undefined;
+      const existingDataValid =
+        existingData?.weatherStatus === WeatherStatus.Loaded;
+      return {
+        key,
+        dateWeather: existingDataValid
+          ? existingData
+          : {
+              date: timestamp,
+              weatherStatus: WeatherStatus.Loading,
+              weather: undefined,
+              updated: null,
+            },
       };
-      return { key, dateWeather };
     });
     ldWeathers.forEach(({ key, dateWeather }) => ldw.set(key, dateWeather));
     return ldw;
@@ -66,12 +83,12 @@ export function startUpdateWeather(
 }
 
 export async function updateWeather(
+  currentWeatherData: LocationDateWeather,
   repository: Repository,
   locations: TripLocation[],
   startDate: Date,
   endDate: Date,
   units: WeatherUnits,
-  onUpdateWeather: (key: string, weather: DateWeather) => void,
 ): Promise<{
   locationDateWeather: LocationDateWeather;
   errors: TripWeatherError[];
@@ -82,21 +99,26 @@ export async function updateWeather(
   const errors: TripWeatherError[] = [];
   const locationDateWeather = new Map<string, DateWeather>();
 
+  //  Remove any locations that we already have weather data for.
+  const filteredLocations = locations.filter((location) => {
+    const keys = dates.map((date) =>
+      ldwKey(location.location, Timestamp.fromDate(date)),
+    );
+    return keys.every(
+      (key) =>
+        currentWeatherData.has(key) &&
+        currentWeatherData.get(key)?.weatherStatus == WeatherStatus.Loaded,
+    );
+  });
+
+  console.log(
+    `filtered locations: ${filteredLocations.length} / ${locations.length}`,
+  );
+
+  //  TODO filtered locations not working
+
   //  Get the weather for each location and date.
   const apiCalls = locations.map(async (location) => {
-    //  Set each location/date value to 'loading'.
-    dates.map((date) => {
-      const key = ldwKey(location.location, Timestamp.fromDate(date));
-      const dateWeather = {
-        date: Timestamp.fromDate(date),
-        weatherStatus: WeatherStatus.Loading,
-        weather: undefined,
-        updated: null,
-      };
-      locationDateWeather.set(key, dateWeather);
-      onUpdateWeather(key, dateWeather);
-    });
-
     //  Try and get the weather. If we couldn't then we'll set the error
     //  state for each of the weather values.
     const weatherResponseOrNull = await getWeather(
@@ -115,62 +137,65 @@ export async function updateWeather(
 
   //  Now that we have the weather for each location, load the data into the
   //  location date weather.
-  // locationsWeather.forEach(({ location, weatherResponseOrNull }) => {
-  //   //  If the weather is null, we have shown an error alert.
-  //   //  Now just set the state of any weather dates in the location that
-  //   //  have not been loaded to 'error' and return it.
-  //   if (weatherResponseOrNull === null) {
-  //     //  Set the error state for each locationdate.
-  //     dates.forEach((date) => {
-  //       const key = ldwKey(location.location, Timestamp.fromDate(date));
-  //       locationDateWeather.set(key, {
-  //         date: Timestamp.fromDate(date),
-  //         weatherStatus: WeatherStatus.Error,
-  //         weather: undefined,
-  //         updated: Timestamp.now(),
-  //       });
-  //     });
-  //     onUpdateWeather(locationDateWeather);
-  //     return;
-  //   }
+  locationsWeather.forEach(({ location, weatherResponseOrNull }) => {
+    //  If the weather is null, we have shown an error alert.
+    //  Now just set the state of any weather dates in the location that
+    //  have not been loaded to 'error' and return it.
+    if (weatherResponseOrNull === null) {
+      //  Set the error state for each locationdate.
+      dates.forEach((date) => {
+        const key = ldwKey(location.location, Timestamp.fromDate(date));
+        locationDateWeather.set(key, {
+          date: Timestamp.fromDate(date),
+          weatherStatus: WeatherStatus.Error,
+          weather: undefined,
+          updated: Timestamp.now(),
+        });
+      });
+      return;
+    }
 
-  //   //  We're now sure we've got valid weather data. Go through each
-  //   //  WeatherData for the location and enrich it.
-  //   const weather = weatherResponseOrNull.weather;
-  //   dates.forEach((date) => {
-  //     const key = ldwKey(location.location, Timestamp.fromDate(date));
+    //  We're now sure we've got valid weather data. Go through each
+    //  WeatherData for the location and enrich it.
+    const weather = weatherResponseOrNull.weather;
+    dates.forEach((date) => {
+      const key = ldwKey(location.location, Timestamp.fromDate(date));
 
-  //     //  Find the weather data for the given date.
-  //     const weatherData = weather.daily.data.find((daily) =>
-  //       moment.unix(daily.time).isSame(moment(date), "date"),
-  //     );
+      //  Find the weather data for the given date.
+      const weatherData = weather.daily.data.find((daily) =>
+        isSameDay(moment.unix(daily.time), moment(date)),
+      );
 
-  //     //  If we don't have the data, push an error and set error weather.
-  //     if (!weatherData) {
-  //       errors.push(
-  //         new TripWeatherError(
-  //           "Unable to map Weather Data",
-  //           `Cannot find requested weather data for date ${date}`,
-  //         ),
-  //       );
-  //       locationDateWeather.set(key, {
-  //         date: Timestamp.fromDate(date),
-  //         weatherStatus: WeatherStatus.Error,
-  //         weather: undefined,
-  //         updated: Timestamp.now(),
-  //       });
-  //     } else {
-  //       locationDateWeather.set(key, {
-  //         date: Timestamp.fromDate(date),
-  //         weatherStatus: WeatherStatus.Loaded,
-  //         weather: weatherData,
-  //         updated: Timestamp.now(),
-  //       });
-  //     }
+      //  If we don't have the data, push an error and set error weather.
+      if (!weatherData) {
+        errors.push(
+          new TripWeatherError(
+            "Unable to map Weather Data",
+            `Cannot find requested weather data for date ${date}`,
+          ),
+        );
+        locationDateWeather.set(key, {
+          date: Timestamp.fromDate(date),
+          weatherStatus: WeatherStatus.Error,
+          weather: undefined,
+          updated: Timestamp.now(),
+        });
+      } else {
+        locationDateWeather.set(key, {
+          date: Timestamp.fromDate(date),
+          weatherStatus: WeatherStatus.Loaded,
+          weather: weatherData,
+          updated: Timestamp.now(),
+        });
+      }
+    });
+  });
 
-  //     onUpdateWeather(locationDateWeather);
-  //   });
-  // });
+  //  Join the current data to the new data.
+  const joinedWeatherData: LocationDateWeather = new Map<string, DateWeather>([
+    ...Array.from(currentWeatherData.entries()),
+    ...Array.from(locationDateWeather.entries()),
+  ]);
 
   return { locationDateWeather, errors };
 }

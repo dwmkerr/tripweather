@@ -75,10 +75,19 @@ export default function LocationGrid({
     setLocationRows(locationRows);
   }, [locations, favoriteLocations, weatherData]);
 
-  //  When the settings change, build the columns.
+  //  When the start date, end date or settings change, build the columns.
   useEffect(() => {
-    setColumnDefinitions(columnDefinitions);
-  }, [settings]);
+    //  Rebuild the columns.
+    const columns = buildColumns(
+      startDate,
+      endDate,
+      onDeleteLocation,
+      onAddFavoriteLocation,
+      onRemoveFavoriteLocation,
+      onRenameLocationLabel,
+    );
+    setColumnDefinitions(columns);
+  }, [settings, startDate, endDate]);
 
   if (locations.length === 0) {
     return (

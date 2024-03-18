@@ -5,7 +5,10 @@ import { useSettingsContext } from "../contexts/SettingsContextProvider";
 import { CircularProgress, Stack } from "@mui/joy";
 import TripPage from "./TripPage";
 import useUserEffect from "../lib/UserEffect";
-import { startUpdateWeather } from "../lib/weather/HydrateDatesWeather";
+import {
+  startUpdateWeather,
+  updateWeather,
+} from "../lib/weather/HydrateDatesWeather";
 import {
   DateWeather,
   LocationDateWeather,
@@ -66,9 +69,11 @@ export default function TripPageContainer() {
       (trip) => {
         setCurrentTrip(trip);
 
-        // Fetch weather data for the updated trip
+        //  Start updating weather - essentially sets each of the values to
+        //  'loading' that we update the UI state quickly.
         const fetchWeatherData = async () => {
           const result = startUpdateWeather(
+            weatherData,
             trip.locations,
             trip.startDate.toDate(),
             trip.endDate.toDate(),
@@ -76,6 +81,21 @@ export default function TripPageContainer() {
           setWeatherData(result);
         };
         fetchWeatherData();
+
+        //  Now hydrate the actual weather data.
+        const updateWeatherData = async () => {
+          const result = await updateWeather(
+            weatherData,
+            repository,
+            trip.locations,
+            trip.startDate.toDate(),
+            trip.endDate.toDate(),
+            settings.units,
+          );
+          setWeatherData(result.locationDateWeather);
+          //  TODO alerts.
+        };
+        updateWeatherData();
       },
     );
 
