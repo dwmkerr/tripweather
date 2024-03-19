@@ -70,7 +70,6 @@ export async function getWeather(
 
 //  Set the 'loading' status to each LDW value which needs to be loaded.
 export function startUpdateWeather(
-  currentWeatherData: LocationDateWeather,
   locations: TripLocation[],
   startDate: Date,
   endDate: Date,
@@ -80,22 +79,14 @@ export function startUpdateWeather(
     //  Set each location/date value to 'loading'.
     const ldWeathers = dates.map((timestamp) => {
       const key = ldwKey(location.location, timestamp);
-      //  Use the existing weather data or load it otherwise.
-      const existingData = currentWeatherData.has(key)
-        ? currentWeatherData.get(key)
-        : undefined;
-      const existingDataValid =
-        existingData?.weatherStatus === WeatherStatus.Loaded;
       return {
         key,
-        dateWeather: existingDataValid
-          ? existingData
-          : {
-              date: timestamp,
-              weatherStatus: WeatherStatus.Loading,
-              weather: undefined,
-              updated: null,
-            },
+        dateWeather: {
+          date: timestamp,
+          weatherStatus: WeatherStatus.Loading,
+          weather: undefined,
+          updated: null,
+        },
       };
     });
     ldWeathers.forEach(({ key, dateWeather }) => ldw.set(key, dateWeather));
@@ -106,7 +97,6 @@ export function startUpdateWeather(
 }
 
 export async function updateWeather(
-  currentWeatherData: LocationDateWeather,
   repository: Repository,
   locations: TripLocation[],
   startDate: Date,
@@ -121,20 +111,6 @@ export async function updateWeather(
   const dates = getMidnightDates(startDate, endDate);
   const errors: TripWeatherError[] = [];
   const locationDateWeather = new Map<string, DateWeather>();
-
-  //  Remove any locations that we already have weather data for.
-  const filteredLocations = locations.filter((location) => {
-    const keys = dates.map((date) =>
-      ldwKey(location.location, Timestamp.fromDate(date)),
-    );
-    return keys.every(
-      (key) =>
-        currentWeatherData.has(key) &&
-        currentWeatherData.get(key)?.weatherStatus == WeatherStatus.Loaded,
-    );
-  });
-
-  //  TODO filtered locations not working
 
   //  Get the weather for each location and date.
   const apiCalls = locations.map(async (location) => {
@@ -209,12 +185,6 @@ export async function updateWeather(
       }
     });
   });
-
-  //  Join the current data to the new data.
-  const joinedWeatherData: LocationDateWeather = new Map<string, DateWeather>([
-    ...Array.from(currentWeatherData.entries()),
-    ...Array.from(locationDateWeather.entries()),
-  ]);
 
   return { locationDateWeather, errors };
 }

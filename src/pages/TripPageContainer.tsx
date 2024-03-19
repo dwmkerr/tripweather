@@ -6,12 +6,14 @@ import { CircularProgress, Stack } from "@mui/joy";
 import TripPage from "./TripPage";
 import useUserEffect from "../lib/UserEffect";
 import {
+  filterLocations,
   startUpdateWeather,
   updateWeather,
 } from "../lib/weather/HydrateDatesWeather";
 import {
   DateWeather,
   LocationDateWeather,
+  TripLocation,
   TripModel,
 } from "../lib/repository/TripModels";
 
@@ -68,34 +70,6 @@ export default function TripPageContainer() {
       currentTripIdentifier.isDraft,
       (trip) => {
         setCurrentTrip(trip);
-
-        //  Start updating weather - essentially sets each of the values to
-        //  'loading' that we update the UI state quickly.
-        const fetchWeatherData = async () => {
-          const result = startUpdateWeather(
-            weatherData,
-            trip.locations,
-            trip.startDate.toDate(),
-            trip.endDate.toDate(),
-          );
-          setWeatherData(result);
-        };
-        fetchWeatherData();
-
-        //  Now hydrate the actual weather data.
-        const updateWeatherData = async () => {
-          const result = await updateWeather(
-            weatherData,
-            repository,
-            trip.locations,
-            trip.startDate.toDate(),
-            trip.endDate.toDate(),
-            settings.units,
-          );
-          setWeatherData(result.locationDateWeather);
-          //  TODO alerts.
-        };
-        updateWeatherData();
       },
     );
 
@@ -104,6 +78,58 @@ export default function TripPageContainer() {
       unsubscribe();
     };
   }, [currentTripIdentifier]);
+
+  //  When the current trip or weather data changes, update weather data.
+  useEffect(() => {
+    //  Start updating weather - essentially sets each of the values to
+    //  'loading' that we update the UI state quickly. Only update locations
+    //  that we do not have weather data for.
+    const fetchWeatherData = async () => {
+      if (!currentTrip) {
+        return [];
+      }
+      const filteredLocations = filterLocations(
+        weatherData,
+        currentTrip.locations,
+        currentTrip.startDate.toDate(),
+        currentTrip.endDate.toDate(),
+      );
+      if (filteredLocations.length === 0) {
+        return filteredLocations;
+      }
+      const result = startUpdateWeather(
+        filteredLocations,
+        currentTrip.startDate.toDate(),
+        currentTrip.endDate.toDate(),
+      );
+      const merged = new Map([...weatherData, ...result]);
+      setWeatherData(merged);
+      return filteredLocations;
+    };
+    const updateWeatherData = async (filteredLocations: TripLocation[]) => {
+      if (!currentTrip) {
+        return null;
+      }
+      const result = await updateWeather(
+        repository,
+        filteredLocations,
+        currentTrip.startDate.toDate(),
+        currentTrip.endDate.toDate(),
+        settings.units,
+      );
+      const merged = new Map([...weatherData, ...result.locationDateWeather]);
+      setWeatherData(merged);
+    };
+
+    //  TODO bug the filtered locations are now not being used in the code
+    //  below. Seems like a race condition.
+    fetchWeatherData().then((filteredLocations) => {
+      if (filteredLocations === null) {
+        return;
+      }
+      updateWeatherData(filteredLocations);
+    });
+  }, [currentTrip]);
 
   const onTripChanged = async (
     trip: Partial<TripModel>,
