@@ -46,6 +46,7 @@ export default function TripPageContainer() {
       //  this is set another effect will watch it for changes.
       const trip = await repository.trips.createOrLoadCurrentTrip(
         user,
+        settings.units,
         window.localStorage,
       );
       setCurrentTripIdentifier({ id: trip.id, isDraft: trip.isDraft });
@@ -91,6 +92,7 @@ export default function TripPageContainer() {
       const filteredLocations = filterLocations(
         weatherData,
         currentTrip.locations,
+        currentTrip.units,
         currentTrip.startDate.toDate(),
         currentTrip.endDate.toDate(),
       );
@@ -99,6 +101,7 @@ export default function TripPageContainer() {
       }
       const result = startUpdateWeather(
         filteredLocations,
+        currentTrip.units,
         currentTrip.startDate.toDate(),
         currentTrip.endDate.toDate(),
       );
@@ -113,9 +116,9 @@ export default function TripPageContainer() {
       const result = await updateWeather(
         repository,
         filteredLocations,
+        currentTrip.units,
         currentTrip.startDate.toDate(),
         currentTrip.endDate.toDate(),
-        settings.units,
       );
       const merged = new Map([...weatherData, ...result.locationDateWeather]);
       setWeatherData(merged);
@@ -158,7 +161,6 @@ export default function TripPageContainer() {
       trip={currentTrip}
       weatherData={weatherData}
       onTripChanged={onTripChanged}
-      units={settings.units}
       startDate={currentTrip.startDate.toDate()}
       endDate={currentTrip.endDate.toDate()}
     />

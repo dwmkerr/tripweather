@@ -27,6 +27,17 @@ export default function NavBar() {
     return () => unsubscribe();
   }, []);
 
+  //  When the units change, update the current trip.
+  useEffect(() => {
+    if (repository.trips.currentTrip === null) {
+      return;
+    }
+    repository.trips.update(repository.trips.currentTrip, {
+      units: settings.units,
+    });
+    repository.trips.currentTrip;
+  }, [settings]);
+
   return (
     <Box
       sx={{

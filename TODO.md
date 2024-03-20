@@ -48,6 +48,7 @@
 - [ ] minor bug (settings): on unit change, new units flash before the loader updates
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 - [ ] monitor: do we still lose the search from time to time in the address search bar?
+- [ ] refactor: units are passed around in a dorky way, can probably remove entirely from settings and just pass as part of trip
 
 
 vNext

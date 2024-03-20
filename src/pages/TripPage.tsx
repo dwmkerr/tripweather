@@ -20,7 +20,6 @@ import {
 } from "../lib/repository/RepositoryModels";
 import useUserEffect from "../lib/UserEffect";
 import { TripModel } from "../lib/repository/TripModels";
-import { WeatherUnits } from "../../functions/src/weather/PirateWeatherTypes";
 import { Timestamp } from "firebase/firestore";
 
 export interface TripPageProps {
@@ -29,14 +28,12 @@ export interface TripPageProps {
   onTripChanged: (trip: Partial<TripModel>) => Promise<TripModel>;
   startDate: Date;
   endDate: Date;
-  units: WeatherUnits;
 }
 
 export default function TripPage({
   trip,
   onTripChanged,
   weatherData,
-  units,
   startDate,
   endDate,
 }: TripPageProps) {
@@ -80,34 +77,6 @@ export default function TripPage({
     );
     setUnselectedFavoriteLocations(filteredLocations);
   }, [locations, favoriteLocations]);
-
-  // TODO: on units change
-  // useEffect(() => {
-  //   //  If the units have changed, we should reload weather data.
-  //   setLocations(
-  //     locations.map(
-  //       (location): TripLocation => ({
-  //         ...location,
-  //         datesWeather: location.datesWeather.map((dw) => ({
-  //           ...dw,
-  //           weatherStatus: WeatherStatus.Loading,
-  //         })),
-  //       }),
-  //     ),
-  //   );
-
-  //   //  Hydrate the weather values.
-  //   hydrateDatesWeather(repository, locations, startDate, endDate, units).then(
-  //     (hydratedLocations) => {
-  //       setLocations(hydratedLocations.locations);
-  //     },
-  //   );
-  // }, [units]);
-
-  //  When the start/end date changes, update the weather.
-  // useEffect(() => {
-  //   console.log("tripweather: new dates", startDate, endDate);
-  // }, [startDate, endDate]);
 
   const onSelectLocation = async (location: TripLocation) => {
     setLocations([...locations, location]);
@@ -198,6 +167,7 @@ export default function TripPage({
         <LocationGrid
           locations={locations}
           weatherData={weatherData}
+          units={trip.units}
           startDate={startDate}
           endDate={endDate}
           favoriteLocations={favoriteLocations}

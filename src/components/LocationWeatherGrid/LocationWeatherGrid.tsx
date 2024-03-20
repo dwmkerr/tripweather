@@ -5,7 +5,6 @@ import {
   TripLocation,
 } from "../../lib/repository/TripModels";
 import { Stack, Typography } from "@mui/joy";
-import { useSettingsContext } from "../../contexts/SettingsContextProvider";
 import { LocationRow } from "./LocationRow";
 import {
   AddFavoriteLocationFunc,
@@ -18,10 +17,12 @@ import {
   findFavoriteLocationFromTripLocation,
 } from "../../lib/repository/RepositoryModels";
 import { buildColumns } from "./buildColumns";
+import { WeatherUnits } from "../../../functions/src/weather/PirateWeatherTypes";
 
 export interface LocationGridProps {
   locations: TripLocation[];
   weatherData: LocationDateWeather;
+  units: WeatherUnits;
   startDate: Date;
   endDate: Date;
   favoriteLocations: FavoriteLocationModel[];
@@ -34,6 +35,7 @@ export interface LocationGridProps {
 export default function LocationGrid({
   locations,
   weatherData,
+  units,
   startDate,
   endDate,
   favoriteLocations,
@@ -42,12 +44,12 @@ export default function LocationGrid({
   onRemoveFavoriteLocation,
   onRenameLocationLabel,
 }: LocationGridProps) {
-  const { settings } = useSettingsContext();
   const [locationRows, setLocationRows] = useState<LocationRow[]>([]);
   const [columnDefinitions, setColumnDefinitions] = useState<
     GridColDef<LocationRow>[]
   >(
     buildColumns(
+      units,
       startDate,
       endDate,
       onDeleteLocation,
@@ -67,6 +69,7 @@ export default function LocationGrid({
         title: location.originalSearch.address,
         address: location.location.address,
         weather: weatherData,
+        units,
         isFavorite:
           findFavoriteLocationFromTripLocation(location, favoriteLocations) !==
           undefined,
@@ -79,6 +82,7 @@ export default function LocationGrid({
   useEffect(() => {
     //  Rebuild the columns.
     const columns = buildColumns(
+      units,
       startDate,
       endDate,
       onDeleteLocation,
@@ -87,7 +91,7 @@ export default function LocationGrid({
       onRenameLocationLabel,
     );
     setColumnDefinitions(columns);
-  }, [settings, startDate, endDate]);
+  }, [startDate, endDate, units]);
 
   if (locations.length === 0) {
     return (

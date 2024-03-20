@@ -18,8 +18,10 @@ import {
 } from "./Actions";
 import renderLocationCell from "./RenderLocationCell";
 import { Timestamp } from "firebase/firestore";
+import { WeatherUnits } from "../../../functions/src/weather/PirateWeatherTypes";
 
 export function buildColumns(
+  units: WeatherUnits,
   startDate: Date,
   endDate: Date,
   onDeleteLocation: DeleteLocationFunc,
@@ -64,7 +66,7 @@ export function buildColumns(
       headerAlign: "center",
       valueGetter: (params: GridValueGetterParams<LocationRow>) => {
         return params.row.weather.get(
-          ldwKey(params.row.location.location, Timestamp.fromDate(date)),
+          ldwKey(params.row.location.location, units, Timestamp.fromDate(date)),
         );
       },
       renderCell: renderWeatherCell,

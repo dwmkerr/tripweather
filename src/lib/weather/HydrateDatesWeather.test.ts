@@ -6,7 +6,7 @@ import {
   ldwKey,
 } from "../repository/TripModels";
 import { filterLocations } from "./HydrateDatesWeather";
-import { getMidnightTimestamps } from "../Time";
+import { WeatherUnits } from "../../../functions/src/weather/PirateWeatherTypes";
 
 describe("HydrateDatesWeather", () => {
   describe("filterLocations", () => {
@@ -64,6 +64,7 @@ describe("HydrateDatesWeather", () => {
       const filteredLocations = filterLocations(
         mockWeatherData,
         [mockLocation1, mockLocation2, mockLocation3],
+        "ca", // units
         new Date("2024-03-15"),
         new Date("2024-03-17"),
       );
@@ -80,25 +81,29 @@ describe("HydrateDatesWeather", () => {
       const date2 = Timestamp.fromDate(new Date("2024-03-16"));
       const date3 = Timestamp.fromDate(new Date("2024-03-17"));
       const updated = Timestamp.fromDate(new Date("2024-03-14"));
-      mockWeatherData.set(ldwKey(mockLocation1.location, date1), {
+      mockWeatherData.set(ldwKey(mockLocation1.location, "ca", date1), {
         date: date1,
         updated,
         weatherStatus: WeatherStatus.Loaded,
+        units: "ca",
       });
-      mockWeatherData.set(ldwKey(mockLocation1.location, date2), {
+      mockWeatherData.set(ldwKey(mockLocation1.location, "ca", date2), {
         date: date2,
         updated,
         weatherStatus: WeatherStatus.Loaded,
+        units: "ca",
       });
-      mockWeatherData.set(ldwKey(mockLocation1.location, date3), {
+      mockWeatherData.set(ldwKey(mockLocation1.location, "ca", date3), {
         date: date3,
         updated,
         weatherStatus: WeatherStatus.Loaded,
+        units: "ca",
       });
 
       const filteredLocations = filterLocations(
         mockWeatherData,
         [mockLocation1, mockLocation2, mockLocation3],
+        "ca", // units
         new Date("2024-03-15"),
         new Date("2024-03-17"),
       );
@@ -111,20 +116,23 @@ describe("HydrateDatesWeather", () => {
       const date2 = Timestamp.fromDate(new Date("2024-03-16"));
 
       const updated = Timestamp.fromDate(new Date("2024-03-14"));
-      mockWeatherData.set(ldwKey(mockLocation2.location, date1), {
+      mockWeatherData.set(ldwKey(mockLocation2.location, "ca", date1), {
         date: date1,
         updated,
         weatherStatus: WeatherStatus.Loaded,
+        units: "ca",
       });
-      mockWeatherData.set(ldwKey(mockLocation2.location, date2), {
+      mockWeatherData.set(ldwKey(mockLocation2.location, "ca", date2), {
         date: date2,
         updated,
         weatherStatus: WeatherStatus.Loaded,
+        units: "ca",
       });
 
       const filteredLocations = filterLocations(
         mockWeatherData,
         [mockLocation1, mockLocation2, mockLocation3],
+        "ca", // units
         new Date("2024-03-15"),
         new Date("2024-03-16"),
       );
@@ -136,15 +144,17 @@ describe("HydrateDatesWeather", () => {
       const date1 = Timestamp.fromDate(new Date("2024-03-15"));
 
       const updated = Timestamp.fromDate(new Date("2024-03-14"));
-      mockWeatherData.set(ldwKey(mockLocation2.location, date1), {
+      mockWeatherData.set(ldwKey(mockLocation2.location, "ca", date1), {
         date: date1,
         updated,
         weatherStatus: WeatherStatus.Loaded,
+        units: "ca",
       });
 
       const filteredLocations = filterLocations(
         mockWeatherData,
         [mockLocation1, mockLocation2, mockLocation3],
+        "ca", // units
         new Date("2024-03-15"),
         new Date("2024-03-16"),
       );

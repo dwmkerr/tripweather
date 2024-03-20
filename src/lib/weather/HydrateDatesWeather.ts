@@ -20,6 +20,7 @@ function isSameDay(lhs: moment.Moment, rhs: moment.Moment): boolean {
 export function filterLocations(
   weatherData: LocationDateWeather,
   locations: TripLocation[],
+  units: WeatherUnits,
   startDate: Date,
   endDate: Date,
 ): TripLocation[] {
@@ -30,7 +31,7 @@ export function filterLocations(
   return locations.filter((location) => {
     //  For us to remove this location from the list, we must have weather data
     //  for every date requested.
-    const keys = dates.map((date) => ldwKey(location.location, date));
+    const keys = dates.map((date) => ldwKey(location.location, units, date));
     const hasWeatherData = keys.every(
       (key) =>
         weatherData.has(key) &&
@@ -43,10 +44,10 @@ export function filterLocations(
 //  Get weather data, or if missing show an alert.
 export async function getWeather(
   repository: Repository,
+  units: WeatherUnits,
   longitude: number,
   latitude: number,
   startDate: Date,
-  units: WeatherUnits,
 ): Promise<WeatherResponse | null> {
   try {
     return (
@@ -71,6 +72,7 @@ export async function getWeather(
 //  Set the 'loading' status to each LDW value which needs to be loaded.
 export function startUpdateWeather(
   locations: TripLocation[],
+  units: WeatherUnits,
   startDate: Date,
   endDate: Date,
 ): LocationDateWeather {
@@ -78,7 +80,7 @@ export function startUpdateWeather(
   const ldw = locations.reduce((ldw: LocationDateWeather, location) => {
     //  Set each location/date value to 'loading'.
     const ldWeathers = dates.map((timestamp) => {
-      const key = ldwKey(location.location, timestamp);
+      const key = ldwKey(location.location, units, timestamp);
       return {
         key,
         dateWeather: {
@@ -86,6 +88,7 @@ export function startUpdateWeather(
           weatherStatus: WeatherStatus.Loading,
           weather: undefined,
           updated: null,
+          units,
         },
       };
     });
@@ -99,9 +102,9 @@ export function startUpdateWeather(
 export async function updateWeather(
   repository: Repository,
   locations: TripLocation[],
+  units: WeatherUnits,
   startDate: Date,
   endDate: Date,
-  units: WeatherUnits,
 ): Promise<{
   locationDateWeather: LocationDateWeather;
   errors: TripWeatherError[];
@@ -118,10 +121,10 @@ export async function updateWeather(
     //  state for each of the weather values.
     const weatherResponseOrNull = await getWeather(
       repository,
+      units,
       location.location.longitude,
       location.location.latitude,
       startDate,
-      units,
     );
     return {
       location,
@@ -139,12 +142,13 @@ export async function updateWeather(
     if (weatherResponseOrNull === null) {
       //  Set the error state for each locationdate.
       dates.forEach((date) => {
-        const key = ldwKey(location.location, Timestamp.fromDate(date));
+        const key = ldwKey(location.location, units, Timestamp.fromDate(date));
         locationDateWeather.set(key, {
           date: Timestamp.fromDate(date),
           weatherStatus: WeatherStatus.Error,
           weather: undefined,
           updated: Timestamp.now(),
+          units,
         });
       });
       return;
@@ -154,7 +158,7 @@ export async function updateWeather(
     //  WeatherData for the location and enrich it.
     const weather = weatherResponseOrNull.weather;
     dates.forEach((date) => {
-      const key = ldwKey(location.location, Timestamp.fromDate(date));
+      const key = ldwKey(location.location, units, Timestamp.fromDate(date));
 
       //  Find the weather data for the given date.
       const weatherData = weather.daily.data.find((daily) =>
@@ -174,6 +178,7 @@ export async function updateWeather(
           weatherStatus: WeatherStatus.Error,
           weather: undefined,
           updated: Timestamp.now(),
+          units,
         });
       } else {
         locationDateWeather.set(key, {
@@ -181,6 +186,7 @@ export async function updateWeather(
           weatherStatus: WeatherStatus.Loaded,
           weather: weatherData,
           updated: Timestamp.now(),
+          units,
         });
       }
     });

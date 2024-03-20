@@ -19,6 +19,7 @@ import {
 import { Auth, Unsubscribe, User } from "firebase/auth";
 import { TripWeatherError } from "../Errors";
 import { TripModel } from "./TripModels";
+import { WeatherUnits } from "../../../functions/src/weather/PirateWeatherTypes";
 
 const DraftTripIdKey = "draftTripId";
 
@@ -48,7 +49,7 @@ export class TripsCollection {
 
   private tripsCollection: CollectionReference<TripModel, TripModel>;
   private draftTripsCollection: CollectionReference<TripModel, TripModel>;
-  private currentTrip: TripModel | null;
+  currentTrip: TripModel | null;
 
   constructor(db: Firestore, auth: Auth) {
     this.db = db;
@@ -64,6 +65,7 @@ export class TripsCollection {
 
   async createOrLoadCurrentTrip(
     user: User | null,
+    units: WeatherUnits,
     localStorage: Storage,
   ): Promise<TripModel> {
     //  On startup we will:
@@ -80,7 +82,7 @@ export class TripsCollection {
         console.log(
           `tripweather: startup: found no draft trip id - creating new draft`,
         );
-        const newDraftTrip = this.newDraftTrip("New Draft Trip");
+        const newDraftTrip = this.newDraftTrip("New Draft Trip", units);
         await setDoc(
           doc(this.draftTripsCollection, newDraftTrip.id),
           newDraftTrip,
@@ -103,7 +105,7 @@ export class TripsCollection {
           console.log(
             `tripweather: startup: failed to find draft trip with id: ${draftTripId} - creating new draft trip`,
           );
-          const newDraftTrip = this.newDraftTrip("New Draft Trip");
+          const newDraftTrip = this.newDraftTrip("New Draft Trip", units);
           await setDoc(
             doc(this.draftTripsCollection, newDraftTrip.id),
             newDraftTrip,
@@ -120,7 +122,7 @@ export class TripsCollection {
         }
       }
     } else {
-      return this.newDraftTrip("TODO");
+      return this.newDraftTrip("TODO", units);
     }
   }
 
@@ -194,7 +196,7 @@ export class TripsCollection {
     await updateDoc(docRef, fields);
   }
 
-  newDraftTrip(name: string): TripModel {
+  newDraftTrip(name: string, units: WeatherUnits): TripModel {
     const newDocumentReference = doc(this.tripsCollection);
     const now = new Date();
     const nowTimestamp = Timestamp.fromDate(now);
@@ -212,6 +214,7 @@ export class TripsCollection {
       dateCreated: nowTimestamp,
       dateUpdated: nowTimestamp,
       locations: [],
+      units,
     };
 
     return trip;

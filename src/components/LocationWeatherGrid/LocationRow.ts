@@ -1,4 +1,8 @@
-import { DateWeather, LocationDateWeather, TripLocation } from "../../lib/repository/TripModels";
+import { WeatherUnits } from "../../../functions/src/weather/PirateWeatherTypes";
+import {
+  LocationDateWeather,
+  TripLocation,
+} from "../../lib/repository/TripModels";
 
 export interface LocationRow {
   location: TripLocation;
@@ -6,5 +10,6 @@ export interface LocationRow {
   title: string;
   address: string;
   weather: LocationDateWeather;
+  units: WeatherUnits;
   isFavorite: boolean;
 }
