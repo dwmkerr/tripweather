@@ -1,13 +1,5 @@
 # TODO
 
-1. Clean slate
-2. Add Howden - loading starts
-3. Add Ellel - Howden is also reloaded
-
-- [ ] bug: add location, refresh, add location - only new locations reloaded
-- [ ] bug: some locations refresh data, some don't fuck me this is driving me crazy
-- [ ] to debug, log each day that we're getting data for at key steps
-- [ ] delete weather data context provider
 - [ ] fix bug showing errors
 - [ ] 'requested time is in the future' for US addresses
 - [ ] ensure we don't reload weather we already have
