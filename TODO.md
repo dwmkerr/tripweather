@@ -6,19 +6,22 @@
 - [x] bug: typing doesn't work on GPS, need to work on this it is disabled for now
 - [x] feat: debounce search input
 - [ ] feat: store current trip in browser cache when user not logged in - basially use document.add, work with the document, offer 'save to my trips' and guard save with the user log in, then we're good, use 'isDraft' in the model and when isDraft do not save or persist changes, offer option to save and guard w/ login. find the right moments to use an alert to suggest login
+- [ ] refactor: ensure favorites and trips are per-user collections (has been a hard bug to fix)
 - [ ] feat: when user logged in, enable 'save trip' option "Save to My Trips"
-- [ ] feat: enable add only when valid gps and mask gps input
+- [x] feat: enable add only when valid gps and mask gps input
 - [ ] bug: clear selection on address add
 - [ ] feat: set location label? (see TODO in code)
 - [ ] bug: undefined cell value when shortening end date range
 - [ ] refactor: favourites as a sub-collection of user
 - [ ] bug: after address or GPS (or favorite) is selected and added, clear the selection
 - [ ] bug: if can't set weather show an error icon in the weather panel
+- [ ] bug: user login state is not refreshed it seems, or at least they log out v quick
 
 **Needs bug fix**
 
 - [ ] bug: state management bug in onRemoveFavoriteLocation, also user in requirelogin
 - [ ] feat: favorite - require sign in to use
+- [ ] bug: hydrating weather updates locations, but the user can add another location in parallel, meaning we have a race condition when updating locations. This'll be a tricky one to fix.
 
 **Nice to have**
 

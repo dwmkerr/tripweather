@@ -1,4 +1,4 @@
-import { DateWeather, TripLocation } from "../../lib/Location";
+import { DateWeather, TripLocation } from "../../lib/repository/TripModels";
 
 export interface LocationRow {
   location: TripLocation;

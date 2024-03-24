@@ -8,6 +8,7 @@ import MenuButton from "@mui/joy/MenuButton";
 import MenuItem from "@mui/joy/MenuItem";
 import ListDivider from "@mui/joy/ListDivider";
 
+import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import GoogleIcon from "@mui/icons-material/Google";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -117,6 +118,11 @@ export default function UserMenuDropdown({ user }: UserMenuDropdownProps) {
           Log out
         </MenuItem>
         <ListDivider />
+        <MenuItem disabled>
+          <LightbulbOutlinedIcon />
+          Share Feedback
+        </MenuItem>
+
         <MenuItem disabled>
           <InfoOutlinedIcon />
           TripWeather Version {pkg.version}

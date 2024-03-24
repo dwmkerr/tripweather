@@ -1,5 +1,5 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { DateWeather, WeatherStatus } from "../../lib/Location";
+import { DateWeather, WeatherStatus } from "../../lib/repository/TripModels";
 import WeatherIcon from "../WeatherIcon/WeatherIcon";
 import { CircularProgress, Stack, Typography } from "@mui/joy";
 import { useSettingsContext } from "../../contexts/SettingsContextProvider";

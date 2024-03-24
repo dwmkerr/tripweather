@@ -3,7 +3,7 @@ import { Button, Stack, Typography } from "@mui/joy";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import { LocationRow } from "./LocationRow";
 import { ReactNode, useState } from "react";
 import { DeleteLocationFunc } from "./Actions";

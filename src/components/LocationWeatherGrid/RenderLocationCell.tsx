@@ -4,14 +4,14 @@ import { CircularProgress, IconButton, Stack, Typography } from "@mui/joy";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import { LocationRow } from "./LocationRow";
 import { ReactNode, useState } from "react";
 import { CheckFavoriteLocationFunc, RenameLocationLabelFunc } from "./Actions";
 
 export interface LocationCellProps {
   location: TripLocation;
-  onRenameLocationLabel: RenameLocationLabelFunc;
+  onRenameLocationLabel?: RenameLocationLabelFunc;
   isFavorite: boolean;
   onCheckFavorite: (checked: boolean) => Promise<void>;
 }
@@ -70,9 +70,9 @@ export function LocationCell({
 
 export default function renderLocationCell(
   params: GridRenderCellParams<LocationRow, TripLocation>,
-  onRenameLocationLabel: RenameLocationLabelFunc,
   isFavorite: boolean,
   onCheckFavorite: CheckFavoriteLocationFunc,
+  onRenameLocationLabel?: RenameLocationLabelFunc,
 ): ReactNode {
   const location = params.value;
   if (location === undefined) {

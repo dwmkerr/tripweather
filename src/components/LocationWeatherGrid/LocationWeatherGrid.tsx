@@ -6,7 +6,7 @@ import {
 } from "@mui/x-data-grid";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { TripLocation } from "../../lib/Location";
+import { TripLocation } from "../../lib/repository/TripModels";
 import { Stack, Typography } from "@mui/joy";
 import { useSettingsContext } from "../../contexts/SettingsContextProvider";
 import { getMidnightDates } from "../../lib/Time";
@@ -32,7 +32,7 @@ const buildColumns = (
   onDeleteLocation: DeleteLocationFunc,
   onAddFavoriteLocation: AddFavoriteLocationFunc,
   onRemoveFavoriteLocation: RemoveFavoriteLocationFunc,
-  onRenameLocationLabel: RenameLocationLabelFunc,
+  onRenameLocationLabel?: RenameLocationLabelFunc,
 ) => {
   const addressColumn: GridColDef<LocationRow> = {
     field: "title",
@@ -43,9 +43,9 @@ const buildColumns = (
     renderCell: (params: GridRenderCellParams<LocationRow, TripLocation>) =>
       renderLocationCell(
         params,
-        onRenameLocationLabel,
         params.row.isFavorite,
         checkFavorite,
+        onRenameLocationLabel,
       ),
   };
 
@@ -71,7 +71,7 @@ const buildColumns = (
       headerAlign: "center",
       valueGetter: (params: GridValueGetterParams<LocationRow>) => {
         return params.row.datesWeather.find(
-          (dw) => dw.date.getDate() === date.getDate(),
+          (dw) => dw.date.toDate().getDate() === date.getDate(),
         );
       },
       renderCell: renderWeatherCell,
@@ -109,7 +109,7 @@ export interface LocationGridProps {
   onDeleteLocation: DeleteLocationFunc;
   onAddFavoriteLocation: AddFavoriteLocationFunc;
   onRemoveFavoriteLocation: RemoveFavoriteLocationFunc;
-  onRenameLocationLabel: RenameLocationLabelFunc;
+  onRenameLocationLabel?: RenameLocationLabelFunc;
 }
 
 export default function LocationGrid({

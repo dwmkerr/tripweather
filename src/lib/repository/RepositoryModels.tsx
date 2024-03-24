@@ -1,4 +1,4 @@
-import { TripLocation } from "../Location";
+import { TripLocation } from "../repository/TripModels";
 
 export interface FavoriteLocationModel {
   id: string;

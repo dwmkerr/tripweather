@@ -1,10 +1,15 @@
 import moment from "moment";
-import { TripLocation, WeatherStatus } from "./Location";
+import {
+  DateWeather,
+  TripLocation,
+  WeatherStatus,
+} from "../repository/TripModels";
+import { Timestamp } from "firebase/firestore";
 
 export function updateLocationWeatherDates(
   location: TripLocation,
   keepExtraDates: boolean,
-  dates: Date[],
+  dates: Timestamp[],
 ): TripLocation {
   const datesWeatherFiltered = keepExtraDates
     ? location.datesWeather
@@ -13,21 +18,22 @@ export function updateLocationWeatherDates(
       });
 
   //  Add any missing days.
-  const datesWeatherMissing = dates
+  const datesWeatherMissing: DateWeather[] = dates
     .filter((d) => {
       return datesWeatherFiltered.find(
         (ld) => !moment(d).isSame(moment(ld.date), "date"),
       );
     })
     .map((date) => ({
-      date,
+      date: date,
       weatherStatus: WeatherStatus.Loading,
+      updated: null,
     }));
 
   //  Join and sort the arrays.
   const updatedDatesWeather = [...datesWeatherFiltered, ...datesWeatherMissing];
   const sortedDatesWeather = updatedDatesWeather.sort(
-    (lhs, rhs) => lhs.date.getDate() - rhs.date.getDate(),
+    (lhs, rhs) => lhs.date.toDate().getDate() - rhs.date.toDate().getDate(),
   );
 
   //  Finally, return a new location with the updated dates.

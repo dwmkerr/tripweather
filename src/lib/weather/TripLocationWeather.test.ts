@@ -1,12 +1,13 @@
 import moment from "moment";
 import { updateLocationWeatherDates } from "./TripLocationWeather";
-import { TripLocation, WeatherStatus } from "./Location";
+import { TripLocation, WeatherStatus } from "../repository/TripModels";
+import { Timestamp } from "firebase/firestore";
 
 describe("TripLocationWeather", () => {
   describe("updateLocationWeatherDates", () => {
     test("can set the weather dates on a location, filtering extra dates and adding missing ones and sorting the result", () => {
       //  Helper to build a date.
-      const getDate = (iso: string) => moment(iso).toDate();
+      const getDate = (iso: string) => Timestamp.fromDate(moment(iso).toDate());
 
       const location: TripLocation = {
         id: "1",
@@ -26,11 +27,13 @@ describe("TripLocationWeather", () => {
             date: getDate("2024-06-12"),
             weatherStatus: WeatherStatus.Loaded,
             weather: undefined,
+            updated: null,
           },
           {
             date: getDate("2024-06-13"),
             weatherStatus: WeatherStatus.Loaded,
             weather: undefined,
+            updated: null,
           },
         ],
       };
@@ -49,22 +52,27 @@ describe("TripLocationWeather", () => {
         {
           date: getDate("2024-06-10"),
           weatherStatus: WeatherStatus.Loading,
+          weather: undefined,
+          updated: null,
         },
         {
           date: getDate("2024-06-11"),
           weatherStatus: WeatherStatus.Loading,
+          weather: undefined,
+          updated: null,
         },
         {
           date: getDate("2024-06-12"),
           weatherStatus: WeatherStatus.Loaded, // i.e. unchanged
           weather: undefined,
+          updated: null,
         },
       ]);
     });
 
     test("can set the weather dates on a location, keeping extra dates and adding missing ones and sorting the result", () => {
       //  Helper to build a date.
-      const getDate = (iso: string) => moment(iso).toDate();
+      const getDate = (iso: string) => Timestamp.fromDate(moment(iso).toDate());
 
       const location: TripLocation = {
         id: "1",
@@ -84,6 +92,7 @@ describe("TripLocationWeather", () => {
             date: getDate("2024-06-13"),
             weatherStatus: WeatherStatus.Loaded,
             weather: undefined,
+            updated: null,
           },
         ],
       };
@@ -101,15 +110,18 @@ describe("TripLocationWeather", () => {
         {
           date: getDate("2024-06-11"),
           weatherStatus: WeatherStatus.Loading,
+          updated: null,
         },
         {
           date: getDate("2024-06-12"),
           weatherStatus: WeatherStatus.Loading,
+          updated: null,
         },
         {
           date: getDate("2024-06-13"),
           weatherStatus: WeatherStatus.Loaded, // i.e. unchanged
           weather: undefined,
+          updated: null,
         },
       ]);
     });
