@@ -32,6 +32,9 @@
 - [ ] refactor: hydrate dates weather can ignore weather we've already loaded
 - [ ] monitor: do we still lose the search from time to time in the address search bar?
 
+### Epic - Notifications
+
+Alerts e.g. five day dry window in a specific location.
 
 vNext
 
