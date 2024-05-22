@@ -65,6 +65,7 @@ vNext
 
 - Location map
 - Omnisearch that handles address, gps or favorite
+- [ ] links from thecrag/mtnproject? iframe inputs?
 
 **X-Data-Grid Pro**
 
