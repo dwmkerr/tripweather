@@ -1,5 +1,20 @@
 # TODO
 
+## Epic - Getting back into it
+
+- [ ] Ensure `npm start` works by fixing permissions for firebase
+
+## Epic - Offline Mode
+
+If running with TRIPWEATHER_OFFLINE=1 then Nock is used to mock all API requests, allowing the app to be run offline but also allowing for saving the number of API calls used - also potentially for testing.
+
+- [ ] 'watch' is not watching for changes
+- [ ] support offline flag
+- [ ] parameter for offline
+- [ ] indicate whether offline or online on startup
+- [ ] call location api offline support
+- [ ] call weather api offline support
+
 ## 0.3.x
 
 - [x] feat: enter key for address/gps/favorite search to confirm entry

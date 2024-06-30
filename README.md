@@ -11,6 +11,7 @@ https://dwmkerr-tripweather.web.app/
 - [Developer Guide](#developer-guide)
     - [Firebase](#firebase)
     - [Firebase Functions](#firebase-functions)
+    - [Offline Mode](#offline-mode)
 - [Releasing](#releasing)
 - [Service Tiers](#service-tiers)
     - [Guest](#guest)
@@ -28,6 +29,8 @@ https://dwmkerr-tripweather.web.app/
 | `npm run start:local` | Run the website locally, connected to the local emulator |
 | `npm run lint` | Lint the code with eslint/prettier |
 | `npm run lint:fix` | Fix the code with eslint/prettier |
+| `npm run emulator` | Start the local firebase emulator |
+| `npm run emulator:offline` | Start the local firebase emulator, mocked weather and location requests |
 
 ### Firebase
 
@@ -81,6 +84,17 @@ firebase functions:shell
 ```
 
 Firebase function parameters and configuration are defined in `./functions/src/parameters.ts`. These parameters are loaded from Firebase at runtime, but can also be defined in `./functions/.secrets.local` if needed.
+
+### Offline Mode
+
+Run `npm run emulator:offline` to run in offline mode. This will only call mocked requests via the [`nock`](https://github.com/nock/nock) library.
+
+Each firebase function has a `mock` file that defines the mocked functions. The following locations are supported:
+
+- TODO
+```
+npm run emulator
+```
 
 ## Releasing
 
