@@ -10,7 +10,9 @@ import {
 import { request } from "@esri/arcgis-rest-request";
 import { ApplicationSession } from "@esri/arcgis-rest-auth";
 
-import { parameters } from "../parameters";
+import { mock } from "./mock";
+
+import { getParameterValues } from "../parameters";
 import {
   Candidate,
   FindAddressFromSuggestionRequest,
@@ -22,16 +24,21 @@ import {
 } from "./LocationTypes";
 
 function getSession() {
+  const params = getParameterValues();
   const session = new ApplicationSession({
-    clientId: parameters.arcgisClientId.value(),
-    clientSecret: parameters.arcgisClientSecret.value(),
+    clientId: params.arcgisClientId,
+    clientSecret: params.arcgisClientSecret,
   });
+  console.log(`ARCGIS client: ${params.arcgisClientId}`);
+  console.log(`ARCGIS token: ${params.arcgisClientSecret}`);
   return session;
 }
 
 export const arcGisStatus = onRequest(
   { cors: ["localhost:3000"] },
   async (req, res) => {
+    const params = getParameterValues();
+    mock(params, logger);
     try {
       const arcgisStatus = await request(
         "https://www.arcgis.com/sharing/rest/info",
@@ -52,6 +59,7 @@ export const arcGisStatus = onRequest(
 export const arcGisSuggest = onCall<SuggestRequest, Promise<SuggestResponse>>(
   { cors: ["localhost:3000"] },
   async (req): Promise<SuggestResponse> => {
+    mock(getParameterValues(), logger);
     const session = getSession();
     const locationText = req.data.location;
     logger.info(`Suggest, query: ${locationText}`);
